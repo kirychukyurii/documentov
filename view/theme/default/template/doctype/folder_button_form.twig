@@ -1,0 +1,352 @@
+    <div class="modal-header">
+        <div class="pull-right">
+            <button type="button" class="btn btn-default" id="modal-button-add" onclick="saveButton('{% if folder_button_uid is empty %}add{% else %}edit{% endif %}');" data-loading-text="{{ text_loading }}"><i class="fa fa-save"></i></button>
+            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-reply"></i></button>
+        </div>    
+        <div class="pull-left"><h4 class="modal-title text-left">{{ text_title_button_add }}</h4></div>
+    </div>
+    <div class="modal-body" id="form_button">
+        <div class="form-horizontal">
+             <ul class="nav nav-tabs">
+                <li class="active"><a href="#button_tab_general" data-toggle="tab">{{ tab_general }}</a></li>
+                <li><a href="#button_tab_action" data-toggle="tab">{{ tab_action }}</a></li>
+                <li><a href="#button_tab_additional" data-toggle="tab">{{ tab_additional }}</a></li>
+             </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade in active" id="button_tab_general">
+                    <ul class="nav nav-tabs" id="button_language">
+                        {% for language in languages %}
+                        <li><a href="#button_language{{ language.language_id }}" data-toggle="tab"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    <div class="tab-content form-group">
+                        {% for language in languages %}
+                        <div class="tab-pane fade" id="button_language{{ language.language_id }}">                                
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="input-button_name{{ language.language_id }}">{{ entry_button_name }}</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="button_descriptions[{{ language.language_id }}][name]" id="input-button_name{{ language.language_id }}"  value="{{descriptions[language.language_id].name}}" class="form-control" placeholder="{{ entry_button_name }}"/>
+                                </div>
+                            </div>                              
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="input-button_description{{ language.language_id }}">{{ entry_button_description }}</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="button_descriptions[{{ language.language_id }}][description]" value="{{descriptions[language.language_id].description}}" id="input-button_description{{ language.language_id }}"  class="form-control" placeholder="{{ entry_button_description }}"/>
+                                </div>
+                            </div>
+                        </div>                        
+                        {% endfor %}   
+                    </div>  
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="input-button_field"><span data-toggle="tooltip" title="{{ help_button_field }}">{{ entry_button_field }}</span></label>
+                        <div class="col-sm-9">
+                            {% import "default/template/macros/fields.twig" as mfields %}
+                            {{ mfields.show(fields, '', 'button_field' ~ field.field_uid, text_macros_field) }}
+                        </div> 
+                        <label class="col-sm-3 control-label" for="input-button_route"><span data-toggle="tooltip" title="{{ help_button_route }}">{{ entry_button_route }}</span></label>
+                        <div class="col-sm-9">
+                            <input type="text" name="button_route" value="" placeholder="{{ entry_button_route }}" id="input-button_route" class="form-control" />
+                            <div id="button_route" class="well well-sm" style="height: auto; overflow: auto;"> 
+                                {% for route in routes %}
+                                <div id="button_route{{ route.route_uid }}">
+                                    <i class="fa fa-minus-circle"></i> {{ route.name }}
+                                    <input type="hidden" name="button_route[]" value="{{ route.route_uid }}" />
+                                </div>  
+                                {% endfor %}
+                            </div>                            
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="input-move_route"><span data-toggle="tooltip" title="{{ help_action_move_route }}">{{ entry_action_move_route }}</span></label>
+                        <div class="col-sm-9">    
+                            <input type="text" name="action_move_route" id="input-action_move_route" value="{{ action_move_route }}" placeholder="{{ entry_route }}" class="form-control">
+                            <input type="hidden" name="action_move_route_uid" value="{{ action_move_route_uid }}" id='input-action_move_route_uid'>
+                        </div>    
+                    </div>  
+                </div> 
+                <div class="tab-pane fade" id="button_tab_additional">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="input-button_picture">{{ entry_button_picture }}</label>
+                        <div class="col-sm-9">
+                            <a href="" id="thumb-image" data-toggle="image" class="img-thumbnail"><img src="{{ thumb }}" alt="" title="" data-placeholder="{{ placeholder }}"></a>
+                            <input type="hidden" name="button_picture" value="{{ picture }}" id="input-button_picture">
+                            <select name="hide_button_name" class="form-control" id="select-hide_button_name">
+                                <option value="0">{{ text_show_button_name }}</option>
+                                <option value="1000" {% if hide_button_name == 1000 %}selected="selected"{% endif %}>{{ text_hide_button_name }} 1 000 {{ text_hide_menu_px }}</option>
+                                <option value="900" {% if hide_button_name == 900 %}selected="selected"{% endif %}>{{ text_hide_button_name }} 900 {{ text_hide_menu_px }}</option>
+                                <option value="800" {% if hide_button_name == 800 %}selected="selected"{% endif %}>{{ text_hide_button_name }} 800 {{ text_hide_menu_px }}</option>
+                                <option value="700" {% if hide_button_name == 700 %}selected="selected"{% endif %}>{{ text_hide_button_name }} 700 {{ text_hide_menu_px }}</option>
+                                <option value="600" {% if hide_button_name == 600 %}selected="selected"{% endif %}>{{ text_hide_button_name }} 600 {{ text_hide_menu_px }}</option>
+                                <option value="500" {% if hide_button_name == 500 %}selected="selected"{% endif %}>{{ text_hide_button_name }} 500 {{ text_hide_menu_px }}</option>
+                                <option value="400" {% if hide_button_name == 400 %}selected="selected"{% endif %}>{{ text_hide_button_name }} 400 {{ text_hide_menu_px }}</option>
+                            </select>                            
+                        </div>
+                    </div>                  
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="input-button_color">{{ entry_button_color }}</label>
+                            <div class="col-sm-9">
+                                <div class="col-sm-6 text-left">
+                                    <input name="button_color" type="text" value="{{ color }}" class="color-picker form-control" {% if color is not empty %}style="color: #{{ color }}"{% endif %} id="input-button_color"/>
+                                </div>                    
+                                <div class="col-sm-6 text-left">
+                                    <input name="button_background" type="text" value="{{ background }}" class="color-picker form-control" {% if background is not empty %}style="background-color: #{{ background }}"{% endif %} id="input-button_background"/>
+                                </div>                    
+                            </div>
+                    </div>  
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label"><span data-toggle="tooltip" title="{{ help_action_log }}">{{ entry_action_log }}</span></label>
+                        <div class="col-sm-9">     
+                            {% if action_log == 1 %}  
+                            <label class="radio-inline"><input type="radio" name="action_log" value="1" checked="checked" /> {{ text_yes }}</label> 
+                            <label class="radio-inline"><input type="radio" name="action_log" value="0" /> {{ text_no }}</label> 
+                            {% else %}
+                            <label class="radio-inline"><input type="radio" name="action_log" value="1" /> {{ text_yes }}</label> 
+                            <label class="radio-inline"><input type="radio" name="action_log" value="0"  checked="checked"/> {{ text_no }}</label> 
+                            {% endif %}
+                        </div>    
+                    </div>                                                            
+                </div>
+                <div class="tab-pane fade" id="button_tab_action">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">{{ entry_action }}</label>
+                        <div class="col-sm-9">
+                            <select name="button_action" id="input-button_action" class="form-control">   
+                                <option value ="0">{{ text_select }}</option>
+                                {% for action in actions %}
+                                {% if action_name is not empty and action_name == action.name %}
+                                <option value = '{{ action.name }}' selected="selected">{{ action.title }}</option>    
+                                {% else %}    
+                                <option value = '{{ action.name }}'>{{ action.title }}</option>
+                                {% endif %}
+                                {% endfor %}   
+                            </select>  
+                        </div>
+                    </div>         
+                    <div id="form_button_action">
+                        {{ action_form }}
+                    </div>                      
+                </div> 
+            </div>    
+        </div>
+    </div>
+   
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <button type="button" class="btn btn-default btn-block" id="modal-button-add" onclick="saveButton('{% if folder_button_uid is empty %}add{% else %}edit{% endif %}');" data-loading-text="{{ text_loading }}">{{ button_save }}</button>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                    <div style="margin-top: 15px;" class="visible-xs"></div>
+                    <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+            </div>
+        </div>
+    </div>
+           
+           
+<script type="text/javascript">
+    
+    $('#input-button_picture').on('change',function(){
+         visible_list_showing_button_name();
+    }); 
+    
+    visible_list_showing_button_name();
+    
+    function visible_list_showing_button_name() {
+        if ($('#input-button_picture').val()) {
+            $('#select-hide_button_name').show();
+        } else {
+            $('#select-hide_button_name').hide();
+        }            
+    }
+    
+    $('#input-button_color, #input-button_background').ColorPicker({
+	onSubmit: function(hsb, hex, rgb, el) {
+		$(el).val(hex);
+                if ($(el).attr('id') === 'input-button_color') {
+                    $(el).css('color','#'+hex);
+                } else {
+                    $(el).css('backgroundColor','#'+hex);
+                }
+		$(el).ColorPickerHide();
+	},
+	onBeforeShow: function () {
+		$(this).ColorPickerSetColor(this.value);
+	}
+})
+
+    .bind('keyup', function(){
+	$(this).ColorPickerSetColor(this.value);
+        if ($(this).attr('id') === 'input-button_color') {
+                    $(this).css('color','#'+this.value);
+                } else {
+                    $(this).css('backgroundColor','#'+this.value);
+                }
+});
+    
+    function saveButton(mode) {
+        $.ajax({
+            url: 'index.php?route=doctype/folder/save_button&folder_uid={{ folder_uid }}&button_uid={{ folder_button_uid }}',
+            type: 'post',
+            cache: false,
+            data: $('#form_button input[type=\'text\'],#form_button input[type=\'number\'], #form_button input[type=\'hidden\'], #form_button input[type=\'radio\']:checked, #form_button input[type=\'checkbox\']:checked, #form_button select, #form_button textarea'),
+            dataType: 'json',
+            beforeSend: function() {
+                    $('#modal-button-add').button('loading');
+            },            
+            success: function(json) {
+                html = '<td class="text-left"><span class="btn btn-default btncolor new_element" onclick="editButton(\'' + json['folder_button_uid'] + '\');" id="button' + json['folder_button_uid'] + '" data-toggle="tooltip" title="{{edit_button}}" style="';
+
+                if (json['color'] !== '') {
+                    html += 'color:#' + json['color'] + ';';
+                }
+                if (json['background'] !== '') {
+                    html += 'background-color:#' + json['background'] + ';';
+                }      
+                if (json['picture25']) {
+                    html += 'padding:3px 6px 3px 3px;';
+                }
+                html += '"> <img src="' + json['picture25'] + '">' + json['name'] + '</span>' +
+                        '</td><td class="text-left pointer" onclick="editButton(\'' + json['folder_button_uid'] + '\');">' + json['fields'] + '</td>' + 
+                        '<td class="text-left pointer" onclick="editButton(\'' + json['folder_button_uid'] + '\');">' + json['routes'] + '</td>' + 
+                        '<td class="text-left pointer" onclick="editButton(\'' + json['folder_button_uid'] + '\');">' + json['action_name'] + '</td>' +
+                        '<td class="text-right" id="remove_button' + json['folder_button_uid'] + '" >' + 
+                        '<button type="button"  class="btn btn-default" onclick="up(this, \'move_button&button_uid=' + json['folder_button_uid'] + '\');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ' +                     
+                        '<button type="button"  class="btn btn-default" onclick="down(this, \'move_button&button_uid=' +json['folder_button_uid'] + '\');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ' +                                                                                                        
+                        '<button type="button" onclick="removeButton(\'' + json['folder_button_uid'] + '\');" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-default"><i class="fa fa-minus-circle"></i></button>' +'</td>';                
+                if(mode === 'add') {
+                    html = '<tr id="button-row' + json['folder_button_uid'] + '" class="new_element">' + html + '</tr>';
+                    $('#table_button tbody').append(html);
+                } else {
+                    $('#button-row' + json['folder_button_uid']).html(html);
+                    $('#button-row' + json['folder_button_uid']).css('color','#e45847');
+                }
+                $('#modal-abutton').modal('hide');
+            }
+        })
+    };
+
+    $('input[name=\'button_field\']').autocomplete({
+	'source': function(request, response) {
+		$.ajax({
+			url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' +  encodeURIComponent(request) + '&doctype_uid=' + $('input[name=\'doctype_uid\']').val(),
+			dataType: 'json',
+                        cache: false,
+			success: function(json) {
+				response($.map(json, function(item) {
+					return {
+						label: item['name'],
+						value: item['field_uid']
+					}
+				}));
+			}
+		});
+	},
+	'select': function(item) {
+		$('input[name=\'button_field\']').val('');
+
+		$('#button_field' + item['value']).remove();
+
+		$('#button_field').append('<div id="button_field' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="button_field[]" value="' + item['value'] + '" /></div>');
+	}
+});
+
+    $('input[name=\'button_route\']').autocomplete({
+	'source': function(request, response) {
+		$.ajax({
+			url: 'index.php?route=doctype/doctype/autocomplete_route&filter_name=' +  encodeURIComponent(request) + '&doctype_uid=' + $('input[name=\'doctype_uid\']').val(),
+			dataType: 'json',
+                        cache: false,
+			success: function(json) {
+                            json.unshift({
+                                route_uid: '0',
+                                name: '{{ text_all_routes }}'
+                            });                            
+                            response($.map(json, function(item) {
+                                    return {
+                                            label: item['name'],
+                                            value: item['route_uid']
+                                    }
+                            }));
+			}
+		});
+	},
+	'select': function(item) {
+		$('input[name=\'button_route\']').val('');
+
+		$('#button_route' + item['value']).remove();
+
+		$('#button_route').append('<div id="button_route' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + 
+                        '<input type="hidden" name="button_route[]" value="' + item['value'] + '" /></div>');
+	}
+});
+                        
+    $('input[name=\'action_move_route\']').autocomplete({
+            'source': function (request, response) {
+                $.ajax({
+                    url: 'index.php?route=doctype/doctype/autocomplete_route&filter_name=' + encodeURIComponent(request) + '&doctype_uid=' + $('input[name=\'doctype_uid\']').val(),
+                    dataType: 'json',
+                    success: function (json) {
+                        json.unshift({
+                            route_uid: 0,
+                            name: '{{ text_none }}'
+                        });
+                        response($.map(json, function (item) {
+                        {% if route_uid is empty %} {% set route_uid = '1' %} {% endif %}
+                            if (item['route_uid'] != '{{ route_uid }}') {
+                                return {
+                                    label: item['name'],
+                                    value: item['route_uid']
+                                } //end returns                            
+                            }
+                        } //end function 
+                        ) //end map                        
+                            ); //end response
+                    } //end success
+                }); //end ajax
+            }, //end source
+
+            'select': function (item) {
+                if (item['value']) {
+                    $('input[name=\'action_move_route\']').val(item['label']);
+                    $('input[name=\'action_move_route_uid\']').val(item['value']);                    
+                } else {
+                    $('input[name=\'action_move_route\']').val('');
+                    $('input[name=\'action_move_route_uid\']').val('');                    
+                }
+            } // end select    
+        }); //end autocomplete                             
+                        
+    $('#button_field').delegate('.fa-minus-circle', 'click', function() {
+            $(this).parent().remove();
+    });
+
+    $('#button_route').delegate('.fa-minus-circle', 'click', function() {
+            $(this).parent().remove();
+    });
+
+    $('select[name=\'button_action\']').on('change', function() {
+        $('#form_button_action').html('');
+        if ($(this).val()) {
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/get_form_action&action=' +  encodeURIComponent(this.value) + '&doctype_uid=' + $('input[name=\'doctype_uid\']').val() + '&folder=1',
+                dataType: 'json',
+                cache: false,
+                success: function(html) {
+                    $('#form_button_action').html('<hr>' + html);
+                }
+            });        
+        }
+
+    });
+
+    $('#button_language a:first').tab('show');
+
+    //после загрузки пиктограммы из-за второго модального окна теряется скролл, исправляем        
+    $(document).on('hidden.bs.modal', function(event) {
+      if($('.modal:visible').length) {
+        $('body').addClass('modal-open');
+      }
+    });
+
+
+//--></script>

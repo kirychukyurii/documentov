@@ -1,0 +1,104 @@
+<hr>
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-field_document_name"><span data-toggle="tooltip" title="{{ help_field_document }}">{{ entry_field_document }}</span></label>
+    <div class="col-sm-9">     
+        <input type="text" name="field_document_name" id="input-field_document_name" value="{{ field_document_name }}" placeholder="{{ entry_field_document }}" class="form-control" {% if field_document_setting %} style="font-style:italic" {% endif %}>
+        <input type="hidden" name="action[field_document_uid]" value="{{ action.field_document_uid }}">
+    </div>    
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-action_history"><span data-toggle="tooltip" title="{{ help_action_history }}">{{ text_action_history }}</span></label>
+    <div class="col-sm-9">
+        <label class="checkbox-inline"> <input type="checkbox" name="action[history]" id="input-action_history" value="1" {% if action.history == 1 %}checked="checked"{% endif %}></label>
+    </div>   
+</div>
+
+        
+<script type="text/javascript">
+    
+    $('input[name=\'field_document_name\']').autocomplete({
+        'source': function (request, response) {
+            if (request === '{{ text_currentdoc }}') request = '';
+            var regexp = new RegExp('{{ text_by_link_in_field }}');
+            request = request.replace(regexp, '').trim().replace(/\"/g, '');
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+                dataType: 'json',
+                cache: false,
+                success: function (json) {
+                    json.unshift({
+                        field_uid: "0",
+                        name: '{{ text_currentdoc }}'
+                    });
+                    response($.map(json, function (item) {
+                        var result = {
+                            value: item['field_uid'],
+                            label: item['name']
+                        };
+                        if (item['field_uid'] > 0) {
+                            if (item['setting'] === "1") {
+                                result['setting'] = 1;
+                                result['label'] = '<span style="font-style:italic">{{ text_by_link_in_field }} "' + item['name'] + '"</span>';
+                            } else {
+                                result['label'] = '{{ text_by_link_in_field }} "' + item['name'] + '"';
+                            }
+                        }
+                        return result;
+                    }));
+                } //end success
+            }); //end ajax
+        }, //end source   
+        'select': function (item) {
+            var label = item['label'];
+            if (item['setting'] === 1) {
+                $('input[name=\'field_document_name\']').css("font-style", "italic");
+                label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+            } else {
+                $('input[name=\'field_document_name\']').css("font-style", "");
+            }
+            if ($('input[name=\'action[field_document_uid]\']').val() !== item['value']) {
+                $('input[name=\'field_document_name\']').val('');
+                $('input[name=\'action[field_document_uid]\']').val('');
+            }
+            $('input[name=\'field_document_name\']').val(label);
+            $('input[name=\'action[field_document_uid]\']').val(item['value']);
+        }
+    });
+
+    
+    $('input[name=\'action[move_route]\']').autocomplete({ 
+        'source': function(request,response) {
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_route&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+                dataType: 'json',
+                success: function(json) { 
+                    json.unshift({
+                        route_uid: 0,
+                        name: '{{ text_not_remove }}'
+                    });
+                    response($.map(json,function(item) {
+                        {% if route_uid is empty %} {% set route_uid = 0 %} {% endif %}
+                        if(item['route_uid'] != '{{ route_uid}}') {
+                            return {
+                                label: item['name'],
+                                value: item['route_uid']
+                            } //end returns                            
+                        }
+                        } //end function 
+                        ) //end map                        
+                    ); //end response
+                } //end success
+            }); //end ajax
+        }, //end source
+        
+        'select': function(item) {
+            $('input[name=\'action[move_route]\']').val(item['label']);
+            $('input[name=\'action[move_route_uid]\']').val(item['value']);
+        } // end select    
+    }); //end autocomplete 
+    
+    
+</script>    
+        
+        
+        

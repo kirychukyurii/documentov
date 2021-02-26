@@ -1,0 +1,277 @@
+{{ header }}
+
+<div class="container-fluid">
+  <div class="pull-right">
+    <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+      <i class="fa fa-reply"></i>
+    </a>
+  </div>
+  <h1>{{ heading_title }}</h1>
+  <hr>
+
+  <div class="container-fluid">
+
+    <div class="pull-right">
+      {% if debugger_status %}
+        <a class="btn btn-default" href="index.php?route=extension/service/debugger/form&status=stop">{{ button_stop }}</a>
+      {% else %}
+        <a class="btn btn-default" href="index.php?route=extension/service/debugger/form&status=start">{{ button_start }}</a>
+      {% endif %}
+      <a class="btn btn-default" href="index.php?route=extension/service/debugger/form&status=clear">{{ button_clear }}</a>
+
+    </div>
+
+    <div class="pull-left">
+      <a class="btn btn-default" onclick="service_debugger_reload();">{{ button_refresh }}</a>
+      {% if debugger_status %}
+        {{ text_debugger_on }}
+      {% else %}
+        {{ text_debugger_off }}
+      {% endif %}
+    </div>
+  </div>
+  <br>
+  <div class="panel-group" id="accordion">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a class="accordion-toggle" data-parent="#accordion" data-toggle="collapse" href="#filter-collapse" style="color: #14628c; font-weight: bold;">{{ text_filter }}
+          <i class="fa fa-caret-down"></i>
+        </a><br></h4>
+    </div>
+    <div class="panel-collapse collapse" id="filter-collapse">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <label class="control-label">{{ column_date1 }}</label>
+                <input type="text" name="filter_date_1" id="input-filter_date_1" class="form-control" value="{{ filter_date_1 }}">
+                <label class="control-label">{{ column_date2 }}</label>
+                <input type="text" name="filter_date_2" id="input-filter_date_2" class="form-control" value="{{ filter_date_2 }}">
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <label class="control-label">{{ column_action }}</label>
+                <select class="form-control" id="select-filter_action" name="filter_action">
+                  <option value="0">{{ text_none }}</option>
+                  {% for action in actions %}
+                    <option value="{{ action.name }}" {% if action.name == filter_action %} selected="selected" {% endif %}>{{ action.title }}</option>
+                  {% endfor %}
+                </select>
+                <label class="control-label">{{ text_or }}
+                  {{ column_field }}</label>
+                <input type="text" name="filter_field_name" id="input-customer_name" class="form-control" value="{{ filter_field_name }}">
+                <input type="hidden" name="filter_field_uid" id="input-customer_name" class="form-control" value="{{ filter_field_uid }}">
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <label class="control-label">{{ column_document_uid }}</label>
+            <input type="text" name="filter_doc_uid" id="input-doc_uid" class="form-control" value="{{ filter_doc_uid }}">
+
+            <br>
+            <button class="btn btn-success" onclick="service_debugger_reload();">{{ button_filter }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="table-responsive">
+  <table class="table table-bordered table-hover">
+    <thead>
+      <th>
+        <a class="pointer{% if sort == 'log_id' %} {{ order }}{% endif %}" onclick="change_sort('log_id');">{{ column_date }}</a>
+      </th>
+      <th>{{ column_user }}</th>
+      <th>{{ column_document }}</th>
+      <th>{{ column_type }}</th>
+      <th>{{ column_name }}</th>
+      <th>{{ column_param }}</th>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+        <tr>
+          <td>{{ log.date }}</td>
+          <td>{{ log.user_name }}</td>
+          <td>
+            {% if log.doc_link is not empty %}
+              <a href="{{ log.doc_link }}">{{ log.doc_text }}</a>:
+              <a class="pointer" onclick="$('#input-doc_uid').val('{{ log.doc_uid }}');$('#filter-collapse').show(500);return false">{{ log.doc_uid }}</a>
+            {% endif %}
+          </td>
+          <td>{{ log.type }}</td>
+          <td>{{ log.object_name }}</td>
+          <td>{{ log.value }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="folder-pagination">
+    <div class="col-sm-6 text-left">
+      {{ pagination }}
+    </div>
+    <div class="col-sm-6 text-right form-inline">
+      {{ text_total_logs }}
+      {{ total_logs }}
+      |
+      {{ text_show_logs }}
+      <select class="form-control" name="limit" onchange="change_limit(this);">'
+        {% if pagination_limits is not empty %}
+          {% for limit in pagination_limits %}
+            <option value="{{ limit }}" {% if limit == pagination_limit %} selected="selected" {% endif %}>{{ limit }}</option>';
+          {% endfor %}
+        {% endif %}
+      </select>
+    </div>
+  </div>
+</div></div><br><br><script typa="text/javascript">
+var page = 1;
+var limit = {{ pagination_limit }}
+var sort = "{{ sort }}";
+var order = "{{ order }}";
+var filter_action = "{{ filter_action }}";
+var filter_doc_uid = "{{ filter_doc_uid }}";
+var filter_date_1 = "{{ filter_date_1 }}";
+var filter_date_2 = "{{ filter_date_2 }}";
+var filter_field_uid = "{{ filter_field_uid }}";
+
+
+if (typeof(navDocumentov) == "undefined") {
+  let navParams = {
+    language: {}
+  };{% for text_index,text_value in text_navigator_documentov %}navParams.language['{{ text_index }}'] = '{{ text_value }}';{% endfor %}var navDocumentov = new NavigatorDocumentov(navParams);
+}
+
+navDocumentov.onPage = function (num_page) {
+  page = num_page;
+  service_debugger_reload();
+}
+
+function on_page(num_page) {
+  page = num_page;
+  service_debugger_reload();
+}
+
+function change_limit(limit_page) {
+  limit = limit_page.value;
+  service_debugger_reload();
+}
+function change_sort(column) {
+  if (sort == column) { // переключаетя сортировка
+    if (order == 'asc') {
+      order = 'desc';
+    } else {
+      order = 'asc';
+    }
+  } else {
+    sort = column;
+    order = 'asc';
+  }
+  service_debugger_reload();
+}
+
+function service_debugger_reload() {
+  url = 'index.php?route=extension/service/debugger/form&page=' + page + '&limit=' + limit + '&sort=' + sort + '&order=' + order + '&status=refresh';
+  filter_action = $('select[name=\'filter_action\']').val();
+  if (filter_action) {
+    url += '&filter_action=' + filter_action;
+  }
+  filter_doc_uid = $('input[name=\'filter_doc_uid\']').val();
+  if (filter_doc_uid) {
+    url += '&filter_doc_uid=' + filter_doc_uid;
+  }
+  filter_date_1 = $('input[name=\'filter_date_1\']').val();
+  if (filter_date_1) {
+    url += '&filter_date_1=' + filter_date_1;
+  }
+  filter_date_2 = $('input[name=\'filter_date_2\']').val();
+  if (filter_date_2) {
+    url += '&filter_date_2=' + filter_date_2;
+  }
+  filter_field_uid = $('input[name=\'filter_field_uid\']').val();
+  if (filter_field_uid) {
+    url += '&filter_field_uid=' + filter_field_uid;
+  }
+  window.location = url;
+}
+if (!$.datetimepicker) {
+  addScript('view/javascript/jquery/datetimepicker/jquery.datetimepicker.full.min.js');
+  addStyle('view/javascript/jquery/datetimepicker/jquery.datetimepicker.min.css');
+}
+let langCode = '{{ code }}'.split('-')[0];
+$.datetimepicker.setLocale(langCode);
+let i18n = {};
+if (langCode != 'en') {
+  i18n[langCode] = {
+    months: [
+      '{{ January }}',
+      '{{ February }}',
+      '{{ March }}',
+      '{{ April }}',
+      '{{ May }}',
+      '{{ June }}',
+      '{{ July }}',
+      '{{ August }}',
+      '{{ September }}',
+      '{{ October }}',
+      '{{ November }}',
+      '{{ December }}'
+    ],
+    dayOfWeek: [
+      '{{ Monday }}',
+      '{{ Tuesday }}',
+      '{{ Wednesday }}',
+      '{{ Thursday }}',
+      '{{ Friday }}',
+      '{{ Saturday }}',
+      '{{ Sunday }}'
+    ]
+  }
+}
+$('input[name*=\'filter_date_\']').datetimepicker({
+  i18n: i18n,
+  lang: langCode,
+  timepicker: '{{ datetime_format }}'.search(/[His]/) > 0 ? true : false,
+  format: '{{ datetime_format }}',{% if code != "en" %}dayOfWeekStart : 1,{% endif %}
+});
+
+$('input[name=\'filter_field_name\']').autocomplete({
+  'source': function (request, response) {
+    $.ajax({
+      url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid=0',
+      dataType: 'json',
+      cache: false,
+      success: function (json) {
+        json.unshift({field_uid: 0, name: '{{ text_none }}'});
+        response($.map(json, function (item) {
+          return {label: item['name'], value: item['field_uid']}
+        }));
+      }
+    });
+  },
+  'select': function (item) {
+    if (item['value']) {
+      $('input[name=\'filter_field_uid\']').val(item['value']);
+      $('input[name=\'filter_field_name\']').val(item['label']);
+
+
+    } else {
+      $('input[name=\'filter_field_uid\']').val("0");
+      $('input[name=\'filter_field_name\']').val("");
+
+
+    }
+    autosave();
+  }
+});
+
+$('input[name*=\'filter_\']').on('keydown', function (event) {
+  if (event.which == 13) { // нажат Enter
+    service_debugger_reload();
+  }
+});</script>{{ footer }}

@@ -1,0 +1,12 @@
+[error]
+get_routes_not_lang = Ошибка при получении точек маршрута - не передан язык. Data: %+v; Err: %s
+get_doctype_template = Ошибка при получении шаблонов (%s) типа документа (UID=%s): %s
+save_document = Ошибка при сохранении документа: %s
+json_encode_params = Ошибка при кодировании JSON параметров поля (UID=%s): %s
+get_action_not_route_uid = Ошибка в запросе действий - не указан идентификатор точки маршрута: %+v
+document_uid_not_found = Ошибка при получении документа - не передан идентификатор: %+v
+not_found_parent_button = Ошибка: Не найден родительский объект кнопки: %+v
+not_enough_params = Ошибка: Недостаточно параметров: %+v
+
+[info]
+service_started = API запущен

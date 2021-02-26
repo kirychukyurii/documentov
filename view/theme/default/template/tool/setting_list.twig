@@ -1,0 +1,233 @@
+{{ header }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <h1>{{ heading_title }}</h1>
+    </div>
+  </div>
+
+  <ul class="nav nav-tabs">
+    <li class="active">
+      <a data-toggle="tab" href="#general">{{ tab_general }}</a>
+    </li>
+    <li>
+      <a data-toggle="tab" href="#localisation">{{ tab_localisation }}</a>
+    </li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane fade in active" id="general">
+      <div class="container-fluid">
+        <div>
+          <br><input type="text" id="input-filter" class="form-control" placeholder="{{ text_search }}"><br>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>{{ column_category }}</th>
+                <th>{{ column_key }}</th>
+                <th>{{ column_value }}</th>
+              </tr>
+            </thead>
+            <tbody id="table-setting">
+              {% for setting in settings %}
+                <tr>
+                  <td class="pointer" onclick="open_setting('{{ setting.setting_id }}');">{{ setting.code }}</td>
+                  <td class="pointer" onclick="open_setting('{{ setting.setting_id }}');">{{ setting.key }}</td>
+                  <td class="pointer" id="setting_value{{ setting.setting_id }}" onclick="open_setting('{{ setting.setting_id }}');">{{ setting.value }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="localisation">
+      <div class="container-fluid">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>{{ column_language_id }}</th>
+                <th>{{ column_name }}</th>
+                <th>{{ column_code }}</th>
+                <th>{{ column_status }}</th>
+                <th>{{ column_sort }}</th>
+              </tr>
+            </thead>
+            <tbody id="table-language">
+              {% for language in languages %}
+                <tr id="row-language-{{ language.language_id }}">
+                  <td class="pointer" id="row-language_id-{{ language.language_id }}" onclick="open_language('{{ language.language_id }}');">{{ language.language_id }}</td>
+                  <td class="pointer" id="row-language_name-{{ language.language_id }}" onclick="open_language('{{ language.language_id }}');">{{ language.name }}</td>
+                  <td class="pointer" id="row-language_code-{{ language.language_id }}" onclick="open_language('{{ language.language_id }}');">{{ language.code }}</td>
+                  <td class="pointer" id="row-language_status-{{ language.language_id }}" onclick="open_language('{{ language.language_id }}');">
+                    {% if language.status %}
+                      {{ text_enabled }}
+                    {% else %}
+                      {{ text_disabled }}
+                    {% endif %}
+                  </td>
+                  <td class="pointer" id="row-language_sort-{{ language.language_id }}" onclick="open_language('{{ language.language_id }}');">{{ language.sort_order }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="alert alert-info">{{ text_instruction_add_language }}</div>
+
+          {% if new_languages is not empty %}
+            {% for lang in new_languages %}
+              {% if lang.error is empty %}
+                <div class="alert alert-success" id="block-lang_add{{ lang.code|e }}">
+                  {{ text_new_lang }}
+                  {{ lang.code }}<br>
+                  <button class="btn btn-success" onclick="add_language('{{ lang.code }}');">{{ button_install }}</button>
+                </div>
+              {% else %}
+                <div class="alert alert-warning">{{ text_new_lang }}
+                  {{ lang.code }},
+                  {{ text_new_lang_error }}
+                  -
+                  {{ lang.error }}</div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          {% if del_languages is not empty %}
+            {% for lang_id, lang_code in del_languages %}
+              <div class="alert alert-danger" id="block-lang_del{{ lang_id }}">
+                {{ text_del_lang }}
+                {{ lang_code }}<br>
+                <button class="btn btn-danger" onclick="del_language('{{ lang_id }}');">{{ button_delete }}</button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}
+
+<script typa="text/javascript">
+
+  $(document).ready(function () {
+    $("#input-filter").on("keyup", function () {
+      var value = $(this).val().toLowerCase();
+      $("#table-setting tr").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
+  function open_setting(setting_id) {
+    $('#modal-setting').remove();
+
+    html = '<div id="modal-setting" class="modal fade">';
+    html += '  <div class="modal-dialog modal-lg">';
+    html += '    <div class="modal-content">';
+    html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '</div>';
+
+    $('body').append(html);
+
+    $('#modal-setting').modal('show');
+    $('#modal-setting').draggable({handle: '.modal-header'});
+
+    $.ajax({
+      url: 'index.php?route=tool/setting/edit&setting_id=' + setting_id,
+      type: 'get',
+      cache: false,
+      dataType: 'html',
+      success: function (data) {
+        $('#modal-setting .modal-load-mask').remove();
+        $('#modal-setting .modal-content').prepend(data);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        $('#modal-setting .modal-load-mask .fa').remove();
+        $('#modal-setting .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+      }
+    });
+
+  }
+
+  function open_language(language_id) {
+    $('#modal-language').remove();
+
+    html = '<div id="modal-language" class="modal fade">';
+    html += '  <div class="modal-dialog modal-lg">';
+    html += '    <div class="modal-content">';
+    html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '</div>';
+
+    $('body').append(html);
+
+    $('#modal-language').modal('show');
+    $('#modal-language').draggable({handle: '.modal-header'});
+
+    $.ajax({
+      url: 'index.php?route=tool/setting/edit&language_id=' + language_id,
+      type: 'get',
+      cache: false,
+      dataType: 'html',
+      success: function (data) {
+        $('#modal-language .modal-load-mask').remove();
+        $('#modal-language .modal-content').prepend(data);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        $('#modal-language .modal-load-mask .fa').remove();
+        $('#modal-language .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+      }
+    });
+
+  }
+  function add_language(code) {
+    $('#modal-language').remove();
+
+    html = '<div id="modal-language" class="modal fade">';
+    html += '  <div class="modal-dialog modal-lg">';
+    html += '    <div class="modal-content">';
+    html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '</div>';
+
+    $('body').append(html);
+
+    $('#modal-language').modal('show');
+    $('#modal-language').draggable({handle: '.modal-header'});
+
+    $.ajax({
+      url: 'index.php?route=tool/setting/edit&language_code=' + code,
+      type: 'get',
+      cache: false,
+      dataType: 'html',
+      success: function (data) {
+        $('#modal-language .modal-load-mask').remove();
+        $('#modal-language .modal-content').prepend(data);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        $('#modal-language .modal-load-mask .fa').remove();
+        $('#modal-language .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+      }
+    });
+
+  }
+
+  function del_language(language_id) {
+    $.ajax({
+      url: 'index.php?route=tool/setting/edit&remove_language_id=' + language_id,
+      type: 'get',
+      cache: false,
+      dataType: 'html',
+      success: function (data) {
+        $('#row-language-' + language_id).remove();
+        $('#block-lang_del' + language_id).remove();
+      }
+    });
+
+  }
+</script>

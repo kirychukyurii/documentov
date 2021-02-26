@@ -1,0 +1,49 @@
+<hr>
+<ul class="nav nav-tabs" id="dialog_template_language">
+  {% for language in languages %}
+    <li>
+      <a data-toggle="tab" href="#dialog_template_language{{ language.language_id }}"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/>
+        {{ language.name }}</a>
+    </li>
+  {% endfor %}
+</ul>
+<div class="tab-content" id="block-dialog_content">
+  {% for language in languages %}
+    <div class="tab-pane fade" id="dialog_template_language{{ language.language_id }}">
+      <div class="form-group">
+        <label class="col-sm-2 control-label" for="input-template{{ language.language_id }}">{{ text_template }}</label>
+        <div class="col-sm-10">
+          <textarea name="action[template][{{ language.language_id }}]" placeholder="{{ text_template }}" id="input-dialog_template{{ language.language_id }}" data-toggle="summernote" data-lang="{{ code }}" class="form-control">
+            {{ action.template[language.language_id] }}
+          </textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-title">
+          <span data-toggle="tooltip" title="{{ help_title }}">{{ entry_title }}</span>
+        </label>
+        <div class="col-sm-9">
+          <input type="text" name="action[title][{{ language.language_id }}]" id="input-title" value="{{ action.title[language.language_id] }}" placeholder="{{ entry_title }}" class="form-control">
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="input-action_history">
+    <span data-toggle="tooltip" title="{{ help_action_history }}">{{ text_action_history }}</span>
+  </label>
+  <div class="col-sm-9">
+    <label class="checkbox-inline">
+      <input type="checkbox" name="action[history]" id="input-action_history" value="1" {% if action.history == 1 %} checked="checked" {% endif %}></label>
+  </div>
+</div>
+<script type="text/javascript">
+  {% for language in languages %}
+    init_summernote_s($('#input-dialog_template{{ language.language_id }}'), '{{ doctype_uid }}', {hideConditions: true});{% endfor %}$('#block-dialog_content').on({
+    "shown.bs.dropdown": function () {
+      $('.input-select_field').focus(); // фокус на поле автокомплита редактора
+    }
+  });
+  $('#dialog_template_language a:first').tab('show');
+</script>

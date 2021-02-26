@@ -1,0 +1,575 @@
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#tab-selection_plus_general" data-toggle="tab">{{ tab_general }}</a></li>
+    <li><a href="#tab-selection_plus_additional" data-toggle="tab">{{ tab_additional }}</a></li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane fade in active" id="tab-selection_plus_general">
+        <div class="form-group">    
+            <label class="col-sm-3 control-label" for="select-document_source"><span data-toggle="tooltip" title="{{ help_document_source }}">{{ entry_document_source }}</span></label>
+            <div class="col-sm-9">     
+                <select name="action[document_source]" id="select-document_source" class="form-control">
+                    <option value="document_field" {% if action.document_source == 'document_field' %} selected="selected"{% endif %}> {{ text_document_source_document_field }} </option>  
+                    <option value="doctype_list" {% if action.document_source == 'doctype_list' %} selected="selected"{% endif %}> {{ text_document_source_doctype_field_list }}</option>
+                    <option value="doctype_field" {% if action.document_source == 'doctype_field' %} selected="selected"{% endif %}> {{ text_document_source_doctype_field }} </option>
+                </select>        
+            </div>   
+        </div>
+        <div class="form-group" id="block_doctype_list">
+            <label class="col-sm-3 control-label" for="input-doctype_name"><span data-toggle="tooltip" title="{{ help_doctype_list }}">{{ entry_doctype_list }}</span></label>
+            <div class="col-sm-9">     
+                <br>
+                <input type="text" name="doctype_name" id="input-doctype_name" value="{{ action.doctype_name }}" placeholder="{{ entry_doctype_list }}" class="form-control">
+                <input type="hidden" name="action[doctype_uid]" id="input-doctype_uid" value="{{ action.doctype_uid }}">
+            </div>    
+        </div>
+        <div class="form-group" id="block_document_field">    
+            <label class="col-sm-3 control-label" for="input-document_field_name"><span data-toggle="tooltip" title="{{ help_document_field }}">{{ entry_document_field }}</span></label>
+            <div class="col-sm-9">     
+                {% import "default/template/macros/field_in_action_uid.twig" as mfield %}
+                {{ mfield.show(action.document_field_name, action.document_field_uid, doctype_uid, 'document_field', text_macros_field) }}
+            </div>    
+        </div>
+        <div class="form-group" id="block_doctype_field">    
+            <label class="col-sm-3 control-label" for="input-field_doctype_field_name"><span data-toggle="tooltip" title="{{ help_doctype_field }}">{{ entry_doctype_field }}</span></label>
+            <div class="col-sm-9">     
+                {% import "default/template/macros/field_in_action_uid.twig" as mfield %}
+                {{ mfield.show(action.doctype_field_name, action.doctype_field_uid, doctype_uid, 'doctype_field', text_macros_field) }}
+            </div>    
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span data-toggle="tooltip" title="{{ help_condition_selection }}">{{ entry_condition_selection }}:</span></label>        
+            <div class="col-sm-9"><br><br></div>
+            <div class="col-sm-12">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="table_list_set">
+                        <thead>
+                        <tr>
+                            <th style="width:95px;"></th>
+                            <th>{{ column_field_1 }}</th>
+                            <th style="width:180px;">{{ column_comparison }}</th>
+                            <th>{{ column_field_2 }}</th>
+                            <th style="width: 40px;"><span class="btn btn-default btn-sm" id="button_add_set" data-toggle="tooltip" title="{{ button_add }}"><i class="fa fa-plus-circle"></i></span></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% set row = 0 %}
+                            {% if action.conditions is not empty %}
+                            {% for condition in action.conditions %}
+                            {% if condition.field_1_uid is not empty %}    
+                            {% set row = row + 1 %}    
+                            <tr>
+                                {% if row > 1 %}
+                                <td>
+                                    <select name="action[conditions][{{ row }}][concat]" class="form-control">
+                                        <option value="0"{% if condition.concat == 0 %} selected="selected"{% endif %}>{{ text_and }}</option>
+                                        <option value="1"{% if condition.concat == 1 %} selected="selected"{% endif %}>{{ text_or }}</option>
+                                    </selected>
+                                </td>    
+                                {% else %}
+                                <td></td>    
+                                {% endif %}    
+                                <td>
+                                    <input type="text" name="field_1_name{{ row }}" id="input-field_1_name{{ row }}" value="{{ condition.field_1_name }}" placeholder="{{ entry_field_1_name }}" class="form-control">
+                                    <input type="hidden" name="action[conditions][{{ row }}][field_1_uid]" value="{{ condition.field_1_uid }}">                            
+                                </td>
+                                <td>
+                                    <select name="action[conditions][{{ row }}][comparison]" class="form-control">
+                                        <option value="equal"{% if condition.comparison == 'equal'%} selected="selected"{% endif %}>{{text_condition_equal}}</option>
+                                        <option value="notequal"{% if condition.comparison == 'notequal'%} selected="selected"{% endif %}>{{text_condition_notequal}}</option>
+                                        <option value="more"{% if condition.comparison == 'more'%} selected="selected"{% endif %}>{{text_condition_more}}</option>
+                                        <option value="moreequal"{% if condition.comparison == 'moreequal'%} selected="selected"{% endif %}>{{text_condition_moreequal}}</option>
+                                        <option value="less"{% if condition.comparison == 'less'%} selected="selected"{% endif %}>{{text_condition_less}}</option>
+                                        <option value="lessequal"{% if condition.comparison == 'lessequal'%} selected="selected"{% endif %}>{{text_condition_lessequal}}</option>
+                                        <option value="contains"{% if condition.comparison == 'contains'%} selected="selected"{% endif %}>{{text_condition_contains}}</option>
+                                        <option value="notcontains"{% if condition.comparison == 'notcontains'%} selected="selected"{% endif %}>{{text_condition_notcontains}}</option>
+                                        <option value="include"{% if condition.comparison == 'include' %} selected="selected" {% endif %}>{{ text_condition_include }}</option>
+                                        <option value="notinclude"{% if condition.comparison == 'notinclude' %} selected="selected" {% endif %}>{{ text_condition_notinclude }}</option>
+                                    </select>                            
+                                </td>
+                                <td>
+                                    <input type="text" name="field_2_name{{ row }}" id="input-field_2_name{{ row }}" value="{{ condition.field_2_name }}" placeholder="{{ entry_field_2_name }}" class="form-control">
+                                    <input type="hidden" name="action[conditions][{{ row }}][field_2_uid]" value="{{ condition.field_2_uid }}">                                                        
+                                </td>
+                                <td> 
+                                    {% if row > 1 %}
+                                    <button type="button" class="btn btn-default btn-sm" onclick="$(this).parent().parent().remove();" data-toggle="tooltip" title="{{ text_button_del_value }}"><i class="fa fa-remove"></i>
+                                    {% endif %}
+                                </td>
+                            </tr>   
+                            {% endif %}
+                            {% endfor %} 
+                            {% endif %}
+                        </tbody>
+                    </table> 
+                </div>
+            </div>    
+        </div>
+
+        <div class="form-group">    
+            <label class="col-sm-3 control-label" for="input-field_result_name"><span data-toggle="tooltip" title="{{ help_field_result }}">{{ entry_field_result }}</span></label>
+            <div class="col-sm-9">     
+                <input type="text" name="field_result_name" id="input-field_result_name" value="{{ action.field_result_name }}" placeholder="{{ entry_field_result }}" class="form-control">
+                <input type="hidden" name="action[field_result_uid]" id="input-field_result_uid" value="{{ action.field_result_uid }}">
+            </div>    
+        </div>                         
+    </div>
+    <div class="tab-pane fade" id="tab-selection_plus_additional">  
+        <div class="form-group">    
+            <label class="col-sm-3 control-label" for="select-type_result"><span data-toggle="tooltip" title="{{ help_type_result }}">{{ text_type_result }}</span></label>
+            <div class="col-sm-9">     
+                <select name="action[type_result]" id="select-type_result" class="form-control">
+                    <option value="documents"{% if action.type_result == 'documents' %} selected="selected"{% endif %}>{{ text_result_documents }}</option>
+                    <option value="count"{% if action.type_result == 'count' %} selected="selected"{% endif %}>{{ text_result_count }}</option>
+                    <option value="sum"{% if action.type_result == 'sum' %} selected="selected"{% endif %}>{{ text_result_sum }}</option>
+                    <option value="max"{% if action.type_result == 'max' %} selected="selected"{% endif %}>{{ text_result_max }}</option>
+                    <option value="min"{% if action.type_result == 'min' %} selected="selected"{% endif %}>{{ text_result_min }}</option>
+                </select>
+            </div>    
+        </div>  
+        <div id="result_documents" style="display:none;">        
+            <div class="form-group">    
+                <label class="col-sm-3 control-label" for="input-sort_field_name"><span data-toggle="tooltip" title="{{ help_sort_field }}">{{ text_sort_field }}</span></label>
+                <div class="col-sm-9">     
+                    <input type="text" name="sort_field_name" id="input-sort_field_name" value='{{ sort_field_name }}' placeholder="{{ entry_sort_field }}" class="form-control">
+                    <input type="hidden" name="action[sort_field_uid]" value="{{ action.sort_field_uid }}">
+                    <select name="action[sort_order]" class="form-control">
+                        <option value="asc"{% if action.sort_order is empty or action.sort_order == 'asc' %} selected="selected"{% endif %}>{{ text_asc }}</option>
+                        <option value="desc"{% if action.sort_order == 'desc' %} selected="selected"{% endif %}>{{ text_desc }}</option>
+                    </select>
+                </div>    
+            </div>        
+            <div class="form-group">    
+                <label class="col-sm-3 control-label" for="input-limit_total"><span data-toggle="tooltip" title="{{ help_limit_total }}">{{ text_limit_total }}</span></label>
+                <div class="col-sm-9">     
+                    {% import "default/template/macros/field_in_action_uid.twig" as ltfield %}
+                    {{ ltfield.show(action.limit_total_field_name, action.limit_total_field_uid, doctype_uid, 'limit_total_field', text_macros_field) }}                
+                </div>    
+            </div>        
+            <div class="form-group">    
+                <label class="col-sm-3 control-label" for="input-limit_start"><span data-toggle="tooltip" title="{{ help_limit_start }}">{{ text_limit_start }}</span></label>
+                <div class="col-sm-9">     
+                    {% import "default/template/macros/field_in_action_uid.twig" as lsfield %}
+                    {{ lsfield.show(action.limit_start_field_name, action.limit_start_field_uid, doctype_uid, 'limit_start_field', text_macros_field) }}                
+                </div>    
+            </div>     
+        </div>
+        <div id="result_count" style="display:none;"></div>        
+        <div id="result_sum" style="display:none;">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label" for="input-sort_field_name"><span data-toggle="tooltip" title="{{ help_sum_field }}">{{ text_sum_field }}</span></label>
+                <div class="col-sm-9">     
+                    <input type="text" name="sum_field_name" id="input-sum_field_name" value='{{ sum_field_name }}' placeholder="{{ entry_sum_field }}" class="form-control">
+                    <input type="hidden" name="action[sum_field_uid]" value="{{ action.sum_field_uid }}">
+                </div>    
+            </div>                    
+        </div>        
+        <div id="result_max" style="display:none;">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label" for="input-max_field_name"><span data-toggle="tooltip" title="{{ help_max_field }}">{{ text_max_field }}</span></label>
+                <div class="col-sm-9">     
+                    <input type="text" name="max_field_name" id="input-max_field_name" value='{{ max_field_name }}' placeholder="{{ entry_max_field }}" class="form-control">
+                    <input type="hidden" name="action[max_field_uid]" value="{{ action.max_field_uid }}">
+                </div>    
+            </div>                
+        </div>        
+        <div id="result_min" style="display:none;">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label" for="input-min_field_name"><span data-toggle="tooltip" title="{{ help_min_field }}">{{ text_min_field }}</span></label>
+                <div class="col-sm-9">     
+                    <input type="text" name="min_field_name" id="input-min_field_name" value='{{ min_field_name }}' placeholder="{{ entry_min_field }}" class="form-control">
+                    <input type="hidden" name="action[min_field_uid]" value="{{ action.min_field_uid }}">
+                </div>    
+            </div>                
+        </div>        
+    </div>
+</div>            
+<script type="text/javascript">    
+    
+    var row = {{ row }};
+    for (i=1; i<=row; i++) {
+        select_field_1(i);
+        select_field_2(i);
+    }
+    
+    var doctype_uid = "0";
+    
+    switch ($('#select-document_source').val()) {
+        case 'document_field':
+            $('#block_doctype_list').hide();
+            $('#block_document_field').show();
+            $('#block_doctype_field').hide();
+            break;
+        case 'doctype_list':
+            $('#block_doctype_list').show();
+            $('#block_document_field').hide();
+            $('#block_doctype_field').hide();
+            doctype_uid = $('input[name=\'action[doctype_uid]\']').val();
+            break;
+        case 'doctype_field':
+            $('#block_doctype_list').hide();
+            $('#block_document_field').hide();
+            $('#block_doctype_field').show();
+            break;
+    }
+
+    $('#result_' + $('#select-type_result').val()).show();
+
+    $('#select-document_source').on('change', function () {
+        switch (this.value) {
+            case 'document_field':
+                $('#block_doctype_list').hide();
+                $('#block_document_field').show();
+                $('#block_doctype_field').hide();
+                doctype_uid = "0";
+                break;
+            case 'doctype_list':
+                $('#block_doctype_list').show();
+                $('#block_document_field').hide();
+                $('#block_doctype_field').hide();
+                doctype_uid = $('input[name=\'action[doctype_uid]\']').val();
+                break;
+            case 'doctype_field':
+                $('#block_doctype_list').hide();
+                $('#block_document_field').hide();
+                $('#block_doctype_field').show();
+                doctype_uid = "0";
+                break;
+        }
+    });
+    
+    $('input[name=\'doctype_name\']').autocomplete({
+        'source': function (request, response) {
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete&filter_name=' + encodeURIComponent(request),
+                dataType: 'json',
+                success: function (json) {
+                    json.unshift({
+                        doctype_uid: 0,
+                        name: '{{ text_none }}'
+                    });
+
+                    response($.map(json, function (item) {
+                        return {
+                            label: item['name'],
+                            value: item['doctype_uid']
+                        }
+                    }));
+                } //end success
+            }); //end ajax
+        }, //end source   
+
+        'select': function (item) {
+            if (item['value']) {
+                $('input[name=\'doctype_name\']').val(item['label']);
+                $('input[name=\'action[doctype_uid]\']').val(item['value']);
+                doctype_uid = item['value'];
+            } else {
+                $('input[name=\'doctype_name\']').val('');
+                $('input[name=\'action[doctype_uid]\']').val('');
+                doctype_uid = "";
+            }
+        }
+    });
+    
+    $('input[name=\'field_result_name\']').autocomplete({
+        'source': function(request, response) {
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&setting=0&doctype_uid={{ doctype_uid }}&filter_name=' + encodeURIComponent(request),
+                dataType: 'json',
+                success: function(json) {
+                    json.unshift({
+                        field_uid: 0,
+                        name: '{{ text_none }}'
+                    });
+
+                    response($.map(json, function(item) {
+                        return {
+                            label: item['name'],
+                            value: item['field_uid']
+                        }
+                    }));                    
+                } //end success
+            }); //end ajax
+        }, //end source   
+        
+        'select': function(item) {
+            if(item['value']) {
+                $('input[name=\'field_result_name\']').val(item['label']);
+                $('input[name=\'action[field_result_uid]\']').val(item['value']);
+            } else {
+                $('input[name=\'field_result_name\']').val('');
+                $('input[name=\'action[field_result_uid]\']').val('');   
+             }    
+        }
+    });     
+        
+    $('input[name=\'sort_field_name\']').autocomplete({
+        'source': function (request, response) {
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid=' + doctype_uid + '&setting=0',
+                dataType: 'json',
+                cache: false,
+                success: function (json) {
+                    json.unshift({
+                            name: '{{ text_none }}',
+                            value: 0
+                    });
+                    response($.map(json, function (item) {
+                        return {
+                            label: item['name'],
+                            value: item['field_uid']
+                        }
+
+                    }));
+                } //end success
+            }); //end ajax
+        }, //end source   
+        'select': function (item) {
+            if (item['value']) {
+                $('input[name=\'sort_field_name\']').val(item['label']);
+                $('input[name=\'action[sort_field_uid]\']').val(item['value']);
+            } else {
+                $('input[name=\'sort_field_name\']').val('');
+                $('input[name=\'action[sort_field_uid]\']').val('');
+            }
+        }
+    });    
+        
+    $('input[name=\'sum_field_name\']').autocomplete({
+        'source': function (request, response) {
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid=' + doctype_uid + '&setting=0',
+                dataType: 'json',
+                cache: false,
+                success: function (json) {
+                    json.unshift({
+                            name: '{{ text_none }}',
+                            value: 0
+                    });
+                    response($.map(json, function (item) {
+                        return {
+                            label: item['name'],
+                            value: item['field_uid']
+                        }
+
+                    }));
+                } //end success
+            }); //end ajax
+        }, //end source   
+        'select': function (item) {
+            if (item['value']) {
+                $('input[name=\'sum_field_name\']').val(item['label']);
+                $('input[name=\'action[sum_field_uid]\']').val(item['value']);
+            } else {
+                $('input[name=\'sum_field_name\']').val('');
+                $('input[name=\'action[sum_field_uid]\']').val('');
+            }
+        }
+    });    
+    
+    $('input[name=\'max_field_name\']').autocomplete({
+        'source': function (request, response) {
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid=' + doctype_uid + '&setting=0',
+                dataType: 'json',
+                cache: false,
+                success: function (json) {
+                    json.unshift({
+                        name: '{{ text_none }}',
+                        field_uid: 0
+                    });
+                    response($.map(json, function (item) {
+                        return {
+                            label: item['name'],
+                            value: item['field_uid']
+                        }
+                    
+                    }));
+                } //end success
+            }); //end ajax
+        }, //end source   
+        'select': function (item) {
+            if (item['value']) {
+                $('input[name=\'max_field_name\']').val(item['label']);
+                $('input[name=\'action[max_field_uid]\']').val(item['value']);
+            } else {
+                $('input[name=\'max_field_name\']').val('');
+                $('input[name=\'action[max_field_uid]\']').val('');
+            }
+        }
+    });    
+    
+    $('input[name=\'min_field_name\']').autocomplete({
+        'source': function (request, response) {
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid=' + doctype_uid + '&setting=0',
+                dataType: 'json',
+                cache: false,
+                success: function (json) {
+                    json.unshift({
+                        name: '{{ text_none }}',
+                        field_uid: 0
+                    });
+                    response($.map(json, function (item) {
+                        return {
+                            label: item['name'],
+                            value: item['field_uid']
+                        }
+                    
+                    }));
+                } //end success
+            }); //end ajax
+        }, //end source   
+        'select': function (item) {
+            if (item['value']) {
+                $('input[name=\'min_field_name\']').val(item['label']);
+                $('input[name=\'action[min_field_uid]\']').val(item['value']);
+            } else {
+                $('input[name=\'min_field_name\']').val('');
+                $('input[name=\'action[min_field_uid]\']').val('');
+            }
+        }
+    });    
+
+    function select_field_1(row) {        
+        {# если тип документа выбран из списка, то показываем только его поля; иначе показываем все поля всех доктайпов #}
+        if ($('#select-document_source').val() === 'doctype_list') {
+            doctype_uid = $('#input-doctype_uid').val(); //'{{ doctype_uid }}';
+        } else {
+            doctype_uid = 0;
+        }
+        $('input[name=\'field_1_name' + row + '\']').autocomplete({
+            'source': function(request, response) {
+                $.ajax({
+                    url: 'index.php?route=doctype/doctype/autocomplete_field&doctype_uid=' + doctype_uid + '&setting=0&filter_name=' + encodeURIComponent(request),
+                    dataType: 'json',
+                    success: function(json) {
+                        json.unshift({
+                            field_uid: 0,
+                            name: '{{ text_none }}'
+                        });
+
+                        response($.map(json, function(item) {
+                            return {
+                                label: item['name'],
+                                value: item['field_uid']
+                            }
+                        }));                    
+                    } //end success
+                }); //end ajax
+            }, //end source   
+
+            'select': function(item) {
+                if(item['value']) {
+                    $('input[name=\'field_1_name' + row + '\']').val(item['label']);
+                    $('input[name=\'action[conditions][' + row + '][field_1_uid]\']').val(item['value']);
+                } else {
+                    $('input[name=\'field_1_name' + row + '\']').val('');
+                    $('input[name=\'action[conditions][' + row + '][field_1_uid]\']').val('');   
+                 }    
+            }
+        });    
+    }
+
+    function select_field_2(row) {        
+        $('input[name=\'field_2_name' + row + '\']').autocomplete({
+            'source': function(request, response) {
+                $.ajax({
+                    url: 'index.php?route=doctype/doctype/autocomplete_field&doctype_uid={{ doctype_uid }}&setting=2&sort=f.setting&order=asc&filter_name=' + encodeURIComponent(request),
+                    dataType: 'json',
+                    success: function(json) {
+                        json.unshift({
+                            field_uid: 0,
+                            name: '{{ text_none }}'
+                        });
+
+                        response($.map(json, function(item) {                            
+                            var result = {
+                                value: item['field_uid'],
+                                label: item['name']
+                            };
+                            if (item['field_uid']) {
+                                if (item['setting'] === "1") {
+                                    result['setting'] = 1;
+                                    result['label'] = '<span style="font-style:italic">' + item['name'] + '</span>';
+                                }
+                            }
+                            return result;                            
+                        }));                    
+                    } //end success
+                }); //end ajax
+            }, //end source   
+
+            'select': function(item) {
+                if (item['value']) {
+                    var label = item['label'];
+                    if (item['setting'] === 1) {
+                        $('input[name=\'field_2_name' + row + '\']').css("font-style", "italic");
+                        label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+                    } else {
+                        $('input[name=\'field_2_name' + row + '\']').css("font-style", "");
+                    }
+                    $('input[name=\'field_2_name' + row + '\']').val(label);
+                    $('input[name=\'action[conditions][' + row + '][field_2_uid]\']').val(item['value']);                                
+                } else {
+                    $('input[name=\'field_2_name' + row + '\']').val('');
+                    $('input[name=\'action[conditions][' + row + '][field_2_uid]\']').val('');                                                    
+                }               
+            }
+        });    
+    }
+    
+    
+    $('#button_add_set').on('click', function(){             
+        row++;
+        html = '<tr>';
+        if (row > 1) {
+            html += '<td><select name="action[conditions][' + row + '][concat]" class="form-control"><option value="0" selected="selected">{{ text_and }}</option><option value="1">{{ text_or }}</option></selected></td>';
+        } else {
+            html += '<td></td>';
+        }
+        html += '<td>' +
+                '<input type="text" name="field_1_name' + row + '" id="input-field_1_name' + row + '" value="" placeholder="{{ entry_field_1_name }}" class="form-control">' +
+                '<input type="hidden" name="action[conditions][' + row + '][field_1_uid]" value="">' + 
+                '</td>' +
+                '<td><select name="action[conditions][' + row + '][comparison]" class="form-control">' +
+                '<option value="equal" selected="selected">{{text_condition_equal}}</option>' +
+                '<option value="notequal">{{text_condition_notequal}}</option>' +
+                '<option value="more">{{text_condition_more}}</option>' +
+                '<option value="moreequal">{{text_condition_moreequal}}</option>' +
+                '<option value="less">{{text_condition_less}}</option>' +
+                '<option value="lessequal">{{text_condition_lessequal}}</option>' +
+                '<option value="contains">{{text_condition_contains}}</option>' +
+                '<option value="notcontains">{{text_condition_notcontains}}</option>' +
+                '<option value="include">{{ text_condition_include }}</option>' +
+                '<option value="notinclude">{{ text_condition_notinclude }}</option>' +
+                '</select></td>' +
+                '<td>' +
+                '<input type="text" name="field_2_name' + row + '" id="input-field_2_name' + row + '" value="" placeholder="{{ entry_field_2_name }}" class="form-control">' +
+                '<input type="hidden" name="action[conditions][' + row + '][field_2_uid]" value="">' + 
+                '</td>';
+        html += '<td>';
+        if (row > 1) {
+            html += '<button type="button" class="btn btn-default btn-sm" onclick="$(this).parent().parent().remove();" data-toggle="tooltip" title="{{ text_button_del_value }}"><i class="fa fa-remove"></i>';
+        }
+        html += '</td></tr>';
+        $('#table_list_set tbody').append(html);
+        select_field_1(row);    
+        select_field_2(row);    
+           
+    });    
+    
+    $('#select-type_result').on('change', function(){
+        $('#result_documents').hide();
+        $('#result_count').hide();
+        $('#result_max').hide();
+        $('#result_min').hide();
+        $('#result_sum').hide();
+        $('#result_' + $(this).val()).show();
+    });
+    
+</script>    
+        
+        
+        

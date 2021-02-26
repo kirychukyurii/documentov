@@ -1,0 +1,38 @@
+<div class="modal-header text-right">
+  <div class="pull-right">
+    <button type="button" class="btn btn-default" id="modal-button-add_inner_row" data-loading-text="{{ text_loading }}">
+      <i class="fa fa-save"></i>
+    </button>
+    <button class="btn btn-default" data-dismiss="modal" type="button">
+      <i class="fa fa-reply"></i>
+    </button>
+  </div>
+  <div class="pull-left">
+    <h4 class="modal-title text-left">{{text_title_edit_row}}</h4>
+  </div>
+</div>
+<div class="panel-body">
+  <table class="table table-responsive">
+    {% for field in inner_fields %}
+
+      <tr class="{{ field.field_form_display }}">
+        <td class="text-right">
+          <b>{{field.column_title[language_id]}}:</b>
+        </td>
+        <td>{{field.field_form}}</td>
+      </tr>
+
+    {% endfor %}
+  </table>
+</div>
+<div class="modal-footer">
+  <div class="row">
+    <div class="col-md-3 col-sm-6">
+      <button type="button" class="btn btn-default btn-block" id="modal-field-add_inner" data-loading-text="{{ text_loading }}">{{ button_save }}</button>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="visible-xs" style="margin-top: 15px;"></div>
+      <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+    </div>
+  </div>
+</div>

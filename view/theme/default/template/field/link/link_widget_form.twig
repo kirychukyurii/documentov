@@ -1,0 +1,75 @@
+<div class="{{ BLOCK }}">
+  {% if not doctype_uid %}
+    <input type="text" name="{{ NAME }}" id="{{ ID }}" value="{{ value_id }}" class="{{ ID }} form-control">
+  {% else %}
+    {% if list == 1 and not filter_form %}
+      {# ВЫПАДАЮЩИЙ СПИСОК #}
+      <select name="{{ NAME }}" id="{{ ID }}" class="{{ ID }} form-control">
+        <option value="0" {% if not value_id %}selected="selected"{% endif %}>{{ text_none }}</option>
+        {% for document in documents %}
+          {% if document.document_uid == value_id %}
+            <option value="{{ document.document_uid }}" selected="selected">{{ document.name }}</option>
+          {% else %}
+            <option value="{{ document.document_uid }}">{{ document.name }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    {% elseif list == 2 and not filter_form %}
+      {# СПИСОК С ПЕРЕКЛЮЧАТЕЛЯМИ #}
+      <table class="table table-hover table-responsive" id="{{ MODULE_NAME}}-block-{{ field_uid }}">
+        {% set value_ids = '' %}
+        {% for document in documents %}
+          <tr>
+            {% if multi_select %}
+              {% set checked = false %}
+              {% for value in values if not checked %}
+                {% if value.id == document.document_uid %}
+                  {% set checked = true %}
+                  {% if value_ids is empty %}
+                    {% set value_ids = value_ids ~ ',' %}
+                  {% endif %}
+                  {% set value_ids = value_ids ~ value.id %}
+                {% endif %}
+              {% endfor %}
+              <td {% if checked %}class="background2"{% endif %}>
+                <div class="checkbox">
+                  <label style="width: 100%;"><input type="checkbox" name="{{ MODULE_NAME }}-name-{{ unique }}" value="{{ document.document_uid }}" {% if checked %} checked {% endif %}>
+                    {{ document.name }}</label>
+                </div>
+              </td>
+            {% else %}
+              <td {% if document.document_uid == value_id %}class="background2"{% endif %}>
+                <div class="checkbox">
+                  <label style="width: 100%;"><input type="radio" name="{{ MODULE_NAME }}-name-{{ unique }}" value="{{ document.document_uid }}" {% if document.document_uid == value_id %} checked {% endif %}>
+                    {{ document.name }}</label>
+                </div>
+              </td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+      </table>
+      {% if value_ids is empty %}
+        {% set value_ids = value_id %}
+      {% endif %}
+      <input type="hidden" class="{{ ID }}" name="{{ NAME }}" value="{{ field_value }}">
+    {% elseif multi_select and not filter_form %}
+      {# АВТОПОДСТАНОВКА, МНОЖЕСТВЕННЫЙ ВЫБОР #}
+        <input class="form-control dropdown-toggle" id="{{ MODULE_NAME}}-{{ ID }}" name="{{ MODULE_NAME}}-{{ NAME }}{{ unique }}" type="text" value="">
+        <input type="hidden" name="{{ NAME }}" id="{{ ID }}" class="{{ ID }}" value="{{ field_value }}"/>
+        <div class="well well-sm" id="{{ MODULE_NAME}}-block-{{ field_uid }}" style="height: auto; overflow: auto;">
+          {% for value in values %}
+            <div class="pointer" id="block_{{ ID }}{{ value.id }}">
+              <i class="fa fa-minus-circle"></i>
+              <i class="fa fa-hand-pointer-o"></i>
+              {{ value.name }}
+              <input type="hidden" value="{{ value.id }}"/>
+            </div>
+          {% endfor %}
+        </div>
+    {% else %}
+      {# АВТОПОДСТАНОВКА, ОДИНОЧНЫЙ ВЫБОР #}
+        <input type="text" name="{{ MODULE_NAME}}-{{ NAME }}{{ unique }}" id="{{ MODULE_NAME}}-{{ ID }}" class="form-control dropdown-toggle" value="{{ value_name }}">
+        <input type="hidden" name="{{ NAME }}" id="{{ ID }}" value="{{ value_id }}" class="{{ ID }}">
+    {% endif %}
+  {% endif %}
+</div>

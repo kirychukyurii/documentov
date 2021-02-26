@@ -1,0 +1,12 @@
+<script type="text/javascript">
+  if (typeof {{ data.MODULE_NAME }} === "undefined") {
+    addScript("view/javascript/action/{{ data.FILE_NAME }}/{{ data.FILE_NAME }}.js");
+  }
+  {% if data.METHOD_NAME is empty %}
+    {% set METHOD_NAME = 'getAdminForm' %}
+  {% else %}
+    {% set METHOD_NAME = data.METHOD_NAME %}
+  {% endif %}
+  (new {{ data.MODULE_NAME }}
+  ('{{ data| json_encode() | e("js") }}')).{{ METHOD_NAME }}();
+</script>

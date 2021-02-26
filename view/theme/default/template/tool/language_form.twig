@@ -1,0 +1,135 @@
+  
+    <div class="modal-header">
+        <div class="pull-right">
+            <button type="button" class="btn btn-default" id="modal-button-add" onclick="saveLanguage('{{ language_id }}');" data-loading-text="{{ text_loading }}"><i class="fa fa-save"></i></button>
+            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-reply"></i></button>
+        </div>    
+        <div class="pull-left"><h4 class="modal-title text-left">{{ text_edit }}</h4></div>
+    </div>
+
+    <div class="modal-body" id="form_language">
+        <div class="form-horizontal">
+                <div class="form-group required">
+                    <label class="col-sm-4 control-label" for="input-language_name" style="padding-top:0px;">{{ entry_name }}</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="name" value="{{ name }}" class="form-control" id="input-language_name">
+                    </div>                    
+                </div>                
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="input-language_code" style="padding-top:0px;">{{ entry_code }}</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="code" value="{{ code }}" disabled="disabled" class="form-control" id="input-language_code">
+                    </div>                    
+                </div>                
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="input-language_locale" style="padding-top:0px;">{{ entry_locale }}</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="locale" value="{{ locale }}" class="form-control" id="input-language_locale">
+                    </div>                    
+                </div>                
+
+                {#<div class="form-group">
+                    <label class="col-sm-4 control-label" style="padding-top:0px;">{{ entry_image }}</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="image" value="{{ image }}" class="form-control" id="input-value">
+                    </div>                    
+                </div>                
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" style="padding-top:0px;">{{ entry_directory }}</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="directory" value="{{ directory }}" class="form-control" id="input-value">
+                    </div>                    
+                </div>#}    
+                
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="input-language_sort" style="padding-top:0px;">{{ entry_sort_order }}</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="sort_order" value="{{ sort_order }}" class="form-control" id="input-language_sort">
+                    </div>                    
+                </div>                
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="select-language_status" style="padding-top:0px;">{{ entry_status }}</label>
+                    <div class="col-sm-8">
+                        <select name="status" id="select-language_status" class="form-control">
+                            {% if status %}
+                                <option value="0">{{ text_disabled }}</option>
+                                <option value="1" selected="selected">{{ text_enabled }}</option>
+                            {% else %}
+                                <option value="0" selected="selected">{{ text_disabled }}</option>
+                                <option value="1">{{ text_enabled }}</option>                                
+                            {% endif %}
+                        </select>
+                    </div>                    
+                </div>                
+        </div>
+    </div>    
+                    
+    <div class="modal-footer">
+        <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <button type="button" class="btn btn-default btn-block" id="modal-setting-save" onclick="saveLanguage('{{ language_id }}');" data-loading-text="{{ text_loading }}">{{ button_save }}</button>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                        <div style="margin-top: 15px;" class="visible-xs"></div>
+                        <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+                </div>
+
+        </div>
+    </div>                    
+ 
+           
+<script type="text/javascript">
+ 
+
+ function saveLanguage() {
+        $.ajax({
+            url: 'index.php?route=tool/setting/save&language_id={{ language_id }}',
+            type: 'post',
+            cache: false,
+            data: $('#form_language input[type=\'text\'], #form_language select'),
+            dataType: 'json',
+            beforeSend: function() {
+                    $('#modal-language-save').button('loading');
+            },            
+            success: function(json) {
+                {% if language_id %}
+                    if (json['success']!== undefined) {
+                        $('#row-language_id-' + json['success']).html(json['success']);
+                        $('#row-language_name-' + json['success']).html($('input[name=\'name\']').val());
+                        if ($('#select-language_status').val() == "1") {
+                            $('#row-language_status-' + json['success']).html('{{ text_enabled }}');
+                        } else {
+                            $('#row-language_status-' + json['success']).html('{{ text_disabled }}');        
+                        }                        
+                        $('#row-language_sort-' + json['success']).html($('input[name=\'sort_order\']').val());
+                    } else if (json['error']!== undefined) {
+
+                    }
+                {% else %}
+                    if (json['success']!== undefined) {
+                        html = '<tr id="row-language-' + json['success'] + '">' +
+                                '<td class="pointer" onclick="open_language(\'' + json['success'] + '\');" id="row-language_id-' + json['success'] + '">' + json['success'] + '</td>' +
+                                '<td class="pointer" onclick="open_language(\'' + json['success'] + '\');" id="row-language_name-' + json['success'] + '">' + $('input[name=\'name\']').val() + '</td>' +
+                                '<td class="pointer" onclick="open_language(\'' + json['success'] + '\');" id="row-language_code-' + json['success'] + '">' + $('input[name=\'code\']').val() + '</td>' +
+                                '<td class="pointer" onclick="open_language(\'' + json['success'] + '\');" id="row-language_status-' + json['success'] + '">';
+                        if ($('#select-language_status').val() == "1") {
+                            html += '{{ text_enabled }}';
+                        } else {
+                            html += '{{ text_disabled }}';
+                        }
+                        html += '</td>' +
+                                '<td class="pointer" onclick="open_language(\'' + json['success'] + '\');" id="row-language_sort-' + json['success'] + '">' + $('input[name=\'sort_order\']').val() + '</td>' +
+                                '</tr>';                        
+                        $('#table-language').append(html);
+                        $('#block-lang_add' + $('input[name=\'code\']').val()).remove();
+                    } else if (json['error']!== undefined) {
+
+                    }
+                    
+                {% endif %}
+                $('#modal-language').modal('hide');
+            }
+        });
+    };
+
+</script>

@@ -1,0 +1,208 @@
+<div class="modal-header">
+    <div class="pull-right">
+        <button type="button" class="btn btn-default" id="modal-button-group-add" onclick="saveButtonGroup('{% if button_group_uid == '1' %}add{% else %}edit{% endif %}');" data-loading-text="{{ text_loading }}"><i class="fa fa-save"></i></button>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-reply"></i></button>
+    </div>    
+    <div class="pull-left"><h4 class="modal-title text-left">{% if button_uid is empty %}{{ text_title_button_group_add }}{% else %}{{ text_title_button_group_edit }}{% endif %}</h4></div>
+</div>
+<div class="modal-body" id="form_button_group">
+    <div class="form-horizontal">
+        <ul class="nav nav-tabs" id="button_group_language">
+            {% for language in languages %}
+                <li><a href="#button_group_language{{ language.language_id }}" data-toggle="tab"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>
+                    {% endfor %}
+        </ul>
+        <div class="tab-content form-group">
+            {% for language in languages %}
+                <div class="tab-pane fade" id="button_group_language{{ language.language_id }}">                                
+                    <label class="control-label" for="input-button_group{{ language.language_id }}">{{ entry_button_group }}</label>
+                    <input type="text" name="button_group_name[{{ language.language_id }}][name]" value="{{descriptions[language.language_id].name}}" id="input-button_group{{ language.language_id }}"  class="form-control" placeholder="{{ entry_button_group }}"/>
+
+                </div>                        
+            {% endfor %}   
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="input-button_group_picture">{{ entry_button_group_picture }}</label>
+            <div class="col-sm-9">
+                <a href="" id="thumb-image-button_group" data-toggle="image" class="img-thumbnail"><img src="{{ thumb }}" alt="" title="" data-placeholder="{{ placeholder }}"></a>
+                <input type="hidden" name="button_group_picture" value="{{ picture }}" id="input-button_group_picture">
+                <select name="button_group_hide_name" class="form-control" id="select-button_group_hide_name">
+                    <option value="0">{{ text_show_button_group_name }}</option>
+                    <option value="1000" {% if button_group_hide_name == 1000 %}selected="selected"{% endif %}>{{ text_hide_button_group_name }} 1 000 {{ text_hide_menu_px }}</option>
+                    <option value="900" {% if button_group_hide_name == 900 %}selected="selected"{% endif %}>{{ text_hide_button_group_name }} 900 {{ text_hide_menu_px }}</option>
+                    <option value="800" {% if button_group_hide_name == 800 %}selected="selected"{% endif %}>{{ text_hide_button_group_name }} 800 {{ text_hide_menu_px }}</option>
+                    <option value="700" {% if button_group_hide_name == 700 %}selected="selected"{% endif %}>{{ text_hide_button_group_name }} 700 {{ text_hide_menu_px }}</option>
+                    <option value="600" {% if button_group_hide_name == 600 %}selected="selected"{% endif %}>{{ text_hide_button_group_name }} 600 {{ text_hide_menu_px }}</option>
+                    <option value="500" {% if button_group_hide_name == 500 %}selected="selected"{% endif %}>{{ text_hide_button_group_name }} 500 {{ text_hide_menu_px }}</option>
+                    <option value="400" {% if button_group_hide_name == 400 %}selected="selected"{% endif %}>{{ text_hide_button_group_name }} 400 {{ text_hide_menu_px }}</option>
+                </select>
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="input-button_group_color">{{ entry_button_group_color }}</label>
+            <div class="col-sm-9">
+                <div class="col-sm-6 text-left">
+                    <input name="button_group_color" type="text" value="{{ color }}" class="color-picker form-control" {% if color is not empty %}style="color: #{{ color }}"{% endif %} id="input-button_group_color"/>
+                </div>                    
+                <div class="col-sm-6 text-left">
+                    <input name="button_group_background" type="text" value="{{ background }}" class="color-picker form-control" {% if background is not empty %}style="background-color: #{{ background }}"{% endif %} id="input-button_group_background"/>
+                </div>                    
+            </div>
+        </div>
+
+    </div> 
+</div>
+<div class="modal-footer">
+    <div class="row">
+        <div class="col-md-3 col-sm-6">
+          <button type="button" class="btn btn-default btn-block" id="modal-button-group-add_" onclick="saveButtonGroup('{% if button_group_uid == '1' %}add{% else %}edit{% endif %}');" data-loading-text="{{ text_loading }}">{{ button_save }}</button>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div style="margin-top: 15px;" class="visible-xs"></div>
+            <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $('#input-button_group_picture').on('change', function () {
+        visible_list_showing_button_group_name();
+    });
+
+    visible_list_showing_button_group_name();
+
+
+
+
+
+    function visible_list_showing_button_group_name() {
+        if ($('#input-button_group_picture').val()) {
+            $('#select-button_group_hide_name').show();
+        } else {
+            $('#select-button_group_hide_name').hide();
+        }
+    }
+
+    $('#input-button_group_color, #input-button_group_background').ColorPicker({
+        onSubmit: function (hsb, hex, rgb, el) {
+            $(el).val(hex);
+            if ($(el).attr('id') === 'input-button_group_color') {
+                $(el).css('color', '#' + hex);
+            } else {
+                $(el).css('backgroundColor', '#' + hex);
+            }
+            $(el).ColorPickerHide();
+        },
+        onBeforeShow: function () {
+            $(this).ColorPickerSetColor(this.value);
+        }
+    })
+        .bind('keyup', function () {
+            $(this).ColorPickerSetColor(this.value);
+            if ($(this).attr('id') === 'input-route_button_color') {
+                $(this).css('color', '#' + this.value);
+            } else {
+                $(this).css('backgroundColor', '#' + this.value);
+            }
+        });
+
+    function saveButtonGroup(mode) {
+        let draft = 0;
+    {% for language in languages %}
+            //console.log('#form_button input[name=\''+container+'_button_group_descriptions[{{language.language_id}}][name]\']');                   
+            let button_group_name_element{{language.language_id}} = $('#form_button input[name=\'btn_group_descriptions[{{language.language_id}}][name]\']');
+            let new_button_group_name{{language.language_id}} = $('#form_button_group input[name=\'button_group_name[{{ language.language_id }}][name]\']').val();
+            if (button_group_name_element{{language.language_id}}.val() !== new_button_group_name{{language.language_id}}) {
+                button_group_name_element{{language.language_id}}.val(new_button_group_name{{language.language_id}});
+                draft = 1;
+            }
+    {% endfor %}
+
+            let button_group_picture_element = $('#form_button input[name=\'btn_group_picture\']');
+            let new_button_group_picture = $('#form_button_group input[name=\'button_group_picture\']').val();
+            if (button_group_picture_element.val() !== new_button_group_picture) {
+                button_group_picture_element.val(new_button_group_picture);
+                draft = 1;
+            }
+            let button_group_hide_name_element = $('#form_button input[name=\'btn_group_hide_name\']');
+            let new_button_group_hide_name = $('#form_button_group select[name=\'button_group_hide_name\']').val();
+            if (button_group_hide_name_element.val() !== new_button_group_hide_name) {
+                button_group_hide_name_element.val(new_button_group_hide_name);
+                draft = 1;
+            }
+            let button_group_color_element = $('#form_button input[name=\'btn_group_color\']');
+            let new_button_group_color = $('#form_button_group input[name=\'button_group_color\']').val();
+            if (button_group_color_element.val() !== new_button_group_color) {
+                button_group_color_element.val(new_button_group_color);
+                draft = 1;
+            }
+            let button_group_background_element = $('#form_button input[name=\'btn_group_background\']');
+            let new_button_group_background = $('#form_button_group input[name=\'button_group_background\']').val();
+            if (button_group_background_element.val() !== new_button_group_background) {
+                button_group_background_element.val(new_button_group_background);
+                draft = 1;
+            }
+
+            if (draft) {
+    {% for language in languages %}
+                button_group_name_element{{language.language_id}}.addClass('new_element');
+    {% endfor %}
+            }
+            let button_group_uid = '1';
+            console.log(button_groups);
+            let button_group = {};
+            let descriptions = {};
+            for (let i = 0; i < language_ids.length; i++) {
+                descriptions[language_ids[i]] = $('#form_button input[name=\'btn_group_descriptions[' + language_ids[i] + '][name]\']').val();
+            }
+            button_group.new_names = descriptions;
+            button_group.changed = true;
+            console.log(mode);
+            if (mode === 'edit') {
+                button_group_uid = $('#form_button select[name=\'btn_group_uid\']').val();
+                button_group.names = button_groups[button_group_uid].names;
+                delete button_groups[button_group_uid];
+            }
+            for (let key in button_groups) {
+                if (key === '1' && key !== button_group_uid) {
+                    delete button_groups[key];
+                } else {
+                    delete button_groups[key]['changed'];
+                    delete button_groups[key]['new_names'];
+                }
+
+            }
+
+            button_groups[button_group_uid] = button_group;
+            $('#form_button select[name=\'btn_group_uid\']').css('color', 'red');
+            $('#edit_button_group_btn').css('display', 'inline-block');
+            if (mode === 'add') {
+                $('#add_button_group_btn').css('display', 'none');
+            }
+            
+            refreshButtonGroupList(button_lang, button_group_uid);
+
+
+
+            $('#modal-ibutton_group').modal('hide');
+            return;
+
+        }
+        ;
+
+        $('#button_group_language a:first').tab('show');
+
+        //после загрузки пиктограммы из-за второго модального окна теряется скролл, исправляем        
+        $(document).on('hidden.bs.modal', function (event) {
+            if ($('.modal:visible').length) {
+                $('body').addClass('modal-open');
+            }
+        });
+
+
+
+        //--></script>

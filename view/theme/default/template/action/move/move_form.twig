@@ -1,0 +1,168 @@
+<hr>
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-field_document_name"><span data-toggle="tooltip" title="{{ help_field_document }}">{{ entry_field_document }}</span></label>
+    <div class="col-sm-9">     
+        <input type="text" name="field_document_name" id="input-field_document_name" value="{{ field_document_name }}" placeholder="{{ entry_field_document }}" class="form-control" {% if field_document_setting %} style="font-style:italic" {% endif %}>
+        <input type="hidden" name="action[field_document_uid]" value="{{ action.field_document_uid }}" id='input-field_document_uid'>
+    </div>    
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-document_route"><span data-toggle="tooltip" title="{{ help_document_route }}">{{ entry_document_route }}</span></label>
+    <div class="col-sm-9">    
+        <label class="radio-inline"><input type="radio" name="action[routeSource]"{% if action.routeSource == "ruid" or action.routeSource is empty %} checked="checked"{% endif %} value="ruid"> {{ text_select_route }}</label>
+        <label class="radio-inline"><input type="radio" name="action[routeSource]"{% if action.routeSource == "fuid" %} checked="checked"{% endif %} value="fuid"> {{ text_select_field }}</label>        
+        <input type="text" name="document_route_name" id="input-document_route_name" value="{{ document_route_name }}" placeholder="{{ entry_document_route }}" class="form-control">
+        <input type="hidden" name="action[document_route_uid]" value="{{ action.document_route_uid }}" id='input-document_route_uid'>
+    </div>    
+</div>     
+<div class="form-group" id="block-type_move">
+    <label class="col-sm-3 control-label" for="select-type_move"><span data-toggle="tooltip" title="{{ help_type_move }}">{{ entry_type_move }}</span></label>
+    <div class="col-sm-9">    
+        <select name="action[type_move]" id="select-type_move" class="form-control">
+            <option value="0"{% if not action.type_move %} selected="selected"{% endif %}>{{ text_move_daemon }}</option>
+            <option value="1"{% if action.type_move %} selected="selected"{% endif %}>{{ text_move_action }}</option>
+        </select>    
+    </div>    
+</div> 
+        
+<script type="text/javascript">
+    
+    $('input[name=\'action\[field_document_uid\]\']').on('change', function(){
+        if ($(this).val() == "0") {
+            $('#block-type_move').hide();
+        } else {
+            $('#block-type_move').show();
+        }         
+    });
+
+    $('input[name=\'action\[field_document_uid\]\']').trigger('change');
+    
+    $('input[name=\'field_document_name\']').autocomplete({
+        'source': function (request, response) {
+            if (request === '{{ text_currentdoc }}') request = '';
+            var regexp = new RegExp('{{ text_by_link_in_field }}');
+            request = request.replace(regexp, '').trim().replace(/\"/g, '');
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+                dataType: 'json',
+                cache: false,
+                success: function (json) {
+                    json.unshift({
+                        field_uid: 0,
+                        name: '{{ text_currentdoc }}'
+                    });
+                    response($.map(json, function (item) {
+                        var result = {
+                            value: item['field_uid'],
+                            label: item['name']
+                        };
+                        if (item['field_uid'] !== 0) {
+                            if (item['setting'] === "1") {
+                                result['setting'] = 1;
+                                result['label'] = '<span style="font-style:italic">{{ text_by_link_in_field }} "' + item['name'] + '"</span>';
+                            } else {
+                                result['label'] = '{{ text_by_link_in_field }} "' + item['name'] + '"';
+                            }
+                        }
+                        return result;
+                    }));
+                } 
+            }); 
+        },    
+        'select': function (item) {
+            var label = item['label'];
+            if (item['setting'] === 1) {
+                $('input[name=\'field_document_name\']').css("font-style", "italic");
+                label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+            } else {
+                $('input[name=\'field_document_name\']').css("font-style", "");
+            }
+            if ($('input[name=\'action[field_document_uid]\']').val() !== item['value']) {
+                $('input[name=\'field_document_name\']').val('');
+                $('input[name=\'action[field_document_uid]\']').val('');
+                //если выбран другой документ для перемещения, очищаем целевую точку
+                $('input[name=\'document_route_name\']').val('');
+                $('input[name=\'action[document_route_uid]\']').val('');
+            }
+            $('input[name=\'field_document_name\']').val(label);
+            $('input[name=\'action[field_document_uid]\']').val(item['value']); 
+            $('input[name=\'action\[field_document_uid\]\']').trigger('change');
+        }
+    });
+
+    $('input[name=\'document_route_name\']').autocomplete({ 
+        'source': function(request,response) {
+            var doctype_uid = '{{ doctype_uid }}';
+            var url = 'index.php?route=doctype/doctype/autocomplete_';
+            
+            if($('input[name="action\[routeSource\]"]:checked').val() === "fuid") { //идентификатор точки маршрута будет получен из поля
+                url += 'field';
+            } else {
+                url += 'route';
+            }
+            url += '&filter_name=' + encodeURIComponent(request);
+            if ($('#input-field_document_uid').val() === "0" || $('input[name="action\[routeSource\]"]:checked').val() === "fuid") {
+                url += '&doctype_uid=' + doctype_uid;
+            }
+             
+            $.ajax({
+                url: url,
+                dataType: 'json',
+                success: function(json) { 
+                    if($('input[name="action\[routeSource\]"]:checked').val() === "fuid") { //идентификатор точки маршрута будет получен из поля
+                        json.unshift({
+                            field_uid: 0,
+                            name: '{{ text_none }}'
+                        });                      
+                    
+                    } else {
+                        json.unshift({
+                            route_uid: 0,
+                            name: '{{ text_none }}'
+                        });                      
+                        
+                    }
+                    response($.map(json,function(item) {                      
+                        {% if route_uid is empty %} {% set route_uid = 0 %} {% endif %}
+                                
+                        if($('input[name="action\[routeSource\]"]:checked').val() === "fuid") { //идентификатор точки маршрута будет получен из поля
+                            return {
+                                label: item['name'],
+                                value: item['field_uid']
+                            } //end returns                            
+
+                        } else {
+                            return {
+                                label: item['name'],
+                                value: item['route_uid']
+                            } //end returns                            
+                            
+                        }
+
+                        } //end function 
+                        ) //end map                        
+                    ); //end response
+                } //end success
+            }); //end ajax
+        }, //end source
+        
+        'select': function(item) {
+            if (item['value']) {
+                $('input[name=\'document_route_name\']').val(item['label']);
+                $('input[name=\'action[document_route_uid]\']').val(item['value']);                
+            } else {
+                $('input[name=\'document_route_name\']').val('');
+                $('input[name=\'action[document_route_uid]\']').val('');                
+            }
+        } // end select    
+    }); //end autocomplete     
+
+    $('input[name="action\[routeSource\]"]').on("change", function(){
+      $('input[name="document_route_name"]').val('')
+      $('input[name="action\[document_route_uid\]"]').val('')
+    })
+    
+//</script>    
+        
+        
+        

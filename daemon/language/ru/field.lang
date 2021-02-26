@@ -1,0 +1,177 @@
+[error]
+load_field_values = Ошибка при загрузке значений поля Коллекция документов (UID=%s): %s
+json_encode_params = Ошибка при кодировании JSON параметров поля (UID=%s) [%+v]: %s
+json_decode_params = Ошибка при декодировании JSON параметров поля (UID=%s, тип=%s) [%s]: %s
+json_decode_params_method = Ошибка при декодировании JSON параметров метода поля (UID=%s, тип=%s, метод=%s) [%s]: %s
+update_db_collection_doc = Ошибка при записи документа (UID=%s, владелец: %s) коллекции поля Коллекция документов (UID=%s) в базу данных: %s
+load_fields = Ошибка при загрузке полей типа документа (UID=%s): %s
+load_field_scan = Ошибка при чтении полей типа документа (UID=%s): %s
+load_subscription = Ошибка при загрузке подписок на изменение полей для актуализации данных: %s
+load_subscrubed_unknown_field = Ошибка при загрузке подписок на изменение полей для актуализации данных: подписано неизвестное поле (UID=%s), удаляем подписку
+load_subscrubed_delete_unknown_field = Ошибка при удалении подписки неизвестного поля (UID=%s) на актуализацию данных: %s
+load_subscrubed_unknown_field_type = Ошибка при загрузке подписок на изменение полей для актуализации данных: неверный тип поля подписчика (Тип=%s, UID=%s)
+get = Ошибка при получении метаданных поля (UID=%s): %s
+get_clone = Ошибка при получении копии поля (UID=%s): %s
+get_fields = Ошибка при загрузке полей типа документа (UID=%s): %s
+get_field_doctype = Ошибка при получении поля типа документа (UID=%s): %s
+get_doclink_fuid = Ошибка при получении документа параметра метода (UID поля = %s, UID документа = %s): %s 
+get_field_value = Ошибка при сохранении значения поля (UID=%s) документа (UID=%s): %s
+get_field_values = Ошибка при получении всех значений поля (UID=%s): %s
+get_value = Ошибка при получении значения поля (UID=%s) документа (UID=%s): %s
+get_display = Ошибка при получении отображаемого значения поля (UID=%s) документа (UID=%s): %s
+get_values = Ошибка при получении значений поля (UID=%s): %s
+update_db = Ошибка при сохранении поля (UID=%s) документа (UID=%s) в базе данных: %s
+checking_field_value_by_template = Ошибка при проверке полей: %s
+add_field_in_notexist_doctype = Ошибка при добавлении поля в несуществующий тип документа: %+v
+add_field = Ошибка при записи поля (UID=%s) в базу данных: %s Через 1 секунду попробуем еще раз
+edit_nonexist_field = Ошибка при редактировании поля. Переданное поле: %+v, ошибка: %s 
+edit_field_doctype_not_exist = Ошибка при редактировании поля (UID=%s) - поле ссылается на несуществующий тип документа (UID=%s): %s
+delete_db = Ошибка при удалении поля (UID=%s, draft=%d) из базы данных: %s
+del_nonexist_field = Ошибка при удалении поля (UID=%s): %s 
+add_subscription = Ошибка при добавлении подписки на обновление поля (UID=%s, DUID=%s): %s
+delete_subscription = Ошибка при удалении подписок на обновление поля (UID=%s, DUID=%s): %s
+load_templates = Ошибка при загрузке файлов шаблонов полей: %s
+parse_template = Ошибка при парсинге шаблона %s: %s
+template_print_not_found = Ошибка при поиске шаблона печати поля %s
+field_not_found = Ошибка при получении поля типа документа (UID=%s, draft=%d): поле не найдено
+field_delegated_not_found = Ошибка при получении делегируемого поля (UID=%) для кнопки типа документа (UID=%s): %s
+button_delegate_fields = Ошибка при получении поле делегирования для кнопки типа документа (UID=%s): %s
+button_delegate_field_not_found = Ошибка при поиске поля делегирования, указанного в кнопке типа документа (UID=%s): %s
+unknown_type_field = Ошибка при загрузке типа поля из-за неизвестного типа (Тип: %s, UID: %s)
+update_display = Ошибка при обновлении отображаемого значения поля (UID=%s): %s
+update_value_display = Ошибка при обновлении значения и отображения поля (UID=%s): %s
+delete_field_value = Ошибка при удалении значений поля (UID=%s): %s
+get_children = Ошибка при получении дочерних документов дерева (FUID=%s, DUID=%s): %s
+divide_by_zero = Ошибка деления на ноль
+method_executed = Ошибка при выполнении метода %T поля (UID=%s): %s
+method_not_found = Не найден метод для запуска
+field_value_is_wrong = Ошибка при записи в поле (UID=%s) значения (%s): %s
+field_collectiondoc_load_docs = Ошибка при загрузке документов коллекции поля Коллекция документов (UID=%s): %s
+field_collectiondoc_add_doc = Ошибка при добавлении документа в коллекцию поля Коллекция документов (UID=%s): %s
+field_collectiondoc_del_doc = Ошибка при удалении документа из коллекции поля Коллекция документов (UID=%s): %s
+field_collectiondoc_json_decode = Ошибка при декодировании JSON документа (UID=%s, владелец: %s) коллекции поля Коллекция документов (UID=%s): %s
+field_collectiondoc_json_encode = Ошибка при кодировании JSON документа (UID=%s, владелец: %s) коллекции поля Коллекция документов (UID=%s): %s
+field_collectiondoc_get_field_values = Ошибка при получении всех значений поля Коллекция документов (UID=%s): %s
+field_currency_error_number_format = Ошибка при форматировании числа %s поля Валюта (UID=%s): %s
+field_currency_get_field_values = Ошибка при получении всех значений поля Валюта (UID=%s): %s
+field_currency_get_field_value = Ошибка при получении значения поля Валюта (UID=%s): %s
+field_datetime_wrong_year = Неверный год: %s
+field_datetime_wrong_month = Неверный месяц: %s
+field_datetime_wrong_day = Неверный день: %s
+field_datetime_wrong_date = Сформирована ошибочная дата: %s
+field_datetime_timeparse = Ошибка при разборе времени (%s) временного поля (UID=%s): %s
+field_datetime_get_field_value = Ошибка при получении значения поля Время (UID=%s): %s
+field_datetime_empty_field = Поле со временем пусто
+field_file_add_file_db = Ошибка при сохранении добавляемого файла в поле (UID=%s): %s 
+field_file_delete_values = Ошибка при получении списка файлов для удаления значений файлового поля (UID=%s): %s
+field_file_delete_value = Ошибка при получении значения файлового поля (UID=%s): %s
+field_file_delete_file = Ошибка при удалении файла (UID=%s) файлового поля (UID=%s): %s
+field_file_get_file_info = Ошибка при получени информации о файле (UID=%s) файлового поля (UID=%s): %s
+field_file_set_file_status = Ошибка при установке статуса файла (UID=%s) файлового поля (UID=%s): %s
+field_file_set_relations = Ошибка при записи связей файлового поля (UID=%s) с документом (UID=%s) и файлом (UID=%s): %s
+field_file_clear = Ошибка при очистке файлового поля (UID=%s): %s
+field_file_disable_copy_fs = Ошибка при запуске метода получения файла из файловой системы: доступ к файловой системе запрещен
+field_hidden_generate_hash_from_password = Ошибка при генерации хэша пароля (UID=%s): %s
+field_hidden_type_is_not_decrypt = Ошибка при дешифрации содержимого поля (UID=%s): поле содержит односторонний хэш (см. настройки поля)
+field_hidden_password_is_too_long = Ошибка при записи пароля в поле (UID=%s): длина пароля не может быть более %d символов
+field_int_error_number_format = Ошибка при форматировании числа %s поля Число (целое) (UID=%s): %s
+field_int_make_display = Ошибка при формировании отображаемого значения (%s) для числового поля (UID=%s)
+field_int_get_field_values = Ошибка при получении всех значений целочисленного поля (UID=%s): %s
+field_int_get_value = Ошибка при получении значения целочисленного поля (UID=%s): %s
+field_json_no_key = Ошибка в методе получения значения ключа поля JSON: не указан ключ
+field_json_key_not_found = Ошибка в методе получения значения ключа поля JSON: заданный ключ не найден в переданном JSON-объекте
+field_json_children_count = Ошибка при определении количества дочерних элементов поля JSON
+field_link_get_display_field_uid = Ошибка при получении идентификатора отображаемого имени при обновлении параметров ссылочного поля (UID=%s): %s
+field_link_get_display_field = Ошибка при получении отображаемого поля (UID=%s) для ссылочного поля (%s, UID=%s): %s
+field_link_make_display = Ошибка в ссылочном поле при формировании отображаемого значения поля UID=%s документа UID=%s: %s
+field_link_no_parent = Ошибка в методе ссылочного поля (UID=%s): не указано родительское поле
+field_link_actualize = Ошибка при актуализации отображаемого значения ссылочного поля: %s
+field_list_get_value = Ошибка при получении значения ссылочного поля (UID=%s): %s
+field_link_unmarshal_value0 = Ошибка при распаковке исходного значения ссылочного поля: %s
+field_string_insert_strings = Ошибка при получении значения в методе записи множества значений строкового поля (UID=%s): %s
+field_table_json_decode = Ошибка при декодировании JSON значения (%s) поля Таблица (UID=%s): %s
+field_table_json_decode_accordance = Ошибка при декодировании JSON таблицы сопоставления полей метода поля Таблица (UID=%s): %s
+field_table_json_encode = Ошибка при кодировании JSON значений поля Таблица (UID=%s): %s
+field_table_json_encode_inner_field_params = Ошибка при кодировании в JSON параметров внутреннего поля (тип=%s) поля типа Таблица (UID=%s): %s
+field_table_row_number_to_int = Ошибка в поле Таблица (UID=%s) при преобразовании номера строки (%s) в число: %s
+field_table_col_to_int = Ошибка в поле Таблица (UID=%s) при преобразовании номера столбца (%s) в число: %s
+field_tabledoc_actualize = Ошибка при актуализации отображаемого значения табличного поля: %s
+field_text_insert_textes = Ошибка при получении значения в методе записи множества значений текстового поля (UID=%s): %s
+field_treedoc_docuid_is_incorrect = Ошибка в методе добавления документа в поле Дерево документов: передан некорректный идентификатор документа UID=%s
+field_viewfield_get_fuid = Ошибка в Образе поля при получении идентификатора целевого поля из поля UID=%s: %s
+field_viewfield_get_duid = Ошибка в Образе поля при получении идентификатора целевого документа из поля UID=%s: %s
+field_viewfield_unknown_target_fieldtype = Ошибка в Образе поля (Название: %s. UID: %s, Тип документа: %s) целевое поле имеет неизвестный тип: %s
+
+[info]
+subsystem_started = Подсистема модулей полей запущена
+field_link_wrong_value = Неверное значение ссылки: %s
+field_collectiondoc_description = Коллекция с полями: %s 
+field_currency_format = Формат числа: %s
+field_currency_min = . Минимальное значение: %s
+field_currency_max = . Максимальное значение: %s
+field_currency_recalc = . Включен пересчет по таблице валют
+field_datetime_format = Формат: %s
+field_datetime_format_dqmqY_Heies = ДД.ММ.ГГГГ ЧЧ:ММ:СС
+field_datetime_format_dqmqY_Hei   = ДД.ММ.ГГГГ ЧЧ:ММ
+field_datetime_format_dvmvY_Heies = ДД/ММ/ГГГГ ЧЧ:ММ:СС
+field_datetime_field_datetime_format_dvmvY_Hei   = ДД/ММ/ГГГГ ЧЧ:ММ
+field_datetime_format_mxdxY_Heies = ММ-ДД-ГГГГ ЧЧ:ММ:СС
+field_datetime_format_mxdxY_Hei   = ММ-ДД-ГГГГ ЧЧ:ММ
+field_datetime_format_Yxmxd_Heies = ГГГГ-ММ-ДД ЧЧ:ММ:СС
+field_datetime_format_Yxmxd_Hei   = ГГГГ-ММ-ДД ЧЧ:ММ
+field_datetime_format_Heies       = ЧЧ:ММ:СС
+field_datetime_format_Hei         = ЧЧ:ММ
+field_datetime_format_dqmqY       = ДД.ММ.ГГГГ
+field_datetime_format_dvmvY       = ДД/ММ/ГГГГ
+field_datetime_format_mxdxY       = ММ-ДД-ГГГГ
+field_datetime_format_Yxmxd       = ГГГГ-ММ-ДД
+field_datetime_format_Yxm         = ГГГГ-ММ
+field_datetime_format_yxm         = ГГ-ММ
+field_datetime_format_mxd         = ММ-ДД
+field_file_preview_on = Предварительный просмотр: Включен
+field_file_preview_off = Предварительный просмотр: Отключен
+field_file_size_file = Максимальный размер файла: %s
+field_file_limit_files = Максимальное количество загружаемых файлов: %d
+field_grafic_type_grafic = Тип: график
+field_grafic_type_bar_chart_vertical = Тип: вертикальная гистограмма
+field_grafic_doctype = Тип документов выборки: %s
+field_grafic_category_field = Поле категории: %s
+field_grafic_data_field = Поле данных: %s
+field_grafic_index_quantity = Показатель: количество документов
+field_grafic_index_sum = Показатель: сумма по полю %s
+field_link_link_doctype = Ссылка на тип документа: %s
+field_link_link_field = Отображаемое поле: %s
+field_link_link_notype = Нетипизированная 
+field_hidden_type_1 = Хэшировать
+field_hidden_type_2 = Шифровать
+field_int_delimiter_none = Без разделителя
+field_int_delimiter_space = Разделитель: Пробел
+field_int_delimiter_dot = Разделитель: Точка
+field_int_delimiter_comma = Разделитель: Запятая
+field_int_min = Минимальное значение: %s
+field_int_max = Максимальное значение: %s
+field_list_list_values = Значения: %s
+field_list_list_field = Список из поля %s, Разделитель вариантов: %s, Разделитель значения и заголовка: %s
+field_list_list_empty = Список пуст
+field_list_list_field_empty = Поле для загрузки списка не выбрано
+field_piediagram_doctype = Тип докумена: %s
+field_piediagram_category_field = Категоризация: %s
+field_piediagram_index_quantity = Значение сектора: количество документов
+field_piediagram_index_sum_field = Значение сектора: сумма по полю %s
+field_string_mask = Маска ввода: %s
+field_table_fields = Поля таблицы: %s
+field_tabledoc_description = Тип документа: %s,  Строки %s, при нажатии %s
+field_tabledoc_show_field_display = показывать кратко (как в журналах)
+field_tabledoc_show_field_value = показывать полностью (с форматированием)
+field_tabledoc_click_row_show_window = открыть документ в модальном окне
+field_tabledoc_click_row_open_document = открыть документ на текущей странице
+field_tabledoc_click_row_nothing = ничего не делать
+field_text_editor_enabled = Отображать редактор
+field_text_editor_enabled_with_script = Отображать редактор. РАЗРЕШЕНО ВЫПОЛНЕНИЕ СКРИПТОВ!
+field_viewdoc_show_history_1 = Показывать историю документа
+field_viewdoc_show_history_0 = Не показывать историю документа
+field_viewfield_source_field_type = Тип поля: %s
+field_viewfield_source_value = Поле: %s из документа по ссылке в поле %s
+field_viewfield_target_field_is_empty = Источник поля пуст
+field_viewfield_target_doc_is_empty = Поле с документом пусто
+field_text_xml_description = Корневой элемент: %s

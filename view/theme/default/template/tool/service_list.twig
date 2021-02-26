@@ -1,0 +1,32 @@
+{{ header }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <h1>{{ heading_title }}</h1>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>{{ column_name }}</th>
+                    </tr>    
+                </thead>    
+                <tbody  id="table-setting">
+                {% for service in services %}
+                    <tr>
+                        <td class="pointer" onclick="window.location='{{ service.form }}';">{{ service.title }}</td>
+                    </tr>
+                {% endfor %}    
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>                
+{{ footer }}
+
+ <script typa="text/javascript">
+     
+
+</script> 

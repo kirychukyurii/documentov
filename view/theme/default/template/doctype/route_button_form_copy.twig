@@ -1,0 +1,121 @@
+  
+    <div class="modal-header">
+        <div class="pull-right">
+            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-reply"></i></button>
+        </div>    
+        <div class="pull-left"><h4 class="modal-title text-left">{% if button_id is empty %}{{ text_title_button_add }}{% else %}{{ text_title_button_edit }}{% endif %}</h4></div>
+    </div>
+
+    <div class="modal-body" id="form_copy_route_button">
+        <input id="input-filter_button" class="form-control" placeholder="{{ text_search }}">
+        <div class="table-responsive" style="height: 400px;">
+            <table class="table table-bordered table-hover" id="table-copy_button">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="check-button_selected_all" onclick="$('input[name*=\'selected-copy_button\']').attr('checked', this.checked);$(this).attr('checked', this.checked);" /></th>
+                        <th>{{ text_route_point }}</th>
+                        <th>{{ text_button }}</th>
+                        <th>{{ text_route_action }}</th>
+                        <th>{{ text_route_description }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for route in buttons %}
+                    {%for button in route %}
+                    <tr>
+                        <td><input type="checkbox" name="selected-copy_button[]" value="{{ button.button_id }}" /></td>
+                        <td>{{ button.route_name }}</td>
+                        <td>{{ button.name }}</td>
+                        <td>{{ button.action_name }}</td>
+                        <td>{{ button.action_description }}</td>
+                    </tr>    
+                    {% endfor %}    
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>    
+    </div>
+
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <button type="button" class="btn btn-default btn-block" id="modal-copy_button" onclick="saveCopyRouteButton('{% if button_id is empty %}add{% else %}edit{% endif %}');" data-loading-text="{{ text_loading }}">{{ button_copy }}</button>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                    <div style="margin-top: 15px;" class="visible-xs"></div>
+                    <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+            </div>
+
+        </div>
+    </div>
+           
+           
+<script type="text/javascript">
+ 
+$(document).ready(function(){
+  $("#input-filter_button").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#table-copy_button tbody tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+    if (value) {
+       $('#check-button_selected_all').hide();
+    } else {
+       $('#check-button_selected_all').show();
+    }      
+  });
+});
+
+$('input[name*=\'selected-copy_button\']').on('click', function() {
+    if (this.checked) {
+        $(this).parent().parent().css('background-color', '#eee');
+    } else {
+        $(this).parent().parent().css('background-color', '');
+    } 
+});
+
+function saveCopyRouteButton() {
+    $.ajax({
+        url: 'index.php?route=doctype/doctype/copy_route_button&route_uid={{ route_uid }}',
+        type: 'post',
+        cache: false,
+        data: $('#form_copy_route_button input[type=\'text\'], #form_copy_route_button input[type=\'hidden\'], #form_copy_route_button input[type=\'radio\']:checked, #form_copy_route_button input[type=\'checkbox\']:checked, #form_copy_route_button select, #form_copy_route_button textarea'),
+        dataType: 'json',
+        beforeSend: function() {
+                $('#modal-copy_button').button('loading');
+        },            
+        success: function(json) {
+            var html = '';
+            $.each(json, function(){
+                html = '<tr id="route_button-row' + this.route_button_uid + '" class="new_element">' +
+                        ' <td class="text-left"><button type="button" class="btn btn-default btncolor new_element"  onclick="editRouteButton(\'' + this.route_button_uid + '\');" id="route_button-button' + this.route_button_uid + '" data-toggle="tooltip" title="{{route_edit_button}}"';
+                if (this.color || this.background || !this.name) {
+                    html += 'style="';
+                    if (this.color) {
+                        html += 'color:#' + this.color + ';';
+                    }
+                    if (this.background) {
+                        html += 'background-color:#' + this.background + ';';
+                    }
+                    if (!this.name) {
+                        html += 'padding:0px;';
+                    }
+                }
+                html += '> <img src="' + this.picture25 + '"> ' + this.name +'</button></td>';
+                html += '<td class="text-left pointer" onclick="editRouteButton(\'' + this.route_button_uid + '\');">';
+                $.each(this.fields, function(){
+                    html += this.name + ' ';
+                });     
+                html += '</td><td class="text-right" id="remove_route_button' + this.route_button_uid + '" style="width: 120px;">' +
+                            '<button type="button"  class="btn btn-default btn-sm" onclick="up(this, \'move_button&button_uid=' + this.route_button_uid + '\');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ' +                     
+                            '<button type="button"  class="btn btn-default btn-sm" onclick="down(this, \'move_button&button_uid=' + this.route_button_uid + '\');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ' +                                                              
+                            '<button type="button"  class="btn btn-default btn-sm" onclick="removeRouteButton(\'' + this.route_button_uid + '\');" data-toggle="tooltip" title="{{ button_remove }}"><i class="fa fa-minus-circle"></i></button>' +
+                            '</td></tr>';              
+                $('#table_route_button{{ route_uid }} tbody').append(html); 
+                $('#modal-copy_button').modal('hide');
+        });
+    }
+});
+}
+
+</script>

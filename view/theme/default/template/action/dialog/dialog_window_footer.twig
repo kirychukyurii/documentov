@@ -1,0 +1,130 @@
+</div></div><div class="modal-footer" id="dialog_footer">
+<div class="row">
+  <div class="col-md-3 col-sm-3">
+    <button type="button" class="btn btn-default btn-block modal-button-save" onclick="save_dialog();" data-loading-text="{{ text_loading }}">{{ button_save }}</button>
+  </div>
+  <div class="col-md-3 col-sm-3">
+    <div class="visible-xs" style="margin-top: 15px;"></div>
+    <button class="btn btn-default btn-block" data-dismiss="modal" onclick="cancel_dialog();">{{ button_cancel }}</button>
+  </div>
+</div></div><style>
+.dialog-alert {
+  border: 3px solid #f3b5ad;
+}</style><script>
+{% if document_uid %}
+  var dialog_url = 'index.php?route=document/document/button&button_uid={{ button_uid }}&document_uid={{ document_uid }}&save=1';
+{% else %}
+  var dialog_url = 'index.php?route=document/folder/button&button_uid={{ button_uid }}&document_uids={{ document_uids }}&save=1';
+  //
+{% endif %};
+$('#modal-action').attr('data-backdrop', 'static');
+$('.tooltip').hide();
+$('#dialog_loading').hide();
+function save_dialog() {
+  if ($('.modal-button-save').attr('disabled')) {
+    return false;
+  }
+
+  if (field_functions.length > 0) { // функции полей перед сохранением документа
+    $.each(field_functions, function () {
+      this();
+    });
+  }
+  // проверяем обязательные для заполнения поля
+  var req_fields = [{{ required_fields }}];
+  var check_required = 1;
+  $.each(req_fields, function () {
+    var type = $('[name^=\'field\[' + this + '\]\']').attr('type');
+    if (type === undefined) {
+      if ($('[name^=\'field\[' + this + '\]\']').is('select')) {
+        type = 'select';
+      } else if ($('[name^=\'field\[' + this + '\]\']').is('textarea')) {
+        type = 'textarea';
+      }
+    }
+    var noFilled = false;
+    switch (type) {
+      case undefined:
+        break;
+      case 'select':
+        if ($('select[name^=\'field\[' + this + '\]\']').val() === null) {
+          noFilled = true;
+        }
+        break;
+      case 'textarea':
+        if ($('textarea[name^=\'field\[' + this + '\]\']').val() == "") {
+          noFilled = true;
+        }
+        break;
+      case 'text':
+      case 'password':
+      case 'hidden':
+        if (!$('[name^=\'field\[' + this + '\]\']').val()) {
+          noFilled = true;
+        }
+        break;
+      case 'radio':
+        if (!$('[name^=\'field\[' + this + '\]\']:checked').length) {
+          noFilled = true;
+        }
+        break;
+      case 'checkbox':
+        if (!$('[name^=\'field\[' + this + '\]\']:checked').length) {
+          noFilled = true;
+        }
+        break;
+      default:
+        alert('new type - ' + type);
+        break;
+    }
+    if (noFilled) {
+      $('#form_dialog .field_block_' + this).addClass('dialog-alert');
+      check_required = 0;
+    } else {
+      $('#form_dialog .field_block_' + this).removeClass('dialog-alert');
+    }
+
+  });
+  if (! check_required) {
+    alert('{{ text_alert_req_field }}');
+  } else {
+    $('#dialog_loading').fadeIn(300);
+    $('#dialog_form').fadeOut(0);
+    $('#dialog_title').html('{{ text_loading }}');
+    $('#dialog_footer button').attr('disabled', 'disabled');
+
+    $.ajax({
+      url: dialog_url,
+      type: 'post',
+      data: $('#dialog_form input[type=\'text\'], #dialog_form input[type=\'number\'], #dialog_form input[type=\'password\'], #dialog_form input[type=\'hidden\'], #dialog_form input[type=\'radio\']:checked, #dialog_form input[type=\'checkbox\']:checked, #dialog_form select, #dialog_form textarea'),
+      dataType: 'json',
+      beforeSend: function (xhr) {
+        $('#block_loading').show();
+        $('.modal-button-save').attr('disabled', 'disabled');
+      },
+      success: function (json) {
+        $('#modal-action').modal('hide');
+        $('.modal-button-save').removeAttr('disabled');
+        navDocumentov.answerServer(json);
+        navDocumentov.ajaxError = 0;
+      },
+      error: function (xhr) {
+        navDocumentov.errorAjax(xhr);
+      },
+      complete: function () {
+        if (!navDocumentov.errorNetwork(this) && !navDocumentov.ajaxError) {
+          //        $('#modal-action').modal('hide');    //если убрать комментарии, то не работает д. Сообщение (Диалог перемещает на точку, в переходе которой д. Сообщение)
+          //        $('.modal-button-save').removeAttr('disabled');
+        }
+      }
+    });
+  }
+};
+
+function cancel_dialog() {
+  {% if document_uid %}
+    $.ajax({url: 'index.php?route=document/document/button&button_uid={{ button_uid }}&document_uid={{ document_uid }}&cancel=1'});
+    //
+  {% endif %}
+
+}</script>

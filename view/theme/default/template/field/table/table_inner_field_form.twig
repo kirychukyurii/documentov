@@ -1,0 +1,156 @@
+<div class="modal-header text-right">
+  <div class="pull-right">
+    <button type="button" class="btn btn-default" id="modal-button-add_inner" onclick="" data-loading-text="{{ text_loading }}" data-dismiss="modal">
+      <i class="fa fa-save"></i>
+    </button>
+    <button class="btn btn-default" data-dismiss="modal" type="button">
+      <i class="fa fa-reply"></i>
+    </button>
+  </div>
+  <div class="pull-left">
+    <h4 class="modal-title text-left">{{ text_edit_column }}</h4>
+  </div>
+</div>
+
+<div class="modal-body">
+  <ul class="nav nav-tabs">
+    <li class="active">
+      <a data-toggle="tab" href="#field_table-tab_main">{{ tab_general }}</a>
+    </li>
+    <li>
+      <a data-toggle="tab" href="#field_table-tab_add">{{ tab_additional }}</a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane fade in active" id="field_table-tab_main">
+      <div class='form-horizontal'>
+        <div class="form-group">
+          <div class="col-sm-3">
+            <ul class="nav nav-pills nav-stacked" id="column_title_language">
+              {% for language in languages %}
+                <li>
+                  <a data-toggle="tab" href="#column_title_language{{ language.language_id }}"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/>
+                    {{ language.name }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="col-sm-9">
+            <div class="tab-content">
+              {% for language in languages %}
+                <div class="tab-pane fade" id="column_title_language{{ language.language_id }}">
+                  <div class="form-group required">
+                    <strong>{{ entry_column_title }}</strong>:
+                    <input type="text" name="field[column_title][{{ language.language_id }}]" value="{{ column_title[language.language_id]}}" placeholder="{{ entry_column_title }}" id="input-name{{ language.language_id }}" class="form-control save_on_change"/>
+                    {% if error_name[language.language_id] %}
+                      <div class="text-danger">
+                        {{ error_name[language.language_id] }}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="form-group required">
+          <label class="col-sm-3 control-label" for="input-inner_field_type">{{ entry_inner_field_type }}</label>
+          <div class="col-sm-9">
+            <select class="form-control" id="input-inner_field_type" name="inner_field_type">
+              <option value="0">{{ text_select }}</option>
+              {% for inner_field in inner_fields %}
+                {% if inner_field is not empty and inner_field.name == inner_field_type %}
+                  <option value='{{ inner_field.name }}' selected="selected">{{ inner_field.title }}</option>
+                {% else %}
+                  <option value='{{ inner_field.name }}'>{{ inner_field.title }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div id="form_inner_field">{{inner_field_form}}</div>
+        <input type="hidden" name="inner_field_uid" value='{{ inner_field_uid }}'/>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="field_table-tab_add">
+      <div class='form-horizontal'>
+
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="input-inner_field_view_display">
+            <span data-toggle="tooltip" title="{{ help_inner_field_view_display }}">{{ entry_inner_field_view_display }}</span>
+          </label>
+          <div class="col-sm-9">
+            <select class="form-control" id="input-inner_field_view_display" name="inner_field_view_display">
+              <option value="visible" {% if inner_field_view_display != 'hidden' %} selected="selected" {% endif %}>{{ text_visible }}</option>
+              <option value="hidden" {% if inner_field_view_display == 'hidden' %} selected="selected" {% endif %}>{{ text_hidden }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="input-inner_field_form_display">
+            <span data-toggle="tooltip" title="{{ help_inner_field_form_display }}">{{ entry_inner_field_form_display }}</span>
+          </label>
+          <div class="col-sm-9">
+            <select class="form-control" id="input-inner_field_form_display" name="inner_field_form_display">
+              <option value="visible" {% if inner_field_form_display != 'hidden' %} selected="selected" {% endif %}>{{ text_visible }}</option>
+              <option value="hidden" {% if inner_field_form_display == 'hidden' %} selected="selected" {% endif %}>{{ text_hidden }}</option>
+            </select>
+
+            <select class="form-control" id="input-inner_field_form_required" name="inner_field_form_required">
+              <option value="0" {% if not inner_field_form_required %} selected="selected" {% endif %}>{{ text_no_required }}</option>
+              <option value="1" {% if inner_field_form_required %} selected="selected" {% endif %}>{{ text_required }}</option>
+            </select>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+</div>
+<div class="modal-footer">
+  <div class="row">
+    <div class="col-md-3 col-sm-6">
+      <button type="button" class="btn btn-default btn-block" id="modal-field-add_inner" data-loading-text="{{ text_loading }}" data-dismiss="modal">{{ button_save }}</button>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="visible-xs" style="margin-top: 15px;"></div>
+      <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+  (function () {
+    $('#column_title_language a:first').tab('show');
+    $('select[name=\'inner_field_type\']').on('change', function () {
+      $('#form_inner_field').html('');
+      var inner_field_type = $('select[name=\'inner_field_type\']').val();
+      if (inner_field_type === "0") {
+        return;
+      }
+
+      $.ajax({
+        url: 'index.php?route=extension/field/table/getInnerFieldForm&route_uid={{ route_uid }}&context={{ context }}&field_type=' + inner_field_type + '&doctype_uid={{ doctype_uid }}',
+        dataType: 'html',
+        success: function (html) {
+          $('#form_inner_field').html('<hr>' + html);
+        }
+      });
+    });
+    function showForm() {
+      $('#input-inner_field_form_required').show();
+      if ($('#input-inner_field_form_display').val() == 'hidden') {
+        $('#input-inner_field_form_required').hide();
+      }
+    }
+    showForm();
+    $('#input-inner_field_form_display').on('change', function () {
+      showForm();
+    });
+  })();
+</script>

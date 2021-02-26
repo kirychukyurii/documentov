@@ -1,0 +1,27 @@
+    <footer class="navbar navbar-default navbar-fixed-bottom" style="min-height: 20px; background-color: #555; color:#e2e2e2;">  
+      <div class="container-fluid">
+        <div class="row">
+            {{ powered }}
+        </div>
+      </div>
+  </footer>  
+
+{% for script in scripts %}
+<script src="{{ script }}" type="text/javascript"></script>
+{% endfor %}
+<script>
+    var notificator_model = new NoitficatorModel({polling_period: '{{notification_pooling_period}}'});
+    if (window.navDocumentov != undefined) {
+        navDocumentov.registerCallback('buttonaction, opendocument, loadtable', function() {            
+            notificator_model.tick = 0;
+            notificator_model.query_notifications();
+            // notificator_model.agent_notificator_initialization();
+        })
+    }
+    
+    $('div[name=\'notificator_widget\']').each(function() {
+        $(this).notificator_widget(notificator_model);
+    });
+
+</script>
+</body></html>

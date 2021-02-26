@@ -1,0 +1,8 @@
+<tr class="pointer">
+  <td class="text-center"><input type="checkbox"/></td>
+  {% for row in rows %}
+    <td class="{{ row.display }}">
+      {{ row.value }}
+    </td>
+  {% endfor %}
+</tr>

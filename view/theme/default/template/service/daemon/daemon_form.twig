@@ -1,0 +1,110 @@
+{{ header }}
+
+<div class="container-fluid">
+    <div class="pull-right">
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+    </div>
+    <h1>{{ heading_title }}</h1>
+
+</div>
+<div class="container-fluid">
+    <div class="pull-right">
+        <button id="btn_demon_start" type="button" data-toggle="tooltip" class="btn btn-default" title="{{ button_demon_start }}" {% if daemon_status %} disabled="true" {% endif %}>{{ button_demon_start }}</button>
+        <button id="btn_demon_restart" type="button" data-toggle="tooltip" class="btn btn-default" title="{{ button_demon_restart }}" {% if daemon_status != true %} disabled="true" {% endif %}>{{ button_demon_restart }}</button>
+        <button id="btn_demon_stop" type="button" data-toggle="tooltip" class="btn btn-default" title="{{ button_demon_stop }}" {% if daemon_status != true %} disabled="true" {% endif %}>{{ button_demon_stop }}</button>
+    </div>    
+    <div class="pull-left">
+        <button type="button" id="btn_demon_update" data-toggle="tooltip" class="btn btn-default" title="{{ button_refresh }}" >{{ button_refresh }}</button>  
+        <span id="daemon_status">{% if daemon_status %} {{text_demon_started}} {% else %} {{text_demon_stopped}}  {% endif %}</span>
+    </div>
+    <br><br>
+
+</div>
+<br/>
+<div class="container-fluid">
+    <b>{{text_daemon_task_log}}</b>
+</div>
+
+<div class="container-fluid">
+    <textarea id="textarea_daemon_task_log" rows="20" class="form-control" readonly="true">
+        {{daemon_task_log}}
+    </textarea>
+    <br><br>
+</div>
+
+<script typa="text/javascript">
+  (function(){
+    setInterval(
+      update,
+      1000
+    )
+
+    $('#btn_demon_start').on('click', function(){
+      run_daemon('start');
+    });
+    $('#btn_demon_restart').on('click', function(){
+      run_daemon('restart');
+    });
+    $('#btn_demon_stop').on('click', function(){
+      run_daemon('stop');
+    });
+    $('#btn_demon_update').on('click', function(){
+      update();
+    });
+
+    function run_daemon(command) {
+        $.ajax({
+            url: 'index.php?route=extension/service/daemon/run_daemon&command=' + command,
+            dataType: 'text',
+            success: function (result) {
+                //setTimeout(update, 1000);
+            }
+        });
+    };
+    
+    function update() {
+        update_log();
+        update_status();
+    }
+
+    function update_log() {
+        $.ajax({
+            url: 'index.php?route=extension/service/daemon/get_daemon_log',
+            dataType: 'text',
+            success: function (result) {
+                $("#textarea_daemon_task_log").val(result);
+            }
+        });
+    };
+    
+    function update_status() {
+        $.ajax({
+            url: 'index.php?route=extension/service/daemon/get_status',
+            dataType: 'text',
+            success: function (result) {
+                if (result === 'started') {
+                    $("#btn_demon_start").prop("disabled", true);
+                    $("#btn_demon_restart").prop("disabled", false);
+                    $("#btn_demon_stop").prop("disabled", false);
+                    $("#daemon_status").text('{{text_demon_started}}');
+                    {% if oswin %}
+                        $('#instructions').hide();
+                    {% endif %}    
+                }
+                if (result === 'stopped') {
+                    $("#btn_demon_start").prop("disabled", false);
+                    $("#btn_demon_restart").prop("disabled", true);
+                    $("#btn_demon_stop").prop("disabled", true);
+                    $("#daemon_status").text('{{text_demon_stopped}}');
+                    {% if oswin %}
+                        $('#instructions').show();
+                    {% endif %}                      
+                }
+            }
+        });
+    }
+  })();
+
+</script> 
+{{ footer }}
+

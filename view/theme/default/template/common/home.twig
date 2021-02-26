@@ -1,0 +1,14 @@
+{{ header }}
+<div id="common-home" class="container">
+  {{ content }}  
+</div>
+<script>
+    $(function($) {
+       $("#common-home").height($(document).height()-93);
+    });    
+    
+    $(window).resize(function() {
+       $("#common-home").height($(document).height()-93);
+    });
+</script>
+{{ footer }}

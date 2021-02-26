@@ -1,0 +1,413 @@
+{{ header }}
+<div class="sticky">
+  <div id="block_loading">{{ text_loading }}</div>
+  {% if navigation == 'always_show' or (navigation == 'toolbar_hidden_show' and toolbar == 'hide' )  %}
+    <div class="container-fluid no-print" id="folder_navigation" style="border-bottom: 1px solid #ddd;">
+      <h3>{{ folder_name }}</h3>
+    </div>
+  {% endif %}
+  {% if toolbar is empty or toolbar != 'hide' %}
+    <div class="navbar navbar-form shadow2" id="folder_toolbar">
+      <div id="document_toolbar">
+        {% if navigation == 'show_in_toolbar' %}
+          <span class="folder_name">{{ folder_name }}</span>
+        {% endif %}
+        {% for button in buttons %}
+          &nbsp;
+          <button class="btn btn-default shadow2" style="{% if button.color is not empty %}color:#{{ button.color }};{% endif %}{% if button.background is not empty %}background-color:#{{ button.background }};{% endif %}{% if button.picture %}padding:3px 6px 3px 3px;{% endif %}" id="folder_button{{ button.folder_button_uid }}" data-button_uid="{{ button.folder_button_uid }}" data-button_type="folder" onclick="navDocumentov.buttonAction(this);" data-toggle="tooltip" title="{{ button.title }}" data-loading-text="{{ text_loading }}" {% if button.documents or button.documents is empty %} disabled {% endif %}>
+            {% if button.picture %}<img src="{{ button.picture }}">
+            {% endif %}
+            <span {% if button.hide_button_name and button.picture %} class="text-hide-{{ button.hide_button_name }}" {% endif %}>{{ button.name }}</span>
+          </button>&nbsp;
+        {% endfor %}
+        <div class="pull-right" id="tfilter">
+          <div class="input-group shadow2" id="block-search" style="display: none; position: absolute; right: 100px;">
+            <input class="form-control" name="inputSearch" onkeydown="navDocumentov.keySearch(event.key);" type="text">
+            {% if ftsearch_avaliable %}
+              <span class="input-group-btn">
+                <button aria-expanded="false" aria-haspopup="true" class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button">
+                  <i class="fa fa-rocket"></i>
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <li>
+                    <a onclick="navDocumentov.setSearchType('quick')">
+                      <i class="fa fa-rocket"></i>
+                      Быстрый</a>
+                  </li>
+                  <li>
+                    <a onclick="navDocumentov.setSearchType('fulltext')">
+                      <i class="fa fa-book"></i>
+                      Полнотекстовый</a>
+                  </li>
+                </ul>
+              </span>
+            {% endif %}
+          </div>
+          <button class="btn btn-default shadow2" disabled id="button_search" onclick="navDocumentov.search();">
+            <i class="fa fa-search"></i>
+          </button>
+
+          <button class="btn btn-default shadow2" data-target="#modalFilter" data-toggle="modal" disabled id="button_filter">
+            <i class="fa fa-filter"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div id="folder_toolbar" style="display: none;"></div>
+  {% endif %}
+</div>
+<div class="background0" style="margin-right: 3px;">
+  {% if grouping_tree is not empty %}
+    <div id="splitter">
+      <div
+        id="grouping" style="max-height:100%;">
+        <!-- tree -->
+        <div id="tree">
+          <ul id="treeData" style="display: none;">
+            {% for idg,group in grouping_tree %}
+              {% if group.grouping_name is not empty %}
+                <li class="folder" data-expanded="true" id="field_uid={{ group.field_uid }}">{{ group.grouping_name }}
+                  {#                    {% set id = idg ~ '.' %}    #}
+                {% endif %}
+                {% if group.grouping_tree_uid %}
+                  {% if group.grouping_name is not empty %}
+                    <ul>
+                    {% endif %}
+                    {% set level1 = true %}
+                    {% for value in group.field_values %}
+
+                      {% if value.separator is not empty  %}
+                        {% set level1 = not level1 %}
+                        {% if group.grouping_name is not empty or (group.grouping_name is empty and not loop.first) or (group.grouping_name is empty and not loop.last > 1) %}
+                          {{ value.separator }}
+                        {% endif %}
+                      {% else %}
+                        <li class="folder" {% if level1 %} data-expanded="true" {% endif %} id='gtid={{ group.grouping_tree_uid }}&fid={{ value.field_uid }}&value={{ value.name|url_encode }}' class="folder">{{ value.name }}
+                        {% endif %}
+                      {% endfor %}
+                      {% if group.grouping_name is not empty %}
+                      </li>
+                    </ul>
+                  {% endif %}
+
+                {% else %}
+                  {% if group.grouping_name is not empty %}
+                    <ul>
+                    {% endif %}
+                    {% for value in group.field_values %}
+                      <li class="folder" id="fid={{ value.field_uid }}&value={{ value.display_value|url_encode }}">
+                        {% if value.display_value is not empty %}
+                          {{ value.display_value }}
+                        {% else %}
+                          {{ text_empty_value }}
+                        {% endif %}
+                        {% if value.children is not empty %}
+                          {% set gname = false %}
+                          {% set gname_not_for_all = false %}
+                          {% for child in value.children %}
+                            {% if child.grouping_name is not empty %}
+                              {% set gname = true %}
+                            {% else %}
+                              {% set gname_not_for_all = true %}
+                            {% endif %}
+                          {% endfor %}
+                          {% if gname %}
+                            <ul>
+                            {% endif %}
+                            {% for child in value.children %}
+                              {% if child.grouping_name is not empty %}
+                                {# группа с названием #}
+                                <li class="folder" id="fid={{ value.field_uid }}&value={{ value.display_value|url_encode }}&namegroup={{ child.folder_field_uid }}">{{ child.grouping_name }}
+                                  <ul>
+                                    {% for child_value in child.values %}
+                                      <li class="folder" id="fid={{ value.field_uid }}&value={{ value.display_value|url_encode }}&fid2={{ child_value.field_uid }}&value2={{ child_value.display_value|url_encode }}">
+                                        {% if child_value.display_value is not empty %}
+                                          {{ child_value.display_value }}
+                                        {% else %}
+                                          {{ text_empty_value }}
+                                        {% endif %}
+                                      {% endfor %}
+                                    </li>
+                                  </ul>
+                                {% elseif gname and gname_not_for_all %}
+                                  {# группа без названия, но есть родственная группа с названием #}
+                                  {% for child_value in child.values %}
+                                  </li>
+                                  <li class="folder" id="fid={{ value.field_uid }}&value={{ value.display_value|url_encode }}&fid2={{ child_value.field_uid }}&value2={{ child_value.display_value|url_encode }}">
+                                    {% if child_value.display_value is not empty %}
+                                      {{ child_value.display_value }}
+                                    {% else %}
+                                      {{ text_empty_value }}
+                                    {% endif %}
+                                  {% endfor %}
+                                {% else %}
+                                  {# все родственные группы без названия#}
+                                  <ul>
+                                    {% for child_value in child.values %}
+                                      <li class="folder" id="fid={{ value.field_uid }}&value={{ value.display_value|url_encode }}&fid2={{ child_value.field_uid }}&value2={{ child_value.display_value|url_encode }}">
+                                        {% if child_value.display_value is not empty %}
+                                          {{ child_value.display_value }}
+                                        {% else %}
+                                          {{ text_empty_value }}
+                                        {% endif %}
+                                      {% endfor %}
+                                    </li>
+                                  </ul>
+                                {% endif %}
+
+                              {% endfor %}
+                              {% if gname %}
+                              </li>
+                            </ul>
+                          {% endif %}
+                        {% endif %}
+                      {% endfor %}
+                      {% if group.grouping_name is not empty %}
+                      </li>
+                    </ul>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+            </li>
+          </ul>
+
+
+        </div>
+        <!-- end tree -->
+      </div>
+      <div class="tcolumn" id="tcolumn"></div>
+    </div>
+    <!-- end of #widget -->
+  {% else %}
+    <div class="fixxed tcolumn" id="tcolumn" style="width:98%;margin: 0 1%;"></div>
+  {% endif %}
+
+
+</div>
+<div class="modal fade" id="modalFilter" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close" data-dismiss="modal" type="button">&times;</button>
+        <h4 class="modal-title">{{ text_title_filter }}</h4>
+      </div>
+      <div class="modal-body">
+        <div class="nav navbar pull-right">
+          <span class="btn btn-default" onclick="navDocumentov.filterAdd();" title="{{ text_filter_add_condition }}">
+            <i class="fa fa-plus"></i>
+          </span>
+          <span class="dropdown">
+            <span class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button" title="{{ text_filter_save }}">
+              <i class="fa fa-save"></i>
+            </span>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li style="padding: 0px 3px;"><input type="text" id="filter_name" placeholder="{{ entry_filter_name }}" class="form-control"></li>
+              <li class="text-center" style="cursor: pointer;">
+                <a onclick="navDocumentov.filterSave();">{{ button_save }}</a>
+              </li>
+            </ul>
+          </span>
+          <span class="dropdown">
+            <span class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button"  title="{{ text_filter_download }}">
+              <i class="fa fa-download"></i>
+            </span>
+            <ul class="dropdown-menu dropdown-menu-right" id="filters">
+              {% for filter in user_filters %}
+                <li id="filter{{ filter.filter_id }}">
+                  <a onclick="navDocumentov.filterLoad({{ filter.filter_id }});" style="cursor: pointer;">
+                    <i class="fa fa-minus-circle" onclick="navDocumentov.filterRemove({{ filter.filter_id }});"></i>
+                    {{ filter.filter_name }}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </span>
+        </div>
+        <table class="table table-bordered" id="list_filters">
+          <thead class="background1">
+            <tr>
+              <th>{{ column_filter_field }}</th>
+              <th>{{ column_filter_condition }}</th>
+              <th>{{ column_filter_value }}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal" onclick="navDocumentov.filter();" type="button">{{ button_filter }}</button>
+        <button class="btn btn-default" data-dismiss="modal" onclick="navDocumentov.filterReset();" type="button">{{ button_reset }}</button>
+        <button class="btn btn-default" data-dismiss="modal" type="button">{{ button_close }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var active_node = ""; // выбранная ветвь дерева
+  var time_node = 0; // время последней загрузки ветви
+
+  let folderParams = {
+    folderUid: '{{ folder_uid }}',
+    hideToolbar: '{{ toolbar }}',
+    hideSelectors: '{{ hide_selectors }}',
+    showCountGroup: '{{ show_count_group }}',
+    limit: '{{ pagination_limit }}',
+    limits: [],
+    filters: [],
+    filterConditions: [],
+    groupingTree: '{% if grouping_tree is empty %}0{% else %}1{% endif %}',
+    ftsearch_invalid_input_msg: '{{ text_ftsearch_invalid_input }}',
+    language: {}
+  };
+  let params,
+    iter_param;
+  {% for filter_id,filter in filters %};
+    params = {};
+    iter_param = {};
+    {% for name, value in filter.params %}
+      {% if value is iterable %}
+        {% for vname, vvalue in value %};
+          iter_param['{{ vname }}'] = '{{ vvalue }}';
+        {% endfor %};
+        params['{{ name }}'] = iter_param;
+      {% else %};
+        params['{{ name }}'] = '{{ value }}';
+      {% endif %}
+    {% endfor %};
+    folderParams.filters.push({filterId: '{{ filter_id }}', action: '{{ filter.action }}', params: params});
+  {% endfor %}
+  {% for condition in filter_conditions %};
+    folderParams.filterConditions.push({value: '{{ condition.value }}', title: '{{ condition.title }}'});
+  {% endfor %}
+  {% for pagination_limit in pagination_limits %};
+    folderParams.limits.push({{ pagination_limit }});
+  {% endfor %}
+  {% for text_index,text_value in text_navigator_documentov %};
+    folderParams.language['{{ text_index }}'] = '{{ text_value }}';
+  {% endfor %};
+  var navDocumentov = new NavigatorDocumentov(folderParams);
+
+  $(function () {
+
+    let url = window.location.href;
+    let urlParams = url.split("&");
+    let clearUrl = "";
+    let search;
+    $.each(urlParams, function () {
+      let nameParam = this.split("=")[0];
+      if (nameParam == 'fid' || nameParam == 'fid2' || nameParam == 'gtid' || nameParam == 'value' || nameParam == 'value2' || nameParam == 'search' || nameParam == 'search_type') {
+        if (navDocumentov.tableParams) {
+          navDocumentov.tableParams += "&";
+        }
+        navDocumentov.tableParams += this;
+        if (nameParam == 'search') {
+          $('#block-search').show();
+          search = decodeURI(this.split("=")[1]);
+        }
+      } else {
+        clearUrl += this + '&';
+      }
+    });
+    history.pushState(null, null, clearUrl.slice(0, -1));
+
+    let $arr = url.split("&document_uid=");
+    if ($arr[1] !== undefined && $arr[1] && $arr[1] != '0') {
+      navDocumentov.openDocument($arr[1].slice(0,36));
+    } else if (search) {
+      $('input[name=\'inputSearch\']').val(search);
+      navDocumentov.search();
+    } else {
+      navDocumentov.loadTable(navDocumentov.tableParams);
+    }
+
+    {% if grouping_tree is not empty %}
+      $("#splitter").splitter({
+        minAsize: 150,
+        maxAsize: 700,
+        splitVertical: true,
+        A: $('#grouping'),
+        B: $('#tcolumn'),
+        closeableto: 0
+      });
+
+      {% if collapse_group %};
+
+        setTimeout(() => {
+          $("#splitter .splitbuttonV").trigger("mousedown");
+        }, 0);
+      {% endif %}
+      if (!$.fn.fancytree) {
+        addScript('view/javascript/jquery/fancytree/jquery.fancytree.js?v=1');
+        addStyle('view/javascript/jquery/fancytree/skin-win8/ui.fancytree.css?v=1');
+      }
+      $("#tree").fancytree({
+        debugLevel: 0,
+        tooltip: true,
+        activate: function (event, data) {
+          let node = data.node;
+          navDocumentov.page = 1;
+          navDocumentov.loadTable(node.key, node);
+          time_node = new Date().getTime();
+        },
+        click: function (event, data) {
+          if (! time_node && data.node.key == '_1') { // в структуре не нужно переключать, т.к. остаются провалы, в структуре node.key != '_1'
+            data.node.toggleExpanded();
+          }
+          var new_time = new Date().getTime() - 1000; // 1 сек задержка на обновление
+          if (data.targetType === 'title' && data.node == active_node && time_node < new_time) {
+            navDocumentov.page = 1;
+            navDocumentov.loadTable(navDocumentov.tableParams, data.node);
+            time_node = new Date().getTime();
+          } else {
+            active_node = data.node;
+          }
+        },
+        modifyChild: function (event, data) {
+          if (data.operation == "add") {
+            navDocumentov.updateNodeTitle(data.node);
+            $.each(data.node.children, function () {
+              navDocumentov.updateNodeTitle(this);
+            });
+          }
+
+        }
+      });
+      var tree = $("#tree").fancytree("getTree");
+
+      // -------------------- УСТАНОВКА КОЛИЧЕСТВА ЗАПИСЕЙ В ГРУППЕ -----------------//
+      tree.visit(function (node) {
+        navDocumentov.updateNodeTitle(node);
+      });
+    {% else %}
+      {% for button in navDocumentov.buttons %} 
+        {% if button.documents %}
+          navDocumentov.buttons['{{ button.folder_button_uid }}'] = [{{ button.documents }}];
+        {% endif %}
+      {% endfor %}
+    {% endif %};
+
+    // --------------------- РАЗДЕЛИТЕЛЬ ----------------------------//
+    if ($('#splitter').outerHeight()) {
+      $('#tcolumn').height($('#splitter').outerHeight());
+    } else {
+      $('#tcolumn').height($('body').height() - $('.sticky').outerHeight(true) - $('#main_menu').outerHeight(true) - $('footer').outerHeight(true));
+    }
+    $('#modalFilter').draggable({handle: '.modal-header'});
+
+    if ($('#splitter').outerHeight()) {
+      window.onresize = function () {
+        let height = $('body').height() - $('.sticky').outerHeight(true) - $('#main_menu').outerHeight(true) - $('footer').outerHeight(true) - 20;
+        $(navDocumentov.contentBlock).height(height);
+        $('#splitter').height(height);
+      }
+    }
+
+
+    $(window).trigger('resize');
+  });
+</script>
+
+{{ footer }}

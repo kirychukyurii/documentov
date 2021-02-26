@@ -1,0 +1,52 @@
+
+<div class="text-right"><span class="btn btn-default" id="button-field_string_add_text" title="{{ text_add_string }}"><i class="fa fa-plus"></i></span></div>
+<div id="field_string_textes">
+    {% set index = 1 %}
+    {% if method_params.standard_setter_param %}
+{#        создание метода, сохраненных параметров нет#}
+    <div class="form-group">
+        <label class="col-sm-2">{{ text_inserting_string }}</label>
+        <div class="col-sm-10" style="padding: 0px;"> 
+            <div id="field_string_text1">
+                {% import "default/template/macros/field_method_parameter.twig" as fmpar %}
+                {{ fmpar.show(method_params_prefix_hierarchy, method_params_name_hierarchy, 'text' ~ index, method_params, method_data) }}
+            </div>    
+        </div>    
+    </div>   
+    {% set index = index + 1 %}  
+    {% else %}
+{#        есть сохраненные параметры#}    
+    {% for method_param_name, method_param in method_params %}
+    <div class="form-group" id="block-field_string_text{{ index }}">
+        <label class="col-sm-2">{% if loop.index0 == 0 %}{{ text_inserting_string }}{% else %}{{ text_adding_string }}   <span class="btn btn-default btn-xs" onclick="fieldStringDeleteText('{{ index }}')" title="{{ text_del_string }}"><i class="fa fa-minus"></i></span>{% endif %}</label>
+        <div class="col-sm-10" style="padding: 0px;"> 
+            <div id="field_string_text1">
+                {% import "default/template/macros/field_method_parameter.twig" as fmpar %}
+                {{ fmpar.show(method_params_prefix_hierarchy, method_params_name_hierarchy, method_param_name, method_params, method_data) }}
+            </div>    
+        </div>    
+    </div>  
+    {% set index = index + 1 %}        
+    {% endfor %}        
+    {% endif %}        
+</div>
+
+<script type="text/javascript">
+    var field_string_textes_index = {{ index }};
+    $('#button-field_string_add_text').on('click',function(){
+        var param = $('#field_string_text1').html();
+        var html = '<div class="form-group" id="block-field_string_text' + field_string_textes_index.toString() + '"><label class="col-sm-2">{{ text_adding_string }}';
+        html += ' <span class="btn btn-default btn-xs" onclick="fieldStringDeleteText(' + field_string_textes_index + ')" title="{{ text_del_string }}"><i class="fa fa-minus"></i></span>';
+        html += '</label><div class="col-sm-10" style="padding: 0px;"> <div id="field_string_text' + field_string_textes_index.toString() + '">';        
+        html += param.replace(/text1/g, 'text' + field_string_textes_index.toString());
+        html += '</div></div></div>';
+        $('#field_string_textes').append(html);
+        $('select[name=\'action\[method_params\]\[text' + field_string_textes_index.toString() + '\]\[type\]\']').val('document');
+        $('select[name=\'action\[method_params\]\[text' + field_string_textes_index.toString() + '\]\[type\]\']').trigger('change');
+        field_string_textes_index++;
+    }); 
+    
+    function fieldStringDeleteText(index) {
+        $('#block-field_string_text' + index).remove();   
+    }    
+</script>    

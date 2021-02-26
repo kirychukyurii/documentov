@@ -1,0 +1,34 @@
+{{ header }}
+<div class="container">
+  <header>
+    <div class="row">
+      <div class="col-sm-6">
+        <h1 class="pull-left">4<small>/4</small></h1>
+        <h3>{{ heading_title }}<br>
+          <small>{{ text_step_4 }}</small></h3>
+      </div>
+      <div class="col-sm-6">
+        <h1 class="logo pull-right">
+          <a href="https://www.documentov.com" target="_blank">
+            <span>Δ</span>ocumentov
+          </a>
+        </h1>     
+      </div>
+    </div>
+  </header>
+  {% if success %}
+  <div class="alert alert-success alert-dismissible">{{ success }}</div>
+  {% endif %}
+  <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+  </div>
+  <div class="visit">
+    <div class="row">
+      <div class="col-sm-10 col-sm-offset-1 text-center">
+        <p><i class="fa fa-home fa-5x"></i></p>
+        <a href="../" class="btn btn-secondary">{{ text_catalog }}</a></div>
+      
+    </div>
+  </div>
+</div>
+{{ footer }}

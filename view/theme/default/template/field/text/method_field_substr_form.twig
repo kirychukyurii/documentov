@@ -1,0 +1,15 @@
+<div class="form-group">
+    <label class="col-sm-2 control-label"><span data-toggle="tooltip" title="{{ help_method_get_substr_separator }}">{{ entry_method_get_substr_separator }}</span></label>
+    <div class="col-sm-10" style="padding: 0px;">
+        {% import "default/template/macros/field_method_parameter.twig" as fmpar %}
+        {{ fmpar.show(method_params_prefix_hierarchy, method_params_name_hierarchy, 'field_separator', method_params, method_data) }}   
+    </div>    
+</div>
+    
+<div class="form-group">
+    <label class="col-sm-2 control-label"><span data-toggle="tooltip" title="{{ help_method_get_substr_part }}">{{ entry_method_get_substr_part }}</span></label>
+    <div class="col-sm-10" style="padding: 0px;">
+        {% import "default/template/macros/field_method_parameter.twig" as fmpar %}
+        {{ fmpar.show(method_params_prefix_hierarchy, method_params_name_hierarchy, 'field_part', method_params, method_data) }}   
+    </div>    
+</div> 

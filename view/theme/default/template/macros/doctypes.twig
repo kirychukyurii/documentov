@@ -1,0 +1,26 @@
+{% macro show(doctypes, name, text) %}
+  {#  doctypes - массив выбранных типов документов, #}
+  {#  name - название параметра,                    #}
+  {#  text - текстовки  {{ text_macros_doctype }}   #}
+
+  <input type="text" name="{{ name }}_name" placeholder="{{ text['placeholder'] }}" id="input-{{ name }}_name" class="form-control"/> <div id="{{ name }}_div" class="well well-sm" style="height: auto; overflow: auto;">
+    {% for doctype in doctypes %}
+      <div id="{{ name }}">
+        <i class="fa fa-minus-circle"></i>
+        {{ doctype.name }}
+        <input type="hidden" name="{{ name }}[]" value="{{ doctype.doctype_uid }}"/>
+      </div>
+    {% endfor %}
+  </div>
+
+
+  <script>
+
+    $('input[name=\'{{ name }}_name\']').autocomplete(Documentov.getAutocompleteDoctype(true));
+
+    $('#{{ name }}_div').delegate('.fa-minus-circle', 'click', function () {
+      $(this).parent().remove();
+      $('input[name^=\'{{ name }}\']').trigger('change');
+    });
+  </script>
+{% endmacro %}

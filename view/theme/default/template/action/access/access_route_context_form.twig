@@ -1,0 +1,177 @@
+<div class="form-group">    
+    <label class="col-sm-3 control-label" for="input-field_subject_name"><span data-toggle="tooltip" title="{{ help_field_subject }}">{{ entry_field_subject }}</span></label>
+    <div class="col-sm-9">     
+        {% import "default/template/macros/field_in_action.twig" as mfield %}
+        {{ mfield.show(action.field_subject_name, action.field_subject_id, doctype_uid, 'field_subject', text_macros_field) }}        
+    </div>    
+</div>
+
+<div class="form-group">    
+    <label class="col-sm-3 control-label" for="select-object_type"><span data-toggle="tooltip" title="{{ help_object_type }}">{{ entry_object_type}}</span></label>
+    <div class="col-sm-9">     
+        <select name="action[object_type]" id="select-object_type" class="form-control">
+            <option value="current_document" {% if action.object_type == 'current_document' %} selected="selected"{% endif %}> {{text_currentdoc}} </option>  
+            <option value="document" {% if action.object_type == 'document' %} selected="selected"{% endif %}> {{text_object_type_document}} </option>  
+            <option value="doctype_list" {% if action.object_type == 'doctype_list' %} selected="selected"{% endif %}> {{text_object_type_doctype_list}}</option>
+            <option value="doctype" {% if action.object_type == 'doctype' %} selected="selected"{% endif %}> {{text_object_type_doctype}} </option>
+
+        </select>        
+    </div>   
+    <div id="object_doctype_list">
+        <label class="col-sm-3 control-label" for="input-doctype_name"><span data-toggle="tooltip" title="{{ help_doctype }}">{{ entry_doctype }}</span></label>
+        <div class="col-sm-9">     
+            <input type="text" name="doctype_name" id="input-doctype_name" value="{{ action.doctype_name }}" placeholder="{{ entry_doctype }}" class="form-control">
+            <input type="hidden" name="action[doctype_uid]" id="input-doctype_uid" value="{{ action.doctype_uid }}">
+        </div>    
+    </div>
+    <div id="object_field_link">    
+        <label class="col-sm-3 control-label" for="input-field_object_name"><span data-toggle="tooltip" title="{{ help_field_object }}">{{ entry_field_object }}</span></label>
+        <div class="col-sm-9">     
+            {% import "default/template/macros/field_in_action.twig" as mfield %}
+            {{ mfield.show(action.field_object_name, action.field_object_id, doctype_uid, 'field_object', text_macros_field) }}
+        </div>    
+    </div>
+</div>
+
+
+
+<div class="form-group">    
+    <label class="col-sm-3 control-label" for="input-field_author_name"><span data-toggle="tooltip" title="{{ help_object_author }}">{{ entry_object_author }}</span></label>
+    <div class="col-sm-9">     
+        {% import "default/template/macros/field_in_action.twig" as mfield %}
+        {{ mfield.show(action.field_author_name, action.field_author_id, doctype_uid, 'field_author', text_macros_field) }}        
+    </div>    
+</div>
+
+<div class="form-group">    
+    <label class="col-sm-3 control-label" for="input-access"><span data-toggle="tooltip" title="{{ help_access }}">{{ entry_access}}</span></label>
+    <div class="col-sm-9">     
+        <select name="action[access]" id="select-access" class="form-control">
+            {% if action.access == 'deny' %}
+                <option value="allow">{{ text_access_allow }}</option>
+                <option value="deny"  selected="selected">{{ text_access_deny }}</option>
+            {% else %}
+                <option value="deny">{{ text_access_deny }}</option>
+                <option value="allow"  selected="selected">{{ text_access_allow }}</option>
+            {% endif %}
+        </select>        
+    </div>    
+</div>    
+
+
+<script type="text/javascript">
+
+    switch ($('#select-object_type').val()) {
+        case 'current_document':
+            $('#input-field_author_name').val('');
+            $('#input-field_author_id').val('0');
+            $('#input-field_author_name').attr('disabled', 'disabled');
+            $('#input-field_author_type1').attr('disabled', 'disabled');
+            $('#input-field_author_type2').attr('disabled', 'disabled');
+            $('#object_doctype_list').css('display', 'none');
+            $('#object_field_link').css('display', 'none');
+            break;
+        case 'document':
+            $('#input-field_author_name').val('');
+            $('#input-field_author_id').val('0');
+            $('#input-field_author_name').attr('disabled', 'disabled');
+            $('#input-field_author_type1').attr('disabled', 'disabled');
+            $('#input-field_author_type2').attr('disabled', 'disabled');
+            $('#object_doctype_list').css('display', 'none');
+            $('#object_field_link').css('display', 'block');
+            break;
+        case 'doctype_list':
+            $('#input-field_author_name').removeAttr('disabled');
+            $('#input-field_author_type1').removeAttr('disabled');
+            $('#input-field_author_type2').removeAttr('disabled');
+            $('#object_doctype_list').css('display', 'block');
+            $('#object_field_link').css('display', 'none');
+            break;
+        case 'doctype':
+            $('#input-field_author_name').removeAttr('disabled');
+            $('#input-field_author_type1').removeAttr('disabled');
+            $('#input-field_author_type2').removeAttr('disabled');
+            $('#object_doctype_list').css('display', 'none');
+            $('#object_field_link').css('display', 'block');
+            break;
+    }
+
+
+    $('#select-object_type').on('change', function () {
+        switch (this.value) {
+            case 'current_document':
+                $('#input-field_author_name').val('');
+                $('#input-field_author_id').val('0');
+                $('#input-field_author_name').attr('disabled', 'disabled');
+                $('#input-field_author_type1').attr('disabled', 'disabled');
+                $('#input-field_author_type2').attr('disabled', 'disabled');
+                $('#object_doctype_list').css('display', 'none');
+                $('#object_field_link').css('display', 'none');
+                break;
+            case 'document':
+                $('#input-field_author_name').val('');
+                $('#input-field_author_id').val('0');
+                $('#input-field_author_name').attr('disabled', 'disabled');
+                $('#input-field_author_type1').attr('disabled', 'disabled');
+                $('#input-field_author_type2').attr('disabled', 'disabled');
+                $('#object_doctype_list').css('display', 'none');
+                $('#object_field_link').css('display', 'block');
+                break;
+            case 'doctype_list':
+                $('#input-field_author_name').removeAttr('disabled');
+                $('#input-field_author_type1').removeAttr('disabled');
+                $('#input-field_author_type2').removeAttr('disabled');
+                $('#object_doctype_list').css('display', 'block');
+                $('#object_field_link').css('display', 'none');
+                break;
+            case 'doctype':
+                $('#input-field_author_name').removeAttr('disabled');
+                $('#input-field_author_type1').removeAttr('disabled');
+                $('#input-field_author_type2').removeAttr('disabled');
+                $('#object_doctype_list').css('display', 'none');
+                $('#object_field_link').css('display', 'block');
+                break;
+        }
+    });
+
+    $('input[name=\'doctype_name\']').autocomplete({
+        'source': function (request, response) {
+            if (request == '{{ text_none }}') {
+                request = '';
+            }
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete&filter_name=' + encodeURIComponent(request),
+                dataType: 'json',
+                success: function (json) {
+                    json.unshift({
+                        doctype_uid: 0,
+                        name: '{{ text_none }}'
+                    });
+
+                    response($.map(json, function (item) {
+                        return {
+                            label: item['name'],
+                            value: item['doctype_uid']
+                        }
+                    }));
+                } //end success
+            }); //end ajax
+        }, //end source   
+
+        'select': function (item) {
+            if (item['value']) {
+                $('input[name=\'doctype_name\']').val(item['label']);
+                $('input[name=\'action[doctype_uid]\']').val(item['value']);
+            } else {
+                $('input[name=\'doctype_name\']').val('');
+                $('input[name=\'action[doctype_uid]\']').val('');
+            }
+        }
+    });
+
+
+
+
+</script>    
+
+

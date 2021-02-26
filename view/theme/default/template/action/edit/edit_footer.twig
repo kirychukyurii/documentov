@@ -1,0 +1,11 @@
+{% if folder_uid is not empty %}
+</div>
+{% endif %}
+<script>
+  $('#document_form').keypress(function (e) {
+    if (e.ctrlKey && (e.keyCode == 10 || e.keyCode == 13)) {
+      $('#button-save_document').trigger('click');
+    }
+  });
+  $('#tcolumn').animate({ scrollTop: 0 }, "slow");
+</script>

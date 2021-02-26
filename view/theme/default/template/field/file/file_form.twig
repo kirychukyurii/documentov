@@ -1,0 +1,108 @@
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#tab_general" data-toggle="tab">{{ tab_general }}</a></li>
+    <li><a href="#tab_additional" data-toggle="tab">{{ tab_additional }}</a></li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane fade in active" id="tab_general">
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="input-doctype_name"><span data-toggle="tooltip" title="{{ help_preview }}">{{ entry_preview }}</span></label>
+            <div class="col-sm-9">
+                  <select name="field[preview][status]" id="select-preview" class="form-control">
+                    {% if params.preview.status %}
+                    <option value="1" selected="selected">{{ text_yes }}</option>
+                    <option value="0">{{ text_no }}</option>
+                    {% else %}
+                    <option value="1">{{ text_yes }}</option>
+                    <option value="0" selected="selected">{{ text_no }}</option>
+                    {% endif %}
+                  </select>
+                  <div id="preview_params">
+                        <div class="row">
+                            <label class="col-sm-4 control-label" for="input-preview_width"><span data-toggle="tooltip" title="{{ help_preview_width }}">{{ entry_preview_width }}</span></label>
+                            <div class="col-sm-8">
+                                <input type="number" value="{{ params.preview.width }}" min="0" name="field[preview][width]" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 control-label" for="input-preview_height"><span data-toggle="tooltip" title="{{ help_preview_height }}">{{ entry_preview_height }}</span></label>
+                            <div class="col-sm-8">
+                                <input type="number" value="{{ params.preview.height }}" min="0"  name="field[preview][height]"  class="form-control">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 control-label" for="input-preview_link"><span data-toggle="tooltip" title="{{ help_preview_link }}">{{ entry_preview_link }}</span></label>
+                            <div class="col-sm-8">
+                                <select name="field[preview][link]" id="select-preview_link" class="form-control">
+                                    {% if params.preview.link %}
+                                    <option value="1" selected="selected">{{ text_yes }}</option>
+                                    <option value="0">{{ text_no }}</option>
+                                    {% else %}
+                                    <option value="1">{{ text_yes }}</option>
+                                    <option value="0" selected="selected">{{ text_no }}</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </div>
+                  </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="input-size_file"><span data-toggle="tooltip" title="{{ help_size_file }}">{{ entry_size_file }}</span></label>
+            <div class="col-sm-9">
+                <input type="number" min="0" name="field[size_file]" id="input-limit" value="{{ params.size_file }}" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="input-limit_files"><span data-toggle="tooltip" title="{{ help_limit_files }}">{{ entry_limit_files }}</span></label>
+            <div class="col-sm-9">
+                <input type="number" min="0" name="field[limit_files]" id="input-limit" value="{{ params.limit_files }}" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="input-delimiter"><span data-toggle="tooltip" title="{{ help_delimiter }}">{{ entry_delimiter }}</span></label>
+            <div class="col-sm-9">
+                <input type="text" name="field[delimiter]" id="input-delimiter" placeholder="{{ entry_delimiter }}" value="{% if params.delimiter %}{{ params.delimiter }}{% else %}, {% endif %}" class="form-control">
+            </div>
+        </div>                                
+    </div>    
+    <div class="tab-pane fade" id="tab_additional">
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span data-toggle="tooltip" title="{{ help_file_ext_allowed }}">{{ entry_file_ext_allowed }}</span></label>
+            <div class="col-sm-9">
+                <div class="text-right"><a href="" name="extes">{{ text_deselect_all }}</a></div>
+                <div style="height: 200px; overflow: auto;">
+                    <table class="table table-hover table-responsive" name="tfile_extes">
+                        {% for name,selected in file_extes %}
+                        <tr>
+                            <td{% if selected %} style="background-color:#eee;"{% endif %}>
+                                <div class="checkbox">
+                                  <label style="width: 100%;"><input type="checkbox" name="field[file_extes][]" value="{{ name }}" {% if selected %}checked{% endif %}> {{ name }}</label>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>   
+                </div>
+            </div>
+        </div>               
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span data-toggle="tooltip" title="{{ help_file_mime_allowed }}">{{ entry_file_mime_allowed }}</span></label>
+            <div class="col-sm-9">
+                <div class="text-right"><a href="" name="mimes">{{ text_deselect_all }}</a></div>
+                <div style="height: 200px; overflow: auto;">
+                    <table class="table table-hover table-responsive" name="tfile_mimes">
+                        {% for name,selected in file_mimes %}
+                        <tr>
+                            <td{% if selected %} style="background-color:#eee;"{% endif %}>
+                                <div class="checkbox">
+                                  <label style="width: 100%;"><input type="checkbox" name="field[file_mimes][]" value="{{ name }}" {% if selected %}checked{% endif %}> {{ name }}</label>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>   
+                </div>
+            </div>
+        </div>     
+    </div>                 
+</div>

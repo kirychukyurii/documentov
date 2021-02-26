@@ -1,0 +1,73 @@
+{% if inner_action_index %}
+    {% set index = inner_action_index %}
+{% endif %}
+{% set index = '_inner' %}
+
+<div class="modal-header">
+        <div class="pull-right">
+            <button type="button" class="btn btn-default" id="condition-modal-button-add{{index}}" onclick="" data-loading-text="{{ text_loading }}" data-dismiss="modal"><i class="fa fa-save"></i></button>
+            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-reply"></i></button>
+        </div>    
+        <div class="pull-left"><h4 class="modal-title text-left">{% if mode == 'add' %}{{ text_title_action_add }}{% else %}{{ text_title_action_edit }}{% endif %}</h4></div>
+    </div>
+
+    <div class="modal-body">
+        <div class="form-horizontal">
+                <div class="form-group required">
+                    <label class="col-sm-3 control-label">{{ entry_action }}</label>
+                    <div class="col-sm-9">
+                        <select name="condition-inner_action" id="select-condition-inner_action" class="form-control">                               
+                        <option value ="0">{{ text_select }}</option>
+                        {% for action in actions %}
+                            {% if action_name is not empty and action_name == action.name %}
+                             <option value = '{{ action.name }}' selected="selected">{{ action.title }}</option>    
+                            {% else %}    
+                            <option value = '{{ action.name }}'>{{ action.title }}</option>
+                            {% endif %}
+                        {% endfor %}   
+                        </select>  
+                    </div>
+                </div>                
+                  <div id="condition-form_inner_action">
+                    {{ inner_action_form }}   
+                  </div>      
+
+                  
+        </div>
+    </div>
+    <div class="modal-footer">
+            <div class="row">
+                    <div class="col-md-6 col-sm-6">
+                        <button type="button" class="btn btn-default btn-block" id="condition-modal-action-add{{index}}" onclick="" data-loading-text="{{ text_loading }}" data-dismiss="modal">{{ button_save }}</button>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                            <div style="margin-top: 15px;" class="visible-xs"></div>
+                            <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+                    </div>
+
+            </div>
+    </div>
+           
+           
+<script type="text/javascript">
+
+ 
+
+$('#select-condition-inner_action').on('change', function() {
+    $('#condition-modal-button-add_inner').show(); //некоторые действия могли скрыть кнопку Сохрания (н-р, Перенаправление)
+    $('#condition-modal-action-add_inner').show();
+    $('#condition-form_inner_action').html('');
+    var inner_action_name = $('select[name=\'condition-inner_action\']').val();
+    if (inner_action_name === "0") {
+        return;
+    }
+    
+    $.ajax({
+	url: 'index.php?route=extension/action/condition/getInnerActionForm&route_uid={{ route_uid }}&context={{ context }}&action_name=' + inner_action_name + '&doctype_uid={{doctype_uid}}',
+	dataType: 'html',
+	success: function(html) {
+            $('#condition-form_inner_action').html('<hr>' + html);
+	}
+    });
+});
+</script>

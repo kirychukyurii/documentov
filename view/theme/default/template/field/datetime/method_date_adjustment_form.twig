@@ -1,0 +1,72 @@
+<style>
+  #field_datetime_adj-block_worktime {
+    display: none;
+    margin-top: 15px;
+  }
+  .field_datetime_adj-block {
+    background-color: #f9fff9;
+    padding: 10px;
+  }
+</style>
+
+<div class="form-group field_datetime_adj-block">
+  {% import "default/template/macros/field_method_parameter.twig" as fmpar %}
+  {% set nowidget = true %}
+  {{ fmpar.show(method_params_prefix_hierarchy, method_params_name_hierarchy, 'standard_setter_param', method_params, method_data, nowidget) }}
+</div>
+{% if timetype %}
+  <div class="form-group field_datetime_adj-block">
+    <select class="form-control" id="field_datetime_adj-select_timetype" name="action{{ method_params_name_hierarchy }}[timetype][value]">
+      <option value="calendtime" {% if timetype == 'calendtime' %} selected="selected" {% endif %}>{{ text_using_calendtime }}</option>
+      <option value="worktime" {% if timetype == 'worktime'%} selected="selected" {% endif %}>{{ text_using_worktime }}</option>
+    </select>
+    <div class="container-fluid" id="field_datetime_adj-block_worktime">
+      <div class="row">
+        <div class="col-sm-3">
+          {{ text_worktime }}
+        </div>
+        <div class="col-sm-9">
+          <input type="hidden" name="action{{ method_params_name_hierarchy }}[worktime][value]" value="{{ worktime_field_uid }}" class="hidden">
+          <input type="text" value="{{ worktime_field_name }}" class="form-control field_datetime_adj-autocomplete_setting_field">
+        </div>
+      </div>
+      <div class=" row">
+        <div class="col-sm-3">
+          {{ text_holidays }}
+        </div>
+        <div class="col-sm-9">
+          <input type="hidden" name="action{{ method_params_name_hierarchy }}[holidays][value]" value="{{ holidays_field_uid }}" class="hidden">
+          <input type="text" value="{{ holidays_field_name }}" class="form-control field_datetime_adj-autocomplete_setting_field">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3">
+          {{ text_irregular_worktime }}
+        </div>
+        <div class="col-sm-9">
+          <input type="hidden" name="action{{ method_params_name_hierarchy }}[irregular_worktime][value]" value="{{ irregular_worktime_field_uid }}" class="hidden">
+          <input type="text" value="{{ irregular_worktime_field_name }}" class="form-control field_datetime_adj-autocomplete_setting_field">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      function selectTymeType() {
+        if ($('#field_datetime_adj-select_timetype').val() == 'worktime') {
+          $('#field_datetime_adj-block_worktime').slideDown(250);
+        } else {
+          $('#field_datetime_adj-block_worktime').slideUp(250);
+        }
+      };
+      selectTymeType();
+      $('#field_datetime_adj-select_timetype').on('change', function () {
+        selectTymeType();
+      });
+      // ------- АВТОКОМПЛИТЫ НАСТРОЕЧНЫХ ПОЛЕЙ ------- //
+      $('.field_datetime_adj-autocomplete_setting_field').autocomplete(Documentov.getAutocompleteField(0, 1));
+    })();
+  </script>
+
+{% endif %}

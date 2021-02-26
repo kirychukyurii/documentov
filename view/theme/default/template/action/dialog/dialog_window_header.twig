@@ -1,0 +1,25 @@
+<script type="text/javascript">
+  var field_functions = []; // массив функций, которые будут запущены перед отправкой данных на сервер
+</script>
+<div class="modal-header">
+  <div class="pull-right">
+    <button type="button" class="btn btn-default modal-button-save" onclick="save_dialog();" data-loading-text="{{ text_loading }}">
+      <i class="fa fa-save"></i>
+    </button>
+    <button class="btn btn-default" data-dismiss="modal" onclick="cancel_dialog();" type="button">
+      <i class="fa fa-reply"></i>
+    </button>
+  </div>
+  <div class="pull-left">
+    <h4 class="modal-title text-left" id="dialog_title">{{ title }}</h4>
+  </div>
+</div>
+
+
+<div class="modal-body" id="form_dialog">
+  <div class="container-fluid text-center" id="dialog_loading">
+    <i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
+    <br>
+    <span>{{ text_loading }}</span>
+  </div>
+  <div class="form-horizontal" id="dialog_form">

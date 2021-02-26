@@ -1,0 +1,47 @@
+{# клон макроса field_in_action; этот макрос добавляет в название поля с идентификаторов документа uid, а не id #}
+{% macro show(value_name, value_id, doctype_uid, name, text, field_setting=0) %}
+  {#    fields - массив выбранных полей, doctype_uid - тип документа, text - текстовки #}
+  <label class="radio-inline"><input type="radio" name="{{ name }}_type" id="input-{{ name }}_type1" {% if not field_setting %} checked="checked" {% endif%} value="0">{{ text['simple'] }}</label>
+  <label class="radio-inline"><input type="radio" name="{{ name }}_type" id="input-{{ name }}_type2" {% if field_setting %} checked="checked" {% endif%} value="1">{{ text['setting'] }}</label>
+
+  <input type="text" name="{{ name }}_name" id="input-{{ name }}_name" value="{{ value_name }}" placeholder="{{ placeholder }}" class="form-control">
+  <input type="hidden" name="action[{{ name }}_uid]" value="{{ value_id }}">
+
+
+  <script type="text/javascript">
+
+    $('input[name=\'{{ name }}_name\']').autocomplete({
+      'source': function (request, response) {
+        {% if doctype_uid %}
+          {# вызов макроса из доктайпа #}
+          doctype_uid = '{{ doctype_uid }}';
+        {% else %}
+          {# вызов макроса из журнала #}
+          doctype_uid = $('input[name=\'doctype_uid\']').val();{% endif %}if ($('input[name="{{ name }}_type"]:checked').val() === "1") {
+          doctype_uid = '0';
+        }
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid=' + doctype_uid + '&setting=' + $('input[name="{{ name }}_type"]:checked').val(),
+          dataType: 'json',
+          cache: false,
+          success: function (json) {
+            json.unshift({field_uid: 0, name: "{{ text['none'] }}"});
+            response($.map(json, function (item) {
+              return {label: item['name'], value: item['field_uid']}
+            }));
+          } // end success
+        }); // end ajax
+      }, // end source
+
+      'select': function (item) {
+        if (item['value']) {
+          $('input[name=\'{{ name }}_name\']').val(item['label']);
+          $('input[name=\'action[{{ name }}_uid]\']').val(item['value']).trigger('change');
+        } else {
+          $('input[name=\'{{ name }}_name\']').val('');
+          $('input[name=\'action[{{ name }}_uid]\']').val('').trigger('change');
+        }
+      }
+    });
+  </script>
+{% endmacro %}

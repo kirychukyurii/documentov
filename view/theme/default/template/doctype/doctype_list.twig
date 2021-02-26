@@ -1,0 +1,129 @@
+{{ header }}{{ column_left }}
+<div id="block_loading"><nobr>{{ text_loading }}</nobr></div>
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <a href="{{ add }}" data-toggle="tooltip" title="{{ button_add }}" class="btn btn-success"><i class="fa fa-plus"></i></a>
+        <button type="submit" id="button-copy" form="form-doctype" formaction="{{ copy }}" data-toggle="tooltip" title="{{ button_copy }}" class="btn btn-default" disabled="true"><i class="fa fa-copy"></i></button>
+        <button type="button" id="button-delete" form="form-doctype" formaction="{{ delete }}" data-toggle="tooltip" title="{{ button_delete }}" class="btn btn-danger" disabled="true" onclick="confirm('{{ text_confirm }}', () => { $('#form-doctype').submit(); });"><i class="fa fa-trash-o"></i></button>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+
+          <div class="panel-body">
+            <form action="{{ delete }}" method="post" enctype="multipart/form-data" id="form-doctype">
+                <input class="form-control" id="search" placeholder="{{ text_search }}" type="text" autocomplete="off" autofocus><br>
+              <div>
+                <table class="table table-bordered table-hover" id="list_doctype">
+                  <thead class="background1">
+                    <tr>
+                      <th style="width: 40px;" class="text-center"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" name="doctype_selected_all" id="check-doctype_selected_all"/></th>
+                      <th class="text-left">{% if sort == 'dd.name' %} <a href="{{ sort_name }}" class="{{ order|lower }}">{{ column_name }}</a> {% else %} <a href="{{ sort_name }}">{{ column_name }}</a> {% endif %}</th>
+                      <th class="text-left">{% if sort == 'dd.short_description' %} <a href="{{ sort_short_description }}" class="{{ order|lower }}">{{ column_description }}</a> {% else %} <a href="{{ sort_short_description }}">{{ column_description }}</a> {% endif %}</th>
+                      <th style="width:100px;" class="text-left">{% if sort == 'd.date_added' %} <a href="{{ sort_date_added }}" class="{{ order|lower }}">{{ column_created }}</a> {% else %} <a href="{{ sort_date_added }}">{{ column_created }}</a> {% endif %}</th>
+                      <th style="width:100px;" class="text-left">{% if sort == 'd.date_edited' %} <a href="{{ sort_date_edited }}" class="{{ order|lower }}">{{ column_modified }}</a> {% else %} <a href="{{ sort_date_edited }}">{{ column_modified }}</a> {% endif %}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  
+                  {% for doctype in doctypes %}
+                  <tr>
+                    <td class="text-center">{% if doctype.doctype_uid in selected %}
+                      <input type="checkbox" name="doctype_selected[]" value="{{ doctype.doctype_uid }}" checked="checked" />
+                      {% else %}
+                      <input type="checkbox" name="doctype_selected[]" value="{{ doctype.doctype_uid }}" />
+                      {% endif %}</td>
+                    <td class="text-left pointer" onclick="window.location='{{ doctype.edit }}';">{{ doctype.name }}</td>
+                    <td class="text-left pointer" onclick="window.location='{{ doctype.edit }}';">{{ doctype.description }}</td>
+                    <td class="text-left pointer small" onclick="window.location='{{ doctype.edit }}';">{{ doctype.date_added }}</td>
+                    <td class="text-left pointer small" onclick="window.location='{{ doctype.edit }}';">{{ doctype.date_edited }}</td>
+                  </tr>
+                  {% endfor %}
+                    </tbody>
+                  
+                </table>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    $('input[name*=\'doctype_selected\']').on('change', function () {
+
+        var selected = $('input[name^=\'doctype_selected\']:checked');
+        if (selected.length > 0) {
+            $('#button-copy').prop('disabled', false);
+            $('#button-delete').prop('disabled', false);
+        } else {
+            $('#button-copy').prop('disabled', true);
+            $('#button-delete').prop('disabled', true);
+        }
+    });          
+// IE and Edge fix!
+$('button[form=\'form-doctype\']').on('click', function(e) {
+	$('#form-doctype').attr('action', $(this).attr('formaction'));
+});
+  
+$('input[name=\'filter_name\']').autocomplete({
+	'source': function(request, response) {
+		$.ajax({
+			url: 'index.php?route=doctype/doctype/autocomplete&filter_name=' +  encodeURIComponent(request),
+			dataType: 'json',
+			success: function(json) {
+				response($.map(json, function(item) {
+					return {
+						label: item['name'],
+						value: item['doctype_uid']
+					}
+				}));
+			}
+		});
+	},
+	'select': function(item) {
+		$('input[name=\'filter_name\']').val(item['label']);
+	}
+});
+
+window.onbeforeunload = function (e) { 
+  $('#block_loading').show();  
+}; 
+
+$(document).ready(function(){
+  $("#search").on("keyup", function() {     
+    var value = $(this).val().toLowerCase();
+    $("#list_doctype tbody tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+    if (value) {
+       $('#check-doctype_selected_all').hide();
+    } else {
+       $('#check-doctype_selected_all').show();
+    }
+  });
+});
+
+</script></div>
+{{ footer }} 

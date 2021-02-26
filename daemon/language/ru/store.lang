@@ -1,0 +1,6 @@
+[info]
+started = Хранилище инициализировано
+
+[error]
+clone_marshal = Ошибка при клонировании объекта модуля (%T, UID=%s): %s
+clone_unmarshall = Ошибка при клонировании объекта модуля (%T, UID=%s): %s JSON: %s

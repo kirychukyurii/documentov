@@ -1,0 +1,20 @@
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
+      <h4 class="modal-title">{{ text_editor_form_image_title }}</h4>
+    </div>
+    <div class="modal-body">
+      <form enctype="multipart/form-data" id="multiple" method="post">
+        <div class="btn btn-success fileup-btn">
+          {{ button_select_file }}
+          <input id="{{ MODULE_NAME }}-file_input" type="file">
+        </div>
+        <div class="queue" id="{{ MODULE_NAME }}-file_queue"></div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary note-btn note-btn-primary note-link-btn" id="{{ MODULE_NAME }}-button_insert_image">{{ button_insert }}</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,123 @@
+<div class="form-group">
+  <label class="col-sm-3 col-md-2 control-label">
+    <span data-toggle="tooltip" title="{{ help_method_row[method_name] }}">{{ entry_method_row[method_name] }}</span>
+  </label>
+  <div class="col-sm-9 col-md-10" style="padding: 0px;">
+    {% import "default/template/macros/field_method_parameter.twig" as fmpar %}
+    {{ fmpar.show(method_params_prefix_hierarchy, method_params_name_hierarchy, 'row', method_params, method_data, true) }}
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-sm-3 col-md-2 control-label">
+    <span data-toggle="tooltip" title="{{ help_method_set_row_accordance_table }}">{{ entry_method_set_row_accordance_table }}</span>
+  </label>
+  <div class="col-sm-9 col-md-10">
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover" id="field_table-table_accordance">
+        <thead>
+          <tr>
+            <th>{{ text_column_table }}</th>
+            <th>{{ text_source_field }}</th>
+            <th style="width: 40px;">
+              <span class="btn btn-default btn-sm" data-action="add" data-toggle="tooltip" title="{{ button_add }}">
+                <i class="fa fa-plus-circle"></i>
+              </span>
+            </th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <input id="field_table-table_accordance_value" name="action{{ method_params_name_hierarchy }}[accordance][value]" type="hidden">
+    </div>
+  </div>
+</div>
+
+
+<script>
+  (function () {
+    var columns = [];
+    var accordance = [];
+    // инициализируем массив столбцов
+    {% for col in columns %}columns.push({id: '{{ col.id }}', name: '{{ col.name }}'});{% endfor %}
+    // инициализируем массив сопоставлений
+    {% for accordance in method_params.accordance %}accordance.push({columnId: '{{ accordance.columnId }}', fieldUid: '{{ accordance.fieldUid }}', fieldName: '{{ accordance.fieldName }}'});{% endfor %}
+    // ------- ОБРАБОТЧИК КНОПОК -------//
+    $('#field_table-table_accordance').on('click', function (e) {
+      if ($(e.target).parent().data('action')) {
+        var button = $(e.target).parent();
+      } else {
+        var button = $(e.target);
+      }
+      switch (button.data('action')) {
+        case 'add':
+          addAccordance();
+          break;
+        case 'del':
+          $(button).parent().parent().remove();
+        default:
+          break;
+      }
+      saveAccordance();
+    });
+
+    // ------- ФУНКЦИЯ ДОБАВЛЕНИЯ СТРОКИ ------- //
+    var addAccordance = function (columnId, fieldUid, fieldName) {
+      columnId = columnId || '';
+      fieldUid = fieldUid || '';
+      fieldName = fieldName || '';
+      var selectedFieldIds = [];
+      $.each($('#field_table-table_accordance tbody tr td select option:selected'), function () {
+        selectedFieldIds.push($(this).val());
+      });
+      var availableFields = columns.filter(function (col) {
+        return selectedFieldIds.indexOf(col.id) < 0;
+      });
+      if (! availableFields.length) {
+        alert('{{ text_no_available_fields }}');
+        return;
+      }
+
+      var tr = $('<tr>');
+      var select = $('<select>').addClass('form-control');
+      availableFields.forEach(function (col) {
+        var option = $('<option>').val(col.id);
+        if (col.id == columnId) {
+          option.attr('selected', 'selected');
+        }
+        option.html(col.name).appendTo(select);
+      });
+      $('<td>').append(select).appendTo(tr);
+      var td = $('<td>');
+      $('<input>').attr('type', 'hidden').addClass('hidden').val(fieldUid).appendTo(td);
+      $('<input>').attr('type', 'text').attr('placeholder', '{{ entry_source_field_name }}').addClass('form-control').val(fieldName).appendTo(td);
+      td.appendTo(tr);
+      var button = $('<button>').data('action', 'del').data('toggle', 'tooltip').attr('title', '{{ text_button_del_value }}').addClass('btn btn-default btn-sm');
+      $('<i>').addClass('fa fa-remove').appendTo(button);
+      $('<td>').append(button).appendTo(tr);
+
+      $('#field_table-table_accordance tbody').append(tr);
+      var lang = {
+        textNone: '{{ text_none }}'
+      };
+      $('#field_table-table_accordance input[type=\'text\']:last').autocomplete(Documentov.getAutocompleteField('{{ doctype_uid }}'));
+
+    };
+    // ------- ФУНКЦИЯ СОХРАНЕНИЯ ТАБЛИЦЫ СОПОСТАВЛЕНИЯ В JSON ------- //
+    var saveAccordance = function () {
+      var result = [];
+      $.each($('#field_table-table_accordance tbody tr'), function () {
+        result.push({columnId: $(this).find('select').val(), fieldUid: $(this).find('.hidden').val()});
+      });
+      $('#field_table-table_accordance_value').val(JSON.stringify(result));
+    };
+    // ------- ИНИЦИАЛИЗАЦИЯ СОПОСТАВЛЕНИЙ ------ //
+    if (accordance) {
+      accordance.forEach(function (acc) {
+        addAccordance(acc.columnId, acc.fieldUid, acc.fieldName);
+      });
+      saveAccordance();
+    }
+
+  })();
+</script>

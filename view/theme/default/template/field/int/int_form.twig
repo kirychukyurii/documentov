@@ -1,0 +1,26 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-delimiter"><span data-toggle="tooltip" title="{{ help_delimiter }}">{{ entry_delimiter }}</span></label>
+    <div class="col-sm-9">
+        <select name="field[delimiter]" id="input-delimiter" placeholder="{{ text_delimiter }}" class="form-control">
+            <option value="" {%if params.delimiter == "" %} selected {%endif%}>{{ text_without_delimiter }}</option>
+            <option value=" " {%if params.delimiter == " " %} selected {%endif%}>{{ text_space }} </option>
+            <option value="." {%if params.delimiter == "." %} selected {%endif%}>{{ text_dot }}</option>
+            <option value="," {%if params.delimiter == "," %} selected {%endif%}>{{ text_comma }}</option>
+        </select>
+        <br/>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-min"><span data-toggle="tooltip" title="{{ help_min }}">{{ entry_min }}</span></label>
+    <div class="col-sm-9">
+        <input type="number" name="field[min]" id="input-min" placeholder="{{ entry_min }}" class="form-control" value="{{ params.min }}"/> 
+    </div>
+
+</div>    
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-max"><span data-toggle="tooltip" title="{{ help_max }}">{{ entry_max }}</span></label>
+    <div class="col-sm-9">
+        <input type="number" name="field[max]" id="input-max" placeholder="{{ entry_max }}" class="form-control" value="{{ params.max }}"/> 
+    </div>
+</div>

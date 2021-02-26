@@ -1,0 +1,120 @@
+{{ header }}
+<div class="container-fluid">
+    <div class="pull-right">
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+    </div>    
+    <h1>{{ heading_title }}</h1>
+</div>
+<div class="container">
+    {% if error %} 
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>        
+    {% endif %}
+    {% if success %} 
+    <div class="alert alert-success alert-dismissible"><i class="fa fa-info-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>        
+    {% endif %}
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab-export" data-toggle="tab">{{ tab_export }}</a></li>
+        <li><a href="#tab-import" data-toggle="tab">{{ tab_import }}</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="tab-export">
+            <form action="{{ action_export }}" method="post" enctype="multipart/form-data" id="export">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="select-doctype"><br><span data-toggle="tooltip" title="{{ help_select_doctype }}"><br>{{ entry_select_doctype }}</span></label>
+                    <div class="col-sm-10">
+                        <div class="text-right"><br><a href="" onclick="select_alldoctype();return false;" id="link-select-doctype">{{ text_select_all }}</a></div>
+                        <div>
+                            <table class="table table-hover table-responsive table-bordered" name="table-select-doctype">
+                                <thead>
+                                    <th>{{ column_doctype }}</th>
+                                </thead>
+                                {% for doctype in doctypes %}
+                                <tr>
+                                    <td id="dt">
+                                        <div class="checkbox">
+                                          <label style="width: 100%;"><input type="checkbox" name="doctypes[]" autocomplete="off" value="{{ doctype.doctype_uid }}"> {{ doctype.name }}</label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                {% endfor %}
+                            </table>   
+                        </div>
+                    </div>
+                </div>     
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="select-folder"><span data-toggle="tooltip" title="{{ help_select_folder }}"><br>{{ entry_select_folder }}</span></label>
+                    <div class="col-sm-10">
+                        <div class="text-right"><a href="" onclick="select_allfolder();return false;" id="link-select-folder">{{ text_select_all }}</a></div>
+                        <div>
+                            <table class="table table-hover table-responsive table-bordered" name="table-select-folder">
+                                <thead>
+                                    <th>{{ column_folder }}</th>
+                                </thead>
+                                {% for folder in folders %}
+                                <tr>
+                                    <td id="dt">
+                                        <div class="checkbox">
+                                          <label style="width: 100%;"><input type="checkbox" name="folders[]" autocomplete="off" value="{{ folder.folder_uid }}"> {{ folder.name }}</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </table>   
+                        </div>
+                    </div>
+                </div>                            
+                <button type="submit" class="btn btn-success" form="export">{{ button_upload }}</button><br><br><br>
+            </form>                
+        </div>
+        <div class="tab-pane" id="tab-import">
+             <form action="{{ action_import }}" method="post" enctype="multipart/form-data" id="import">
+                <input name="import_file" id="input_import_file" type="file" accept="application/zip"><br>
+                <div class="checkbox">
+                    <label><input type="checkbox" name="force" autocomplete="off" value="1"> {{ text_force }}</label>
+                </div>                
+                <br><br>
+                <button type="submit" class="btn btn-success" form="import">{{ button_download }}</button><br><br><br>
+             </form>    
+        </div>
+    </div>    
+</div>      
+<script type="text/javascript">
+    $('input[name*=\'doctypes\']').on('click', function() {
+        if (this.checked) {
+            $(this).parent().parent().parent().parent().css('background-color', '#eee');
+        } else {
+            $(this).parent().parent().parent().parent().children('#dc').children().children().children().prop('checked', '');
+            $(this).parent().parent().parent().parent().css('background-color', '');
+        } 
+    });
+
+    
+    function select_alldoctype() {
+        if ($('#link-select-doctype').html() === '{{ text_deselect_all }}') {
+            $('input[name*=\'doctypes\']').prop('checked', '');
+            $('table[name=\'table-select-doctype\'] td').css('background-color','');
+            $('#link-select-doctype').html('{{ text_select_all }}');        
+        } else {
+            $('input[name*=\'doctypes\']').prop('checked', 'checked');
+            $('table[name=\'table-select-doctype\'] td').css('background-color','#eee');
+            $('#link-select-doctype').html('{{ text_deselect_all }}');              
+        }  
+    }    
+    function select_allfolder() {
+        if ($('#link-select-folder').html() === '{{ text_deselect_all }}') {
+            $('input[name*=\'folders\']').prop('checked', '');
+            $('table[name=\'table-select-folder\'] td').css('background-color','');
+            $('#link-select-folder').html('{{ text_select_all }}');        
+        } else {
+            $('input[name*=\'folders\']').prop('checked', 'checked');
+            $('table[name=\'table-select-folder\'] td').css('background-color','#eee');
+            $('#link-select-folder').html('{{ text_deselect_all }}');              
+        }  
+    }
+</script>                           
+{{ footer }}

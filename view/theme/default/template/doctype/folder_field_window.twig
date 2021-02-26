@@ -1,0 +1,440 @@
+<div class="modal-header text-right">
+  <div class="pull-right">
+    <button type="button" class="btn btn-default" id="modal-button-add" onclick="{% if folder_field_uid is empty %}add{% else %}edit{% endif %}();" data-loading-text="{{ text_loading }}">
+      <i class="fa fa-save"></i>
+    </button>
+    <button class="btn btn-default" data-dismiss="modal" type="button">
+      <i class="fa fa-reply"></i>
+    </button>
+  </div>
+  <div class="pull-left">
+    <h4 class="modal-title text-left">{{ text_title_field_list }}
+      {{ field_name }}</h4>
+  </div>
+</div>
+
+<div class="modal-body">
+  <div class='form-horizontal' id="form_field">
+    <div class="form-group">
+      <label class="col-sm-3 control-label">{{ entry_field_field }}</label>
+      <div class="col-sm-9">
+        <select class="form-control" id="select-field_field{{ language.language_id }}" name="field_field_uid">
+          <option value="0">{{ text_select }}</option>
+          {% for field in add_fields %}
+            <option value='{{ field.field_uid }}' {% if field.field_uid == field_uid %} selected="selecred" {% endif %}>{{ field.field_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <hr>
+    <ul class="nav nav-tabs">
+      <li {% if part != 'group' %} class="active" {% endif %}>
+        <a data-toggle="tab" href="#field_table">{{ column_table }}</a>
+      </li>
+      <li {% if part == 'group' %} class="active" {% endif %}>
+        <a data-toggle="tab" href="#field_group">{{ column_grouping }}</a>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane fade{% if part != 'group' %} in active{% endif %}" id="field_table">
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="select-field_tcolumn">
+            <span data-toggle="tooltip" title="{{ help_field_tcolumn }}">{{ entry_field_tcolumn }}</span>
+          </label>
+          <div class="col-sm-9">
+            <select class="form-control" id="select-field_tcolumn" name="field_tcolumn">
+              {% if tcolumn %}
+                <option value="0">{{ text_no }}</option>
+                <option selected="selected" value="1">{{ text_yes}}</option>
+              {% else %}
+                <option selected="selected" value="0">{{ text_no }}</option>
+                <option value="1">{{ text_yes }}</option>
+              {% endif %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="select-field_tcolumn_hidden">
+            <span data-toggle="tooltip" title="{{ help_field_tcolumn_hidden }}">{{ entry_field_tcolumn_hidden }}</span>
+          </label>
+          <div class="col-sm-9">
+            <select class="form-control" id="select-field_tcolumn_hidden" name="field_tcolumn_hidden">
+              {% if tcolumn_hidden %}
+                <option selected="selected" value="1">{{ text_no }}</option>
+                <option value="0">{{ text_yes}}</option>
+              {% else %}
+                <option value="1">{{ text_no }}</option>
+                <option selected="selected" value="0">{{ text_yes }}</option>
+              {% endif %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="input-field_tcolumn_name">
+            <span data-toggle="tooltip" title="{{ help_field_tcolumn_name }}">{{ entry_field_tcolumn_name }}</span>
+          </label>
+          <div class="col-sm-9">
+            <input type="text" name="field_tcolumn_name" id="input-field_tcolumn_name" value="{{ tcolumn_name }}" class="form-control" placeholder="{{ entry_field_tcolumn_name }}"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="input-field_tcolumn_width">
+            <span data-toggle="tooltip" title="{{ help_field_tcolumn_width }}">{{ entry_field_tcolumn_width }}</span>
+          </label>
+          <div class="col-sm-9">
+            <input type="text" name="field_tcolumn_width" id="input-field_tcolumn_width" value="{{ tcolumn_width }}" class="form-control" placeholder="{{ entry_field_tcolumn_width }}"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="select-field_tcolumn_total">
+            <span data-toggle="tooltip" title="{{ help_field_tcolumn_total }}">{{ entry_field_tcolumn_total }}</span>
+          </label>
+          <div class="col-sm-9">
+            <select class="form-control" id="select-field_tcolumn_total" name="field_tcolumn_total">
+              {% if tcolumn_total %}
+                <option selected="selected" value="1">{{ text_yes }}</option>
+                <option value="0">{{ text_no }}</option>
+              {% else %}
+                <option value="1">{{ text_yes }}</option>
+                <option selected="selected" value="0">{{ text_no }}</option>
+              {% endif %}
+            </select>
+          </div>
+        </div>
+
+      </div>
+      <div class="tab-pane fade{% if part == 'group' %} in active{% endif %}" id="field_group">
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="select-field_grouping">
+            <span data-toggle="tooltip" title="{{ help_field_grouping }}">{{ entry_field_grouping }}</span>
+          </label>
+          <div class="col-sm-9">
+            <select class="form-control" id="select-field_grouping" name="field_grouping">
+              {% if grouping %}
+                <option value="0">{{ text_no }}</option>
+                <option selected="selected" value="1">{{ text_yes}}</option>
+              {% else %}
+                <option selected="selected" value="0">{{ text_no }}</option>
+                <option value="1">{{ text_yes }}</option>
+              {% endif %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="input-field_grouping_name">
+            <span data-toggle="tooltip" title="{{ help_field_grouping_name }}">{{ entry_field_grouping_name }}</span>
+          </label>
+          <div class="col-sm-9">
+            <input type="text" name="field_grouping_name" id="input-field_grouping_name" value="{{ grouping_name }}" class="form-control" placeholder="{{ entry_field_grouping_name }}"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="select-field_content_grouping">
+            <span data-toggle="tooltip" title="{{ help_content_grouping }}">{{entry_content_grouping }}</span>
+          </label>
+          <div class="col-sm-9">
+            <select class="form-control" id="select-field_content_grouping" name="field_content_grouping">
+              {% if grouping_tree_uid %}
+                <option value="list">{{ text_content_grouping_list }}</option>
+                <option selected="selected" value="tree">{{ text_content_grouping_tree }}</option>
+              {% else %}
+                <option selected="selected" value="list">{{ text_content_grouping_list }}</option>
+                <option value="tree">{{ text_content_grouping_tree }}</option>
+              {% endif %}
+            </select>
+
+            <select class="form-control" id="select-field_content_tree_field" name="field_grouping_tree_uid">
+              <option value="0">{{ text_select }}</option>
+              {% for field in fields %}
+                <option value='{{ field.field_uid }}' {% if field.field_uid == grouping_tree_uid %} selected="selecred" {% endif %}>{{ field.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="select-field_grouping_parent">
+            <span data-toggle="tooltip" title="{{ help_field_grouping_parent }}">{{entry_field_grouping_parent }}</span>
+          </label>
+          <div class="col-sm-9">
+            <select class="form-control" id="select-field_grouping_parent" name="field_grouping_parent_uid">
+              <option value="0">{{ text_no_parent }}</option>
+              {% for field in grouping_parents %}
+                {% if field.folder_field_uid != folder_field_uid and field.grouping_parent_uid != folder_field_uid %}
+                  <option value='{{ field.folder_field_uid }}' {% if field.folder_field_uid == grouping_parent_uid %} selected="selecred" {% endif %}>{{ field.field_name }}
+                    {% if field.grouping_name is not empty %}
+                      ({{ field.grouping_name }})
+                    {% endif %}
+                  </option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <div class="row">
+    <div class="col-md-3 col-sm-6">
+      <button type="button" class="btn btn-default btn-block" id="modal-button-add" onclick="{% if folder_field_uid is empty %}add{% else %}edit{% endif %}();" data-loading-text="{{ text_loading }}">
+        {% if folder_field_uid in empty %}
+          {{ button_add }}
+        {% else %}
+          {{ button_save }}
+        {% endif %}
+      </button>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="visible-xs" style="margin-top: 15px;"></div>
+      <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+  if ($('#select-field_field').val() !== "0") {
+    $('#select-field_tcolumn').removeAttr('disabled');
+    $('#select-field_grouping').removeAttr('disabled');
+  } else {
+    $('#select-field_tcolumn').attr('disabled', 'disabled');
+    $('#select-field_grouping').attr('disabled', 'disabled');
+  }
+
+  if ($('#select-field_grouping').val() == '1') {
+    $('#input-field_grouping_name').removeAttr('disabled');
+    $('#select-field_grouping_parent').removeAttr('disabled');
+    $('#select-field_content_grouping').removeAttr('disabled');
+    if ($('#select-field_content_grouping').val() === 'tree') {
+      $('#select-field_content_tree_field').removeAttr('disabled');
+      $('#select-field_grouping_parent').attr('disabled', 'disabled');
+    } else {
+      $('#select-field_content_tree_field').attr('disabled', 'disabled');
+      $('#select-field_grouping_parent').removeAttr('disabled');
+    }
+  } else {
+    $('#input-field_grouping_name').attr('disabled', 'disabled');
+    $('#select-field_grouping_parent').attr('disabled', 'disabled');
+    $('#select-field_content_grouping').attr('disabled', 'disabled');
+    $('#select-field_content_tree_field').attr('disabled', 'disabled');
+  }
+
+  if ($('#select-field_tcolumn').val() === '1') {
+    if ($('#select-field_tcolumn_hidden').val() != '1') {
+      $('#input-field_tcolumn_name').removeAttr('disabled');
+      $('#select-field_tcolumn_total').removeAttr('disabled');
+    } else {
+      $('#input-field_tcolumn_name').attr('disabled', 'disabled');
+      $('#select-field_tcolumn_total').attr('disabled', 'disabled');
+    }
+    $('#select-field_tcolumn_hidden').removeAttr('disabled');
+  } else {
+    $('#input-field_tcolumn_name').attr('disabled', 'disabled');
+    $('#select-field_tcolumn_total').attr('disabled', 'disabled');
+    $('#select-field_tcolumn_hidden').attr('disabled', 'disabled');
+  }
+
+  $('#select-field_tcolumn_hidden').on('change', function () {
+    if (this.value === '1') {
+      $('#input-field_tcolumn_name').attr('disabled', 'disabled');
+      $('#select-field_tcolumn_total').attr('disabled', 'disabled');
+    } else {
+      $('#input-field_tcolumn_name').removeAttr('disabled');
+      $('#select-field_tcolumn_total').removeAttr('disabled');
+    }
+  });
+
+  $('#select-field_grouping').on('change', function () {
+    if (this.value === '1') {
+      $('#input-field_grouping_name').removeAttr('disabled');
+      $('#select-field_grouping_parent').removeAttr('disabled');
+      $('#select-field_content_grouping').removeAttr('disabled');
+      if (!$('#input-field_grouping_name').val()) {
+        $('#input-field_grouping_name').val($('#select-field_field option:selected').text());
+      }
+      if ($('#select-field_content_grouping').val() === 'tree') {
+        $('#select-field_content_tree_field').removeAttr('disabled');
+        $('#select-field_grouping_parent').attr('disabled', 'disabled');
+      }
+    } else {
+      $('#input-field_grouping_name').attr('disabled', 'disabled');
+      $('#select-field_grouping_parent').attr('disabled', 'disabled');
+      $('#select-field_content_grouping').attr('disabled', 'disabled');
+      $('#select-field_content_tree_field').attr('disabled', 'disabled');
+    }
+  });
+
+  if ($('#select-field_grouping_parent').val() === '1') {
+    $('#input-field_grouping_name').removeAttr('disabled');
+  }
+
+  $('#select-field_grouping_parent').on('change', function () {
+    if (this.value === '0') {
+      $('#input-field_grouping_name').removeAttr('disabled');
+    } else {
+      $('#input-field_grouping_name').attr('disabled', 'disabled');
+    }
+  });
+
+  $('#select-field_content_grouping').on('change', function () {
+    if (this.value === 'tree') {
+      $('#select-field_content_tree_field').removeAttr('disabled');
+      $('#select-field_grouping_parent').attr('disabled', 'disabled');
+    } else {
+      $('#select-field_content_tree_field').attr('disabled', 'disabled');
+      $('#select-field_grouping_parent').removeAttr('disabled');
+    }
+  });
+
+  $('#select-field_tcolumn').on('change', function () {
+    if (this.value === '1') {
+      $('#select-field_tcolumn_hidden').removeAttr('disabled');
+      $('#input-field_tcolumn_name').removeAttr('disabled');
+      $('#select-field_tcolumn_total').removeAttr('disabled');
+      if (!$('#input-field_tcolumn_name').val()) {
+        $('#input-field_tcolumn_name').val($('#select-field_field option:selected').text());
+      }
+    } else {
+      $('#select-field_tcolumn_hidden').attr('disabled', 'disabled');
+      $('#input-field_tcolumn_name').attr('disabled', 'disabled');
+      $('#select-field_tcolumn_total').attr('disabled', 'disabled');
+    }
+  });
+  $('#select-field_field').on('change', function () {
+    if (this.value) {
+      $('#select-field_tcolumn').removeAttr('disabled');
+      $('#select-field_grouping').removeAttr('disabled');
+      if (!$('#input-field_grouping_name').val() && !$('#input-field_grouping_name').attr('disabled')) {
+        $('#input-field_grouping_name').val($('#select-field_field option:selected').text());
+      }
+      if (!$('#input-field_tcolumn_name').val() && !$('#input-field_tcolumn_name').attr('disabled')) {
+        $('#input-field_tcolumn_name').val($('#select-field_field option:selected').text());
+      }
+    } else {
+      $('#select-field_tcolumn').attr('disabled', 'disabled');
+      $('#select-field_grouping').attr('disabled', 'disabled');
+    }
+  });
+
+
+  function add() {
+    if ($('#select-field_field').val() == '0') {
+      alert('{{ text_field_not_selected }}');
+      return false;
+
+    }
+    if ($('#select-field_tcolumn').val() == '0' && $('#select-field_grouping').val() == '0') {
+      alert('{{ text_field_not_shows }}');
+      return false;
+    }
+    $.ajax({
+      url: 'index.php?route=doctype/folder/add_field&folder_uid={{ folder_uid }}&language_id={{ language_id }}',
+      type: 'post',
+      cache: false,
+      data: $('#form_field input[type=\'text\'], #form_field input[type=\'hidden\'], #form_field input[type=\'radio\']:checked, #form_field input[type=\'checkbox\']:checked, #form_field select, #form_field textarea, #input-field_type, #input-field_name'),
+      dataType: 'json',
+      beforeSend: function () {
+        $('#modal-button-add').button('loading');
+      },
+      success: function (json) {
+        if (json['grouping'] > 0) {
+          html = '<tr id="gfield-row' + json['folder_field_uid'] + '" class="new_element">' + '<td class="text-left pointer" onclick="editField(\'' + json['folder_field_uid'] + '\',\'group\');"';
+          if (json['grouping_level'] > 0) {
+            html += ' style="padding-left:30px;"';
+          }
+          html += '>';
+          html += json['field_name'] + '</td><td class="text-left pointer" onclick="editField(\'' + json['folder_field_uid'] + '\',\'group\');">' + json['grouping_name'] + '</td><td class="text-left pointer" onclick="editField(\'' + json['folder_field_uid'] + '\',\'group\');">' + json['grouping_content'] + '</td>' + '<td class="text-right" id="gfield-row-button' + json['folder_field_uid'] + '">' + '<button type="button" class="btn btn-default" onclick="up(this, \'move_field&field_uid=' + json['folder_field_uid'] + '&grouping=1\');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ' + '<button type="button" class="btn btn-default" onclick="down(this, \'move_field&field_uid=' + json['folder_field_uid'] + '&grouping=1\');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ' + '<button type="button" class="btn btn-default" onclick="removeField(\'' + json['folder_field_uid'] + '\');" data-toggle="tooltip" title="{{ button_remove }}"><i class="fa fa-minus-circle"></i></button>' + '</td></tr>';
+          if (json['grouping_prev_folder_field_uid'] > 1) {
+            $('#gfield-row' + json['grouping_prev_folder_field_uid']).after(html);
+          } else {
+            $('#grouping_fields_table{{ language_id }} tbody').append(html);
+          }
+        }
+        if (json['tcolumn'] > 0) {
+          html = '<tr id="tfield-row' + json['folder_field_uid'] + '" class="new_element">' + '<td class="text-left pointer" onclick="editField(\'' + json['folder_field_uid'] + '\',\'table\');">' + json['field_name'] + '</td>' + '<td class="text-left pointer" onclick="editField(\'' + json['folder_field_uid'] + '\',\'table\');">';
+          if (json['tcolumn_name']) {
+            html += json['tcolumn_name'];
+          } else {
+            html += '<span style="color:#ccc;">{{ text_name_not_select }}</span>';
+          }
+          html += '</td>' + '<td class="text-left pointer">' + '   <label class="radio-inline text-center" style="width: 100%;">' + '       <input name="default_sort[{{ language_id }}]" value="' + json['folder_field_uid'] + '" type="radio" class="autosave" onclick="$(\'#select_default_sort_order\').remove(); $(this).parent().append(\'' + '<a id=\\\'select_default_sort_order\\\' class=\\\'asc\\\' onclick=\\\'orderDefaultSort(this, {{ language_id }});return false;\\\'></a>' + '\');">' + '   </label>' + '</td>' + '<td class="text-right" id="tfield-row-button' + json['folder_field_uid'] + '">' + '<button type="button" class="btn btn-default" onclick="up(this, \'move_field&field_uid=' + json['folder_field_uid'] + '&tcolumn=1\');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ' + '<button type="button" class="btn btn-default" onclick="down(this, \'move_field&field_uid=' + json['folder_field_uid'] + '&tcolumn=1\');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ' + '<button type="button" class="btn btn-default" onclick="removeField(\'' + json['folder_field_uid'] + '\');" data-toggle="tooltip" title="{{ button_remove }}"><i class="fa fa-minus-circle"></i></button></td></tr>';
+          $('#tcolumn_fields_table{{ language_id }} tbody').append(html);
+        }
+        $('#modal-afield').modal('hide');
+      }
+    })
+  }
+
+
+  function edit() {
+    if ($('#select-field_field').val() == '0') {
+      alert('{{ text_field_not_selected }}');
+      return false;
+
+    }
+    if ($('#select-field_tcolumn').val() == '0' && $('#select-field_grouping').val() == '0') {
+      alert('{{ text_field_not_shows }}');
+      return false;
+    }
+    $.ajax({
+      url: 'index.php?route=doctype/folder/edit_field&folder_field_uid={{ folder_field_uid }}',
+      type: 'post',
+      cache: false,
+      data: $('#form_field input[type=\'text\'], #form_field input[type=\'hidden\'], #form_field input[type=\'radio\']:checked, #form_field input[type=\'checkbox\']:checked, #form_field select, #form_field textarea, #input-field_type, #input-field_name'),
+      dataType: 'json',
+      beforeSend: function () {
+        $('#modal-button-add').button('loading');
+      },
+      success: function (json) {
+        if (json['grouping'] > 0) {
+          html = '<td class="text-left pointer" onclick="\'editField(\'' + json['folder_field_uid'] + '\',\'group\');"';
+          if (json['grouping_level'] > 0) {
+            html += ' style="padding-left:30px;"';
+          }
+          html += '>';
+          html += json['field_name'] + '</td>' + '<td class="text-left pointer" onclick="editField(\'' + json['folder_field_uid'] + '\',\'group\');">' + json['grouping_name'] + '</td><td class="text-left pointer" onclick="editField(\'' + json['folder_field_uid'] + '\',\'group\');">' + json['grouping_content'] + '</td>' + '<td class="text-right" id="gfield-row-button' + json['folder_field_uid'] + '">' + '<button type="button" class="btn btn-default" onclick="up(this, \'move_field&field_uid=' + json['folder_field_uid'] + '&grouping=1\');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ' + '<button type="button" class="btn btn-default" onclick="down(this, \'move_field&field_uid=' + json['folder_field_uid'] + '&grouping=1\');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ' + '<button type="button" class="btn btn-default" onclick="removeField(\'' + json['folder_field_uid'] + '\');" data-toggle="tooltip" title="{{ button_remove }}"><i class="fa fa-minus-circle"></i></button>' + '</td>';
+          if (json['grouping_prev_folder_field_uid'] !== json['folder_field_uid'] && json['grouping_prev_folder_field_uid']) {
+            if ($('tr').is('#gfield-row' + json['grouping_prev_folder_field_uid'])) {
+              $('#gfield-row' + json['folder_field_uid']).remove();
+              $('#gfield-row' + json['grouping_prev_folder_field_uid']).after('<tr id="gfield-row' + json['folder_field_uid'] + '" class="new_element">' + html + '</tr>');
+            }
+          } else {
+            if ($('tr').is('#gfield-row' + json['folder_field_uid'])) {
+              $('#gfield-row' + json['folder_field_uid']).html(html);
+            } else {
+              $('#grouping_fields_table{{ language_id }} tbody').append('<tr id="gfield-row' + json['folder_field_uid'] + '">' + html + '</tr>');
+            }
+          }
+          $('#gfield-row' + json['folder_field_uid']).addClass('new_element');
+
+        } else { // группировки нет, на всякий случай удаляем поле из таблицы группировки (если до редактирования группировка была включена)
+          $('#gfield-row' + json['folder_field_uid']).remove();
+        }
+        if (json['tcolumn'] > 0) {
+          html = '<td class="text-left pointer" onclick="editField(\'' + json['folder_field_uid'] + '\',\'table\');">' + json['field_name'] + '</td>' + '<td class="text-left  pointer" onclick="editField(\'' + json['folder_field_uid'] + '\',\'table\');">';
+          if (json['tcolumn_name']) {
+            html += json['tcolumn_name'];
+          } else {
+            html += '<span style="color:#ccc;">{{ text_name_not_select }}</span>';
+          }
+          html += '</td>' + '<td class="text-left pointer">' + '   <label class="radio-inline text-center" style="width: 100%;">' + '       <input name="default_sort[{{ language_id }}]" value="' + json['folder_field_uid'] + '" type="radio" class="autosave" onclick="$(\'#select_default_sort_order\').remove(); $(this).parent().append(\'' + '<a id=\\\'select_default_sort_order\\\' class=\\\'asc\\\' onclick=\\\'orderDefaultSort(this, {{ language_id }});return false;\\\'></a>' + '\');">' + '   </label>' + '</td>' + '<td class="text-right" id="tfield-row-button' + json['folder_field_uid'] + '">' + '<button type="button" class="btn btn-default" onclick="up(this, \'move_field&field_uid=' + json['folder_field_uid'] + '&tcolumn=1\');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ' + '<button type="button" class="btn btn-default" onclick="down(this, \'move_field&field_uid=' + json['folder_field_uid'] + '&tcolumn=1\');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ' + '<button type="button" class="btn btn-default" onclick="removeField(\'' + json['folder_field_uid'] + '\');" data-toggle="tooltip" title="{{ button_remove }}"><i class="fa fa-minus-circle"></i></button></td>';
+          if ($('tr').is('#tfield-row' + json['folder_field_uid'])) {
+            $('#tfield-row' + json['folder_field_uid']).html(html);
+            $('#tfield-row' + json['folder_field_uid']).addClass('new_element');
+          } else {
+            $('#tcolumn_fields_table{{ language_id }} tbody').append('<tr id="tfield-row' + json['folder_field_uid'] + '" class="new_element">' + html + '</tr>');
+          }
+
+        } else { // отображение в таблице журнала отключено, удаляем поле из таблицы таб.части (может, ранее поле было в таб. части)
+          $('#tfield-row' + json['folder_field_uid']).remove();
+        }
+        $('#modal-afield').modal('hide');
+      }
+    });
+  };
+
+  $('#field_language a:first').tab('show');
+
+  // -->
+</script>

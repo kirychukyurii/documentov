@@ -1,0 +1,127 @@
+<hr>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-field_recipient_name">
+          {{ entry_field_recipient }}
+        </label>
+        <div class="col-sm-9">         
+                {% import "default/template/macros/field_in_action_uid.twig" as mfield %}
+                {{ mfield.show(recipient_field_name, action.recipient_field_uid, doctype_uid, 'recipient_field', text_macros_field) }}                
+        </div>
+      </div>
+      <div class="form-group" id="target_doclink_field">                    
+            <label class="col-sm-3 control-label" for="input-target_doclink_field_name">
+              <span data-toggle="tooltip" title="{{help_target_doclink}}">{{text_target_doclink}}</span>
+            </label>
+            <div class="col-sm-9">     
+              <input type="text" name="target_doclink_field_name" id="input-target_doclink_field_name" placeholder="{{entry_target_doclink}}" class="form-control" value="{{target_doclink_field_name}}" {%if target_doclink_field_setting %} style="font-style:italic" {%endif%}>
+              <input type="hidden" name="action[target_doclink_field_uid]"  id="input-target_doclink_field_uid" value="{{action.target_doclink_field_uid}}">
+            </div>    
+      </div>
+        
+      <div class="form-group">
+            <label class="col-sm-3 control-label" for="select-action_type">
+              <span data-toggle="tooltip" title="{{ help_action_type }}">{{ entry_action_type }}</span>
+            </label>
+            <div class="col-sm-9">  
+              <select class="form-control" name="action[action_type]" id="select-action_type">
+                <option value="add" {% if action.action_type == 'add' %}selected="selected"{% endif %}>{{ text_action_type_add }}</option>                            
+                <option value="remove"  {% if action.action_type == 'remove' %}selected="selected"{% endif %}>{{ text_action_type_remove }}</option>
+              </select>
+            </div>
+      </div>    
+
+
+      <div id='block-notification_content'{% if action.action_type == 'remove' %} style="display:none" {%endif%}>  
+      <ul class="nav nav-tabs" id="notification_template_language">
+        {% for language in languages %}
+        <li><a href="#notification_template_language{{ language.language_id }}" data-toggle="tab"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>
+        {% endfor %}
+      </ul>   
+      <div class="tab-content">  
+        {% for language in languages %}                        
+        <div class="tab-pane fade" id="notification_template_language{{ language.language_id }}" >
+          <div class="form-group notification_template_language" {% if action.action_type == 'remove' %} style="display:none" {%endif%}>    
+            <label class="col-sm-3 control-label" for="input-notification_template{{ language.language_id }}"><span data-toggle="tooltip" title="{{help_template_message}}">{{entry_template_message}}</span></label>
+            <div class="col-sm-9">     
+                <div class="input-group">
+                    <input type="text" class="form-control" id="input-notification_template{{ language.language_id }}" name="action[notification_template][{{ language.language_id }}]" value="{{ action.notification_template[language.language_id] }}">
+                    <div class="input-group-btn">
+                        <div class="dropup">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ text_fields }} <span class="caret"></span></button>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                  {% for field in fields %}  
+                                  <li><a onclick="$('#input-notification_template{{ language.language_id }}').val($('#input-notification_template{{ language.language_id }}').val() + ' ' + $(this).html());return false;" href="">{{ '{{ ' }}{{ field.name }}{{ ' }}' }}</a></li>
+                                  {% endfor %}
+                                </ul>
+                          </div>                      
+                    </div>
+                </div>                
+            </div>    
+          </div>            
+        </div>        
+        {% endfor %}
+      </div>  
+    </div>         
+<script type="text/javascript">
+    $('#notification_template_language a:first').tab('show');
+    
+    $('#input-target_doclink_field_name').autocomplete({
+        'source': function (request, response) {
+            if (request === '{{text_currentdoc}}')
+                request = '';
+            var regexp = new RegExp('{{text_by_link_in_field}}');
+            request = request.replace(regexp, '').trim().replace(/\"/g, '');
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+                dataType: 'json',
+                cache: false,
+                success: function (json) {
+                    json.unshift({
+                        field_uid: "0",
+                        name: '{{text_currentdoc}}'
+                    });
+                    response($.map(json, function (item) {
+                        var result = {
+                            value: item['field_uid'],
+                            label: item['name']
+                        };
+                        if (item['field_uid'] && item['field_uid'] !== "0") {
+                            if (item['setting'] === "1") {
+                                result['setting'] = 1;
+                                result['label'] = '<span style="font-style:italic">{{text_by_link_in_field}} "' + item['name'] + '"</span>';
+                            } else {
+                                result['label'] = '{{text_by_link_in_field}} "' + item['name'] + '"';
+                            }
+                        }
+                        return result;
+                    }));
+                } //end success
+            }); //end ajax
+        }, //end source   
+        'select': function (item) {
+            var label = item['label'];
+            if (item['setting'] === 1) {
+                $('#input-target_doclink_field_name').css("font-style", "italic");
+                label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+            } else {
+                $('#input-target_doclink_field_name').css("font-style", "");
+            }           
+            $('#input-target_doclink_field_name').val(label);
+            $('#input-target_doclink_field_uid').val(item['value']);
+        }
+    });
+    
+    $('#select-action_type').on('change', function() {
+       if ($(this).val() === 'remove') {
+           $('.notification_template_language').css("display", "none");
+           $('#block-notification_content').css("display", "none");
+       }
+       else {
+            $('.notification_template_language').css("display", "block");
+            $('#block-notification_content').css("display", "block");
+       };
+    });
+</script>    
+        
+        
+        

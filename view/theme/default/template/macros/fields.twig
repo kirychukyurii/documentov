@@ -1,0 +1,58 @@
+{% macro show(fields, doctype_uid, name, text) %}
+{#    fields - массив выбранных полей, doctype_uid - тип документа, text - текстовки #}
+
+    <label class="radio-inline"><input type="radio" name="{{ name }}_type" checked="checked" value="0"> {{ text['simple'] }}</label> &nbsp; &nbsp;
+    <label class="radio-inline" style="margin-left: 0px;"><input type="radio" name="{{ name }}_type" value="1"> {{ text['setting'] }}</label>
+    
+    <input type="text" name="{{ name }}_name" placeholder="{{ text['placeholder'] }}" id="input-{{ name }}_name" class="form-control" />
+    <div id="{{ name }}_div" class="well well-sm" style="height: auto; overflow: auto;"> 
+    {% for field in fields %}
+        <div id="{{ name }}"><i class="fa fa-minus-circle"></i> 
+            {{ field.name }} <input type="hidden" name="{{ name }}[]" value="{{ field.field_uid }}" />
+        </div> 
+    {% endfor %}
+    </div>
+
+    
+    <script type="text/javascript">
+        
+    $('input[name=\'{{ name }}_name\']').autocomplete({
+	'source': function(request, response) {
+            if ($('input[name="{{ name }}_type"]:checked').val() == 1) {
+                var f_doctype_uid = 0;
+            } else {
+                {% if doctype_uid %}
+                {# вызов макроса из доктайпа #}              
+                var f_doctype_uid = '{{ doctype_uid }}';
+                {% else %}
+                {# вызов макроса из журнала #}    
+                var f_doctype_uid = $('input[name=\'doctype_uid\']').val();
+                {% endif %}                
+            }               
+            $.ajax({
+		url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' +  encodeURIComponent(request) + '&doctype_uid=' + f_doctype_uid + '&setting=' + $('input[name="{{ name }}_type"]:checked').val(),
+		dataType: 'json', cache:false, 
+		success: function(json) {
+                    response($.map(json, function(item) {
+                        return {
+                            label: item['name'],
+                            value: item['field_uid']
+                        }
+                    }));
+		}
+            });
+	},
+	'select': function(item) {
+		$('input[name=\'{{ name }}_div\']').val('');
+
+		$('#{{ name }}_div' + item['value']).remove();
+
+		$('#{{ name }}_div').append('<div id="{{ name }}' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="{{ name }}[]" value="' + item['value'] + '" /></div>');
+	}
+    });
+
+    $('#{{ name }}_div').delegate('.fa-minus-circle', 'click', function() {
+	$(this).parent().remove();
+    });        
+    </script>
+{% endmacro %}

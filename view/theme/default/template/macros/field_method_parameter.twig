@@ -1,0 +1,295 @@
+{% macro show(method_params_prefix_hierarchy, method_params_name_hierarchy, param_name, params, method_data, nowidget) %}
+  <!-- параметр метода -->
+  {% set param_prefix = "#{method_params_prefix_hierarchy}_#{param_name}" %}
+  {% if not param_field_method_type %}
+    {% set param_field_method_type = 'getter' %}
+  {% endif %}
+  {% if nowidget == true %}
+    {% set widget_field_uid = '' %}
+  {% else %}
+    {% set widget_field_uid = method_data.widget_field_uid %}
+  {% endif %}
+
+
+  <div>
+    <div id="{{ param_prefix }}_type">
+
+      <div>
+        <div class="text-left">
+          <span data-toggle="tooltip" title="{{ method_data.info.help_source_type }}">
+            <strong>{{ method_data.info.text_source_type }}</strong>
+          </span>
+        </div>
+        <select name="action{{ method_params_name_hierarchy }}[{{ param_name }}][type]" id="{{ param_prefix }}_select-type" class="form-control">
+          <option value="document" {% if params[param_name].type == 'document' %} selected="selected" {% endif %}>{{ method_data.info.text_source_type_document }}</option>
+          <option value="doctype" {% if params[param_name].type == 'doctype' %} selected="selected" {% endif %}>{{ method_data.info.text_source_type_doctype }}</option>
+          <option value="variable" {% if params[param_name].type == 'variable' %} selected="selected" {% endif %}>{{ method_data.info.text_source_type_variable }}</option>
+          <option value="value" {% if params[param_name].type == 'value' %} selected="selected" {% endif %}>{{ method_data.info.text_source_type_manual }}</option>
+        </select>
+
+        <div id="{{ param_prefix }}_doclink_field">
+          <input type="text" name="{{ param_prefix }}_doclink_field_name" id="{{ param_prefix }}_input-doclink_field_name" placeholder="{{ method_data.info.entry_source_doclink }}" class="form-control" value="{%if params[param_name].doclink_field_name %}{{ params[param_name].doclink_field_name }}{%else%}{{method_data.info.text_currentdoc}}{%endif%}" {%if params["#{param_prefix}_doclink_field_setting"] %} style="font-style:italic" {%endif%}>
+          <input type="hidden" name="action{{ method_params_name_hierarchy }}[{{ param_name }}][doclink_field_uid]" id="{{ param_prefix }}_input-doclink_field_uid" value="{%if params[param_name].doclink_field_uid %}{{ params[param_name].doclink_field_uid }}{%else%}0{%endif%}">
+        </div>
+
+        <div id="{{ param_prefix }}_variable">
+          <select name="action{{ method_params_name_hierarchy }}[{{ param_name }}][var_id]" id="{{ param_prefix }}_select-variable" class="form-control">
+            {% for var_name, var_title in method_data.vars %}
+              <option value="{{ var_name }}" {% if params[param_name].var_id == var_name %} selected='selected' {% endif %}>{{ var_title }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="row">
+          <div id="{{ param_prefix }}_field" class="col-sm-6">
+            <input type="text" name="{{ param_prefix }}_field_name" id="{{ param_prefix }}_input-field_name" value='{% if params[param_name].field_uid %}{{ params[param_name].field_name }}{% endif %}' placeholder="{{ method_data.info.entry_source_field }}" class="form-control">
+            <input type="hidden" name="action{{ method_params_name_hierarchy }}[{{ param_name }}][field_uid]" id="{{ param_prefix }}_input-field_uid" value='{{ params[param_name].field_uid }}'>
+          </div>
+          <div id="{{ param_prefix }}_field_method" class="col-sm-6">
+            <select name="action{{ method_params_name_hierarchy }}[{{ param_name }}][method_name]" id="{{ param_prefix }}_select-field_method" class="form-control">
+              <option value='standard_getter' {% if not params[param_name].method_name %} selected='selected' {% endif %}>
+                {{ method_data.info.text_default_method }}</option>
+              {% for method in params[param_name].avaliable_methods %}
+                {% if method.type == 'getter' %}
+                  <option value="{{ method.name }}" {% if params[param_name].method_name == method.name %} selected='selected' {% endif %}>{{ method_data.info.text_field_method }}:
+                    {{ method.alias }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12" id="{{ param_prefix }}_method_form">
+            {{ params[param_name].method_form }}
+          </div>
+        </div>
+
+        <div id="{{ param_prefix }}_manual">
+          <div id="{{ param_prefix }}_value_widget" class="param_value_widget"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    $('#{{ param_prefix }}_variable').css('display', 'none');
+    $('#{{ param_prefix }}_doclink_field').css('display', 'none');
+    $('#{{ param_prefix }}_doctype').css('display', 'none');
+    $('#{{ param_prefix }}_manual').css('display', 'none');
+    $('#{{ param_prefix }}_field').css('display', 'none');
+    $('#{{ param_prefix }}_field_method').css('display', 'none');
+    $('#{{ param_prefix }}_method_form').css('display', 'none');
+
+    switch ($('#{{ param_prefix }}_select-type').val()) {
+      case 'variable':
+        $('#{{ param_prefix }}_variable').css('display', 'block');
+        $('#{{ param_prefix }}_doclink_field').css('display', 'block');
+        // $('#{{ param_prefix }}_value_widget').html('');
+        break;
+      case 'document':
+        $('#{{ param_prefix }}_doclink_field').css('display', 'block');
+        $('#{{ param_prefix }}_field').css('display', 'block');
+        $('#{{ param_prefix }}_field_method').css('display', 'block');
+        $('#{{ param_prefix }}_input-field_name').css("font-style", "");
+        $('#{{ param_prefix }}_method_form').css('display', 'block');
+        // $('#{{ param_prefix }}_value_widget').html('');
+        break;
+      case 'doctype':
+        $('#{{ param_prefix }}_doctype').css('display', 'block');
+        $('#{{ param_prefix }}_field').css('display', 'block');
+        $('#{{ param_prefix }}_field_method').css('display', 'block');
+        $('#{{ param_prefix }}_input-field_name').css("font-style", "italic");
+        $('#{{ param_prefix }}_method_form').css('display', 'block');
+        // $('#{{ param_prefix }}_value_widget').html('');
+        break;
+      case 'value':
+        Documentov.reloadFieldWidget('#{{ param_prefix }}_value_widget', '{{ widget_field_uid }}', '{{ params[param_name].value }}', '{{ method_params_name_hierarchy }}[{{ param_name }}]');
+        $('#{{ param_prefix }}_manual').css('display', 'block');
+    }
+
+    $('#{{ param_prefix }}_select-type').on('change', function () {
+      $('#{{ param_prefix }}_variable').css('display', 'none');
+      $('#{{ param_prefix }}_doclink_field').css('display', 'none');
+      $('#{{ param_prefix }}_field').css('display', 'block');
+      $('#{{ param_prefix }}_field_method').css('display', 'block');
+      $('#{{ param_prefix }}_method_form').css('display', 'block');
+
+      $('#{{ param_prefix }}_input-doclink_field_name').val('');
+      $('#{{ param_prefix }}_input-doclink_field_uid').val('');
+      $('#{{ param_prefix }}_input-field_name').val('');
+      $('#{{ param_prefix }}_input-field_uid').val('');
+      Documentov.reloadFieldMethodList('#{{ param_prefix }}_select-field_method', 'getter', 0, 'standard_getter', '{{ method_data.info.text_default_method }}');
+      $('#{{ param_prefix }}_method_form').html('');
+      switch (this.value) {
+        case 'variable':
+          $('#{{ param_prefix }}_variable').css('display', 'block');
+          $('#{{ param_prefix }}_field').css('display', 'none');
+          $('#{{ param_prefix }}_doclink_field').css('display', 'block');
+          $('#{{ param_prefix }}_input-doclink_field_name').val('{{ method_data.info.text_currentdoc }}');
+          $('#{{ param_prefix }}_input-doclink_field_uid').val('0');
+          $('#{{ param_prefix }}_field_method').css('display', 'none');
+          $('#{{ param_prefix }}_method_form').css('display', 'none');
+          $('#{{ param_prefix }}_manual').css('display', 'none');
+          $('#{{ param_prefix }}_value_widget').html('');
+          break;
+        case 'document':
+          $('#{{ param_prefix }}_doclink_field').css('display', 'block');
+          $('#{{ param_prefix }}_input-field_name').css("font-style", "");
+          $('#{{ param_prefix }}_input-doclink_field_name').val('{{ method_data.info.text_currentdoc }}');
+          $('#{{ param_prefix }}_input-doclink_field_uid').val('0');
+          $('#{{ param_prefix }}_manual').css('display', 'none');
+          $('#{{ param_prefix }}_value_widget').html('');
+          break;
+        case 'doctype':
+          $('#{{ param_prefix }}_input-field_name').css("font-style", "italic");
+          $('#{{ param_prefix }}_manual').css('display', 'none');
+          $('#{{ param_prefix }}_value_widget').html('');
+          break;
+        case 'value':
+          Documentov.reloadFieldWidget('#{{ param_prefix }}_value_widget', '{{ widget_field_uid }}', '', '{{ method_params_name_hierarchy }}[{{ param_name }}]');
+          $('#{{ param_prefix }}_field').css('display', 'none');
+          $('#{{ param_prefix }}_field_method').css('display', 'none');
+          $('#{{ param_prefix }}_manual').css('display', 'block');
+          break;
+      }
+    });
+
+    $('#{{ param_prefix }}_input-doclink_field_name').autocomplete({
+      'source': function (request, response) {
+        if (request === '{{ method_data.info.text_currentdoc }}' || request === '{{ method_data.info.text_addressdoc }}') 
+          request = '';
+        
+
+
+        var regexp = new RegExp('{{ method_data.info.text_by_link_in_field }}');
+        request = request.replace(regexp, '').trim().replace(/\"/g, '');
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ method_data.doctype_uid }}',
+          dataType: 'json',
+          cache: false,
+          success: function (json) {
+            json.unshift({field_uid: "1", name: '{{ method_data.info.text_addressdoc }}'});
+            json.unshift({field_uid: "0", name: '{{ method_data.info.text_currentdoc }}'});
+
+            response($.map(json, function (item) {
+              var result = {
+                value: item['field_uid'],
+                label: item['name']
+              };
+              if (item['field_uid'] && item['field_uid'] !== "0" && item['field_uid'] !== "1") {
+                if (item['setting'] === "1") {
+                  result['setting'] = 1;
+                  result['label'] = '<span style="font-style:italic">{{ method_data.info.text_by_link_in_field }} "' + item['name'] + '"</span>';
+                } else {
+                  result['label'] = '{{ method_data.info.text_by_link_in_field }} "' + item['name'] + '"';
+                }
+              }
+              return result;
+            }));
+          } // end success
+        }); // end ajax
+      }, // end source
+      'select': function (item) {
+        var label = item['label'];
+        if (item['setting'] === 1) {
+          $('#{{ param_prefix }}_input-doclink_field_name').css("font-style", "italic");
+          label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+        } else {
+          $('#{{ param_prefix }}_input-doclink_field_name').css("font-style", "");
+        }
+        if ($('#{{ param_prefix }}_input-doclink_field_uid').val() !== item['value']) {
+          $('#{{ param_prefix }}_input-field_name').val('');
+          $('#{{ param_prefix }}_input-field_uid').val('');
+          Documentov.reloadFieldMethodList('#{{ param_prefix }}_select-field_method', 'getter', 0, 'standard_getter', '{{ method_data.info.text_default_method }}');
+          $('#{{ param_prefix }}_select-field_method').val('standard_getter');
+          $('#{{ param_prefix }}_method_form').html('');
+        }
+        $('#{{ param_prefix }}_input-doclink_field_name').val(label);
+        $('#{{ param_prefix }}_input-doclink_field_uid').val(item['value']);
+      }
+    });
+
+
+    $('#{{ param_prefix }}_input-field_name').autocomplete({
+      'source': function (request, response) {
+        var setting = "0";
+        var doctype_uid = "";
+        if ($('#{{ param_prefix }}_select-type').val() === 'doctype') {
+          setting = "1";
+        } else {
+          if ($('#{{ param_prefix }}_input-doclink_field_uid').val() === "0") {
+            doctype_uid = '{{ method_data.doctype_uid }}';
+          }
+        }
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid=' + doctype_uid + '&setting=' + setting,
+          dataType: 'json',
+          cache: false,
+          success: function (json) {
+            json.unshift({field_uid: 0, name: '{{ method_data.info.text_none }}'});
+
+            response($.map(json, function (item) {
+              var prefix = '';
+              if (item['field_uid']) {
+                prefix = '{{ method_data.info.text_from_field }} ';
+              }
+              var result = {
+                value: item['field_uid'],
+                label: item['name']
+              };
+              if (item['setting'] === "1") {
+                result['setting'] = 1;
+                result['label'] = '<span style="font-style:italic">' + prefix + item['name'] + '</span>';
+              } else {
+                result['label'] = prefix + item['name'];
+              }
+              return result;
+            }));
+          } // end success
+        }); // end ajax
+      }, // end source
+      'select': function (item) {
+        if (item['value']) {
+          var label = item['label'];
+          if (item['setting'] === 1) {
+            $('#{{ param_prefix }}_input-field_name').css("font-style", "italic");
+            label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+          } else {
+            $('#{{ param_prefix }}_input-field_name').css("font-style", "");
+          }
+          if ($('#{{ param_prefix }}_input-field_uid').val() !== item['value']) {
+
+            Documentov.reloadFieldMethodList('#{{ param_prefix }}_select-field_method', 'getter', item['value'], 'standard_getter', '{{ method_data.info.text_default_method }}');
+            $('#{{ param_prefix }}_select-field_method').val('standard_getter');
+            $('#{{ param_prefix }}_method_form').html('');
+            $('#{{ param_prefix }}_input-field_uid').val(item['value']);
+          }
+          $('#{{ param_prefix }}_input-field_name').val(label);
+        } else {
+          Documentov.reloadFieldMethodList('#{{ param_prefix }}_select-field_method', 'getter', '0', 'standard_getter', '{{ method_data.info.text_default_method }}');
+          $('#{{ param_prefix }}_select-field_method').val('');
+          $('#{{ param_prefix }}_method_form').html('');
+          $('#{{ param_prefix }}_input-field_uid').val('');
+          $('#{{ param_prefix }}_input-field_name').val('');
+        }
+      }
+    });
+
+    // загрузка формы геттера
+    $('#{{ param_prefix }}_select-field_method').on('change', function () {
+      $('#{{ param_prefix }}_method_form').html('');
+      let field_uid = $('#{{ param_prefix }}_input-field_uid').val();
+      $.ajax({
+        url: 'index.php?route=doctype/doctype/get_field_method_form&method=' + encodeURIComponent(this.value) + '&field_uid=' + field_uid + '&method_params_name_hierarchy={{ method_params_name_hierarchy }}[{{ param_name }}][method_params]&doctype_uid={{ method_data.doctype_uid }}',
+        dataType: 'json',
+        cache: false,
+        success: function (html) {
+          if (html != "") {
+            $('#{{ param_prefix }}_method_form').html('<div class="panel panel-default"><div class="panel-body"><div class="panel-heading">{{ method_data.info.text_field_method }}</div>' + html + '</div></div>');
+          }
+        }
+      });
+    });
+  </script>
+{% endmacro %}

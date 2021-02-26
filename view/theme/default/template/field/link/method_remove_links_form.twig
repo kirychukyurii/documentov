@@ -1,0 +1,22 @@
+<hr>
+<div class="container-fluid form-horizontal">
+    <div class="form-group">
+        <label class="col-sm-3 text-right">{{ method_data.info["text_method_orientation"] }}</label>
+        <div class="col-sm-9" style="padding: 0px;">
+            <select class="form-control" name="action{{ method_params_name_hierarchy }}[orientation][value]">
+                <option value="start" {% if method_params['orientation']['value'] == 'start' or method_params['orientation']['value'] is empty %} selected="selected" {% endif %}>{{ method_data.info["text_method_first_links"] }}</option>
+                <option value="end" {% if method_params['orientation']['value'] == 'end' %} selected="selected" {% endif %}>{{ method_data.info["text_method_last_links"] }}</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 text-right">{{ method_data.info["text_method_count_links"] }}</label>
+        <div class="col-sm-9" style="padding: 0px;">
+            {% import "default/template/macros/field_method_parameter.twig" as fmpar %}
+            {{ fmpar.show(method_params_prefix_hierarchy, method_params_name_hierarchy, 'count', method_params, method_data, true) }}
+        </div>
+
+    </div>
+
+</div>

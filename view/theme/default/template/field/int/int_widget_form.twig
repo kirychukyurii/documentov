@@ -1,0 +1,68 @@
+<div class="{{ BLOCK }}">
+  {% if widget_name or filter_form %}
+    <input type="number" name="{{ NAME }}" id="{{ ID }}{{ unique }}" class="{{ ID }} form-control" value="{{ field_value }}">
+  {% else %}
+    <input type="text" name="{{ NAME }}" id="{{ ID }}{{ unique }}" class="{{ ID }} form-control" value="{{ field_value }}">
+    <script type="text/javascript">
+      (function () {
+
+        var decimalmark = ".";
+        var delimiter = "";
+
+        //
+        {% if delimiter == " " %}delimiter = " ";{% endif %}
+        //
+        {% if delimiter == "." %}delimiter = ".";
+          decimalmark = ",";
+          //
+        {% endif %}
+        {% if delimiter == "," %};
+          delimiter = ",";
+          //
+        {% endif %};
+        if (!window.Cleave) {
+          addScript("view/javascript/cleave.min.js");
+        }
+        var cleave = new Cleave('#{{ ID }}{{ unique }}', {
+          numeral: true,
+          numeralThousandsGroupStyle: 'thousand',
+          numeralDecimalMark: decimalmark,
+          delimiter: delimiter,
+          numeralDecimalScale: 0
+        });
+        var max = "{{ max }}";
+        if (!max) max = 2147483647;
+        var min = "{{ min }}";
+        if (!min) min = -2147483648;
+        // Окрашиваем текст поля в красный цвет, если число больше, чем максимально допустимое
+        // Окрашиваем текст поля в синий цвет, если число меньше, чем минимально допустимое
+        var defcolint = $("#{{ ID }}{{ unique }}").css("color");
+        $("#{{ ID }}{{ unique }}").on("keyup", function () {
+
+          var val = ($(this).val()).replace(/[., ]/g, "");
+          if (val) {
+            if (max && + max < + val) {
+              $(this).css("color", "red");
+            } else if (min && + min > + val) {
+              $(this).css("color", "blue");
+            } else {
+              $(this).css("color", defcolint);
+            }
+          }
+        });
+        $("#{{ ID }}{{ unique }}").on("blur", function () { // перед отправкой на сервер проверяем мин/макс значения
+          var val = ($(this).val()).replace(/[., ]/g, "");
+          if (val) {
+            if ((max && + max < + val)) {
+              $(this).val(max);
+            } else if (min && + min > + val) {
+              $(this).val(min);
+            }
+          }
+          $(this).css("color", defcolint);
+        });
+        //
+      })();
+    </script>
+  {% endif %}
+</div>

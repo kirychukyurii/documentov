@@ -1,0 +1,16 @@
+<hr>
+<div class="container-fluid form-horizontal">
+    <div class="form-group">
+        <label class="col-sm-2">{{ method_data.info["text_method_param_source"] }}</label>
+        <div class="col-sm-10" style="padding: 0px;"> 
+            {% import "default/template/macros/field_method_parameter.twig" as fmpar %}
+            {{ fmpar.show(method_params_prefix_hierarchy, method_params_name_hierarchy, 'standard_setter_param', method_params, method_data) }}   
+        </div>
+    </div>    
+    <div class="form-group">
+        <label class="col-sm-2" for="{{method_params_prefix_hierarchy}}_separator_input-field">{{ method_data.info.entry_method_insert_text_separator }}</label>
+        <div class="col-sm-10" style="padding: 0px;"> 
+            <input type="text" name="action{{method_params_name_hierarchy}}[separator][value]" id="{{method_params_prefix_hierarchy}}_separator_input-field" value='{{ method_params['separator']['value'] }}' placeholder="{{ entry_method_insert_text_separator }}" class="form-control">
+        </div>    
+    </div>    
+</div>

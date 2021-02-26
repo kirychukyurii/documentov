@@ -1,0 +1,12 @@
+<div class="{{ BLOCK }}">
+  {% if filter_form %}
+    {#    если установлена filter_form - нужна компактная форма, используется, к примеру, в фильтрах журналов #}
+    {#    если установлена widget_name - это имя поля #}
+    <input type="text" name="{{ NAME }}" id="{{ ID }}" class="{{ ID }} form-control">
+  {% else %}
+
+    <div>
+      <textarea name="{{ NAME }}" id="{{ MODULE_NAME }}-ID" data-lang="{{ code }}" class="{{ ID }} form-control"></textarea>
+    </div>
+  {% endif %}
+</div>

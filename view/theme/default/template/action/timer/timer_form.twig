@@ -1,0 +1,299 @@
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="input-field_document_name">
+    <span data-toggle="tooltip" title="{{ help_timer_action }}">{{ entry_timer_action }}</span>
+  </label>
+  <div class="col-sm-9">
+    <select class="form-control" id="select-timer_action" name="action[timer_action]">
+      <option value="0" {%if action.timer_action == '0'%} selected="selected" {%endif%}>{{ text_start }}</option>
+      <option value="1" {%if action.timer_action == '1'%} selected="selected" {%endif%}>{{ text_stop }}</option>
+      <option value="2" {%if action.timer_action == '2'%} selected="selected" {%endif%}>{{ text_stop_all }}</option>
+    </select>
+  </div>
+</div>
+
+<div class="form-group" id="exectime_field">
+  <label class="col-sm-3 control-label" for="input-exectime_field_name">
+    <span data-toggle="tooltip" title="{{ help_exectime_field}}">{{text_exectime_field}}</span>
+  </label>
+  <div class="col-sm-9">
+    <input type="text" name="exectime_field_name" id="input-exectime_field_name" value='{{exectime_field_name}}' placeholder="{{entry_exectime_field}}" class="form-control">
+    <input type="hidden" name="action[exectime_field_uid]" value="{{action.exectime_field_uid}}">
+
+  </div>
+</div>
+
+<div class="form-group" id="identifier_field">
+  <label class="col-sm-3 control-label" for="input-identifier_field">
+    <span data-toggle="tooltip" title="{{help_identifier_field}}">{{entry_identifier_field}}</span>
+  </label>
+  <div class="col-sm-9">
+    {% import "default/template/macros/field_in_action_uid.twig" as mfield %}
+    {{ mfield.show(identifier_field_name, action.identifier_field_uid, doctype_uid, 'identifier_field', text_macros_field) }}
+  </div>
+</div>
+
+<div class="form-group" id="timer_doclink_field">
+  <label class="col-sm-3 control-label" for="input-timer_doclink_field_name">
+    <span data-toggle="tooltip" title="{{help_timer_doclink}}">{{entry_timer_doclink}}</span>
+  </label>
+  <div class="col-sm-9">
+    <input type="text" name="timer_doclink_field_name" id="input-timer_doclink_field_name" placeholder="{{entry_timer_doclink}}" class="form-control" value="{{timer_doclink_field_name}}" {%if timer_doclink_field_setting %} style="font-style:italic" {%endif%}>
+    <input type="hidden" name="action[timer_doclink_field_uid]" value="{{action.timer_doclink_field_uid}}">
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="input-target_field_name">
+    <span data-toggle="tooltip" title="{{ help_target_field}}">{{ text_on_timer }}</span>
+  </label>
+  <div class="col-sm-9">
+    <div id="input-target_field">
+      <span data-toggle="tooltip" title="{{ help_target_field}}">{{text_target_field}}</span>
+      <input type="text" name="target_field_name" id="input-target_field_name" value='{{target_field_name}}' placeholder="{{entry_target_field}}" class="form-control">
+      <input type="hidden" name="action[target_field_uid]" value="{{action.target_field_uid}}">
+    </div>
+    <div id="timer_document_route">
+      <span data-toggle="tooltip" title="{{ help_document_route }}">{{ entry_document_route }}</span>
+      <input type="text" name="document_route_name" id="input-timer_document_route_name" value="{{ document_route_name }}" placeholder="{{ entry_document_route }}" class="form-control">
+      <input type="hidden" name="action[document_route_uid]" value="{{ action.document_route_uid }}" id='input-timer_document_route_uid'>
+    </div>
+  </div>
+
+
+</div>
+<script>
+
+  $('input[name=\'timer_doclink_field_name\']').autocomplete({
+    'source': function (request, response) {
+      if (request === '{{ text_currentdoc }}') 
+        request = '';
+      
+
+
+      var regexp = new RegExp('{{ text_by_link_in_field }}');
+      request = request.replace(regexp, '').trim().replace(/\"/g, '');
+      $.ajax({
+        url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+        dataType: 'json',
+        cache: false,
+        success: function (json) {
+          json.unshift({field_uid: "0", name: '{{ text_currentdoc }}'});
+          response($.map(json, function (item) {
+            var result = {
+              value: item['field_uid'],
+              label: item['name']
+            };
+            if (item['field_uid'] && item['field_uid'] !== "0") {
+              if (item['setting'] === "1") {
+                result['setting'] = 1;
+                result['label'] = '<span style="font-style:italic">{{ text_by_link_in_field }}' + item['name'] + '"</span>';
+              } else {
+                result['label'] = '{{ text_by_link_in_field }} "' + item['name'] + '"';
+              }
+            }
+            return result;
+          }));
+        } // end success
+      }); // end ajax
+    }, // end source
+    'select': function (item) {
+      var label = item['label'];
+      if (item['setting'] === 1) {
+        $('input[name=\'timer_doclink_field_name\']').css("font-style", "italic");
+        label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+      } else {
+        $('input[name=\'timer_doclink_field_name\']').css("font-style", "");
+      }
+      if ($('input[name=\'action[timer_doclink_field_uid]\']').val() !== item['value']) {
+        $('input[name=\'target_field_name\']').val('');
+        $('input[name=\'action[target_field_uid]\']').val('');
+        $('input[name=\'document_route_name\']').val('');
+        $('input[name=\'action[document_route_uid]\']').val('');
+      }
+      $('input[name=\'timer_doclink_field_name\']').val(label);
+      $('input[name=\'action[timer_doclink_field_uid]\']').val(item['value']);
+    }
+  });
+
+  $('input[name=\'exectime_field_name\']').autocomplete({
+    'source': function (request, response) {
+      var doctype_uid = "0";
+      // if ($('input[name=\'action[timer_doclink_field_uid]\']').val() === "0") {
+      doctype_uid = '{{ doctype_uid }}';
+      // }
+
+      $.ajax({
+        url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid=' + doctype_uid + '&setting=0',
+        dataType: 'json',
+        cache: false,
+        success: function (json) {
+          json.unshift({field_uid: 0, name: '{{ text_none }}'});
+          response($.map(json, function (item) {
+            return {label: item['name'], value: item['field_uid']}
+
+          }));
+        } // end success
+      }); // end ajax
+    }, // end source
+    'select': function (item) {
+      if (item['value']) {
+        if ($('input[name=\'action[exectime_field_uid]\']').val() !== item['value']) {
+          $('input[name=\'action[exectime_field_uid]\']').val(item['value']);
+        }
+        $('input[name=\'exectime_field_name\']').val(item['label']);
+      } else {
+        $('input[name=\'exectime_field_name\']').val('');
+        $('input[name=\'action[exectime_field_uid]\']').val('');
+      }
+
+    }
+  });
+
+  $('input[name=\'target_field_name\']').autocomplete({
+    'source': function (request, response) {
+      var doctype_uid = "0";
+      if ($('input[name=\'action[timer_doclink_field_uid]\']').val() === "0") {
+        doctype_uid = '{{ doctype_uid }}';
+      }
+
+      $.ajax({
+        url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid=' + doctype_uid + '&setting=0',
+        dataType: 'json',
+        cache: false,
+        success: function (json) {
+          json.unshift({field_uid: 0, name: '{{ text_none }}'});
+
+          response($.map(json, function (item) {
+            return {label: item['name'], value: item['field_uid']}
+
+          }));
+        } // end success
+      }); // end ajax
+    }, // end source
+    'select': function (item) {
+      if (item['value']) {
+        if ($('input[name=\'action[target_field_uid]\']').val() !== item['value']) {
+          $('input[name=\'action[target_field_uid]\']').val(item['value']);
+        }
+        $('input[name=\'target_field_name\']').val(item['label']);
+      } else {
+        $('input[name=\'action[target_field_uid]\']').val('');
+        $('input[name=\'target_field_name\']').val('');
+      }
+    }
+  });
+
+  $('input[name=\'document_route_name\']').autocomplete({
+    'source': function (request, response) {
+      var doctype_uid = '{{ doctype_uid }}';
+      var url = 'index.php?route=doctype/doctype/autocomplete_route&filter_name=' + encodeURIComponent(request);
+      if ($('input[name=\'action[timer_doclink_field_uid]\']').val() === "0") {
+        url += '&doctype_uid=' + doctype_uid;
+      }
+
+      $.ajax({
+        url: url,
+        dataType: 'json',
+        success: function (json) {
+          json.unshift({route_uid: 0, name: '{{ text_none }}'});
+
+          response($.map(json, function (item) {
+            {% if route_uid is empty %}
+              {% set route_uid = 0 %}
+            {% endif %}
+            return {label: item['name'], value: item['route_uid']} // end returns
+
+          } // end function
+          ) // end map
+          ); // end response
+        } // end success
+      }); // end ajax
+    }, // end source
+
+    'select': function (item) {
+      if (item['value']) {
+        $('input[name=\'document_route_name\']').val(item['label']);
+        $('input[name=\'action[document_route_uid]\']').val(item['value']);
+      } else {
+        $('input[name=\'document_route_name\']').val('');
+        $('input[name=\'action[document_route_uid]\']').val('');
+      }
+    } // end select
+  }); // end autocomplete
+
+  $('input[name=\'action\[identifier_field_uid\]\']').on('change', function () {
+    if ($(this).val()) {
+      $('#input-target_field').show();
+    } else {
+      $('#input-target_field').hide();
+    }
+
+  });
+
+  // обработка изменения действия
+  $('select[name=\'action[timer_action]\']').on('change', function () {
+    switch ($('select[name=\'action[timer_action]\']').val()) {
+      case "0":
+        // запуск таймера
+        $('#identifier_field').css('display', 'block');
+        $('input[name=\'identifier_field_name\']').attr('placeholder', '{{ text_timer_autoidentifier }}');
+        if ($('input[name=\'action[identifier_field_uid]\']').val() === "0") {
+          $('#input-target_field').css('display', 'none');
+        } else {
+          $('#input-target_field').css('display', 'block');
+        }
+        $('#exectime_field').css('display', 'block');
+        $('#timer_document_route').css('display', 'block');
+        // $('#timer_identifier_field').css('display', 'block');
+        break;
+      case "1":
+        // остановка таймера
+        $('input[name=\'identifier_field_name\']').attr('placeholder', '{{ text_select_field }}');
+        $('#identifier_field').css('display', 'block');
+        $('#input-target_field').css('display', 'none');
+        $('#exectime_field').css('display', 'none');
+        $('#timer_document_route').css('display', 'none');
+        break;
+      case "2":
+        // остановка всех
+        $('#identifier_field').css('display', 'none');
+        $('#input-target_field').css('display', 'none');
+        $('#exectime_field').css('display', 'none');
+        $('#timer_document_route').css('display', 'none');
+        break;
+    }
+
+  });
+
+
+  switch ($('select[name=\'action[timer_action]\']').val()) {
+    case "0":
+      // запуск таймера
+      $('#identifier_field').css('display', 'block');
+      $('input[name=\'identifier_field_name\']').attr('placeholder', '{{ text_timer_autoidentifier }}');
+      if ($('input[name=\'action[identifier_field_uid]\']').val() === "0") {
+        $('#input-target_field').css('display', 'none');
+      } else {
+        $('#input-target_field').css('display', 'block');
+      }
+      $('#exectime_field').css('display', 'block');
+      $('#timer_document_route').css('display', 'block');
+
+      // $('#timer_identifier_field').css('display', 'block');
+      break;
+    case "1":
+      // остановка таймера
+      $('input[name=\'identifier_field_name\']').attr('placeholder', '{{ text_select_field }}')
+      $('#identifier_field').css('display', 'block');
+      $('#input-target_field').css('display', 'none');
+      $('#exectime_field').css('display', 'none');
+      $('#timer_document_route').css('display', 'none');
+      break;
+    case "2":
+      // остановка всех
+      $('#identifier_field').css('display', 'none');
+      $('#input-target_field').css('display', 'none');
+      $('#exectime_field').css('display', 'none');
+      $('#timer_document_route').css('display', 'none');
+      break;
+  }
+</script>

@@ -1,0 +1,78 @@
+<hr>
+<div class="form-group">
+  <label class="col-sm-2 control-label" for="input-field_email_name">{{ entry_field_email }}</label>
+  <div class="col-sm-10">
+    {% import "default/template/macros/field_in_action_uid_getter.twig" as rfield %}
+    {{ rfield.show(action.field_email_name, action.field_email_uid, action.field_email_type, doctype_uid, 'field_email', text_macros_field, action.field_email_method, action.field_email_method_params) }}
+
+  </div>
+</div> 
+<ul class="nav nav-tabs" id="email_template_language">
+  {% for language in languages %}
+    <li>
+      <a data-toggle="tab" href="#email_template_language{{ language.language_id }}"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/>
+        {{ language.name }}</a>
+    </li>
+  {% endfor %}
+</ul>
+<div class="tab-content" id='block-email_content'>
+  {% for language in languages %}
+
+    <div class="tab-pane fade" id="email_template_language{{ language.language_id }}">
+      <div class="form-group">
+        <label class="col-sm-2 control-label" for="input-template_subject{{ language.language_id }}">{{ entry_template_subject }}</label>
+        <div class="col-sm-10">
+          <div class="input-group">
+            <input type="text" class="form-control" id="input-template_subject{{ language.language_id }}" name="action[template_subject][{{ language.language_id }}]" value="{{ action.template_subject[language.language_id] }}">
+            <div class="input-group-btn">
+              <div class="dropup">
+                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button">{{ text_fields }}
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                  {% for field in fields %}
+                    <li>
+                      <a href="" onclick="$('#input-template_subject{{ language.language_id }}').val($('#input-template_subject{{ language.language_id }}').val() + ' ' + $(this).html());return false;">{{ '{{ ' }}{{ field.name }}{{ ' }}' }}</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-2 control-label" for="input-template_message{{ language.language_id }}">{{ entry_template_message }}</label>
+        <div class="col-sm-10">
+          <textarea name="action[template_message][{{ language.language_id }}]" placeholder="{{ entry_template_message }}" id="input-email_template_message{{ language.language_id }}" data-toggle="summernote_s" data-lang="{{ code }}" class="form-control save_on_blur">
+            {{ action.template_message[language.language_id] }}
+          </textarea>
+        </div>
+      </div>
+
+
+    </div>
+  {% endfor %}
+</div>
+<div class="form-group">
+  <label class="col-sm-2 control-label" for="input-attached_file_name">
+    <span data-toggle="tooltip" title="{{ help_attached_file }}">{{ entry_attached_file }}</span>
+  </label>  
+  <div class="col-sm-10">
+    {% import "default/template/macros/field_in_action_uid_getter.twig" as rfield %}
+    {{ rfield.show(action.attached_file_name, action.attached_file_uid, action.attached_file_type, doctype_uid, 'attached_file', text_macros_field, action.attached_file_method, action.attached_file_method_params) }}
+  </div>
+</div> 
+<script
+  type="text/javascript">
+  <!--
+  {% for language in languages %}
+    init_summernote_s($('#input-email_template_message{{ language.language_id }}'), '{{ doctype_uid }}', {hideConditions: true});{% endfor %}$('#block-email_content').on({
+    "shown.bs.dropdown": function () {
+      $('.input-select_field').focus(); // фокус на поле автокомплита редактора
+    }
+  });
+  $('#email_template_language a:first').tab('show');
+  //
+  -->
+</script>
