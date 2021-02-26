@@ -1,0 +1,101 @@
+{% set row = 1 %}
+<div class="form-group container-fluid">
+  <div class="row">
+    <label class="control-label">
+      <span data-toggle="tooltip" title="{{ help_table_list_values }}">{{ entry_table_list_values }}:</span>
+    </label>
+    <div class="pull-right">
+      <span class="btn btn-default" id="{{ MODULE_NAME }}-button_add_value" data-toggle="tooltip" title="{{ text_button_add_value }}">
+        <i class="fa fa-plus-circle"></i>
+      </span>
+    </div>
+  </div>
+  <div class="row">
+    <select class="form-control" name="field[source_type]">
+      <option value="table" {% if params.source_type is empty or params.source_type == "table" %} selected="selected" {% endif %}>{{ text_source_list_table }}</option>
+      <option value="field" {% if params.source_type == "field" %} selected="selected" {% endif %}>{{ text_source_list_field }}</option>
+    </select>
+  </div>
+  <div class="row" id="{{ MODULE_NAME }}-block_source_field">
+    <div class="form-group">
+      <label class="col-sm-3 control-label">
+        <span data-toggle="tooltip" title="{{ help_source_type_field }}">{{ text_select_field }}</span>
+      </label>
+      <div class="col-sm-9">
+        {% import "default/template/macros/field_in_field.twig" as mfield %}
+        {{ mfield.show(source_field_name, params.source_field_uid, doctype_uid, 'source_field', text_macros_field) }}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">
+        <span data-toggle="tooltip" title="{{ help_separator_values }}">{{ entry_separator_values }}</span>
+      </label>
+      <div class="col-sm-9">
+        <input type="text" name="field[separator_values]" value="{% if params.separator_values is empty %}||{% else %}{{ params.separator_values }}{% endif %}" class="form-control">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">
+        <span data-toggle="tooltip" title="{{ help_separator_value_title }}">{{ entry_separator_value_title }}</span>
+      </label>
+      <div class="col-sm-9">
+        <input type="text" name="field[separator_value_title]" value="{% if params.separator_value_title is empty %}::{% else %}{{ params.separator_value_title }}{% endif %}" class="form-control">
+      </div>
+    </div>
+  </div>
+  <div class="row" id="{{ MODULE_NAME }}-block_table_values">
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover" id="{{ MODULE_NAME }}-table_values">
+        <thead>
+          <tr>
+            <th style="width: 90px;">{{ text_value_list_value }}</th>
+            <th>{{ text_value_list_title }}</th>
+            <th style="width: 60px;">{{ text_value_default }}</th>
+            <th style="width: 95px;">{{ text_action }}</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="field_list-select_multi">
+    <span data-toggle="tooltip" title="{{ help_multi_select }}">{{ entry_multi_select }}</span>
+  </label>
+  <div class="col-sm-9">
+    <select class="form-control" id="{{ MODULE_NAME }}-select_multi" name="field[multi_select]">
+      {% if params.multi_select %}
+        <option selected="selected" value="1">{{ text_yes }}</option>
+        <option value="0">{{ text_no }}</option>
+      {% else %}
+        <option value="1">{{ text_yes }}</option>
+        <option selected="selected" value="0">{{ text_no }}</option>
+      {% endif %}
+    </select>
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="field_list-select_visualization">
+    <span data-toggle="tooltip" title="{{ help_visualization }}">{{ entry_visualization }}</span>
+  </label>
+  <div class="col-sm-9">
+    <select class="form-control" id="{{ MODULE_NAME }}-select_visualization" name="field[visualization]">
+      {% if params.visualization == 1 %}
+        <option value="0">{{ text_horizontal }}</option>
+        <option selected="selected" value="1">{{ text_vertical }}</option>
+        <option value="2">{{ text_list }}</option>
+      {% elseif params.visualization == 2 %}
+        <option value="0">{{ text_horizontal }}</option>
+        <option value="1">{{ text_vertical }}</option>
+        <option selected="selected" value="2">{{ text_list }}</option>
+      {% else %}
+        <option selected="selected" value="0">{{ text_horizontal }}</option>
+        <option value="1">{{ text_vertical }}</option>
+        <option value="2">{{ text_list }}</option>
+      {% endif %}
+    </select>
+  </div>
+</div>

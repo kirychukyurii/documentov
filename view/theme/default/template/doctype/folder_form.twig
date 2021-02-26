@@ -1,0 +1,905 @@
+{{ header }}{{ column_left }}
+<div id="block_loading">
+  <nobr>{{ text_loading }}</nobr>
+</div>
+<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-folder" class="form-horizontal">
+  <input name="active_tab" type="hidden">
+  <div id="folder_form">
+    <div class="page-header">
+      <div class="container-fluid">
+        <div class="pull-right">
+          {% if link_folder %}
+            <a href="{{ link_folder }}" target="_blank" data-toggle="tooltip" title="{{ button_open_folder }}" class="btn btn-default">
+              <i class="fa fa-book"></i>
+            </a>
+          {% endif %}
+          <button type="submit" form="form-folder" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-success">
+            <i class="fa fa-save"></i>
+          </button>
+          <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+            <i class="fa fa-reply"></i>
+          </a>
+        </div>
+        <h1>{{ heading_title }}</h1>
+      </div>
+    </div>
+    <div class="container-fluid">
+      {% if error_warning %}
+        <div class="alert alert-danger alert-dismissible">
+          <i class="fa fa-exclamation-circle"></i>
+          {{ error_warning }}
+          <button class="close" data-dismiss="alert" type="button">&times;</button>
+        </div>
+      {% endif %}
+      {% if draft_message %}
+        <div class="alert alert-info alert-dismissible">
+          <i class="fa fa-exclamation-circle"></i>
+          {{ draft_message }}
+          <button class="close" data-dismiss="alert" type="button">&times;</button>
+        </div>
+      {% endif %}
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <ul class="nav nav-tabs" id="general_tabs">
+            <li class="active">
+              <a data-toggle="tab" href="#tab-general">{{ tab_general }}</a>
+            </li>
+            <li>
+              <a data-toggle="tab" href="#tab-field">{{ tab_field }}</a>
+            </li>
+            <li>
+              <a data-toggle="tab" href="#tab-filter">{{ tab_filter }}</a>
+            </li>
+            <li>
+              <a data-toggle="tab" href="#tab-button">{{ tab_buttons }}</a>
+            </li>
+            <li>
+              <a data-toggle="tab" href="#tab-additional">{{ tab_additional }}</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade in active" id="tab-general">
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-doctype">
+                  <span data-toggle="tooltip" title="{{ help_doctype }}">{{ entry_doctype }}</span>
+                </label>
+                <div class="col-sm-10">
+                  <input type="text" name="{% if not disable_change_doctype %}doctype_name{% endif %}" value="{{ doctype_name }}" {% if disable_change_doctype %} readonly="true" {% endif %} placeholder="{{ entry_select_doctype }}" id="input-doctype" class="form-control autosave"/>
+                  <input type="hidden" name="doctype_uid" value="{{ doctype_uid }}" class="autosave"/>
+                </div>
+              </div>
+              <ul class="nav nav-tabs" id="language">
+                {% for language in languages %}
+                  <li>
+                    <a data-toggle="tab" href="#language{{ language.language_id }}"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/>
+                      {{ language.name }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+              <div class="tab-content">
+                {% for language in languages %}
+                  <div class="tab-pane fade" id="language{{ language.language_id }}">
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label" for="input-name{{ language.language_id }}">{{ text_folder_name }}</label>
+                      <div class="col-sm-10">
+                        <input type="text" name="folder_description[{{ language.language_id }}][name]" value="{{ folder_description[language.language_id] ? folder_description[language.language_id].name }}" placeholder="{{ entry_folder_name }}" id="input-name{{ language.language_id }}" {% if loop.index0 == 0%} autofocus {% endif %} class="form-control autosave"/>
+                        {% if error_name[language.language_id] %}
+                          <div class="text-danger">{{ error_name[language.language_id] }}</div>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label" for="input-short_description{{ language.language_id }}">{{ text_short_description }}</label>
+                      <div class="col-sm-10">
+                        <textarea name="folder_description[{{ language.language_id }}][short_description]" placeholder="{{ entry_folder_short_description }}" id="input-short_description{{ language.language_id }}" class="form-control autosave">{{ folder_description[language.language_id] ? folder_description[language.language_id].short_description }}</textarea>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label" for="input-full_description{{ language.language_id }}">{{ entry_full_description }}</label>
+                      <div class="col-sm-10">
+                        <textarea name="folder_description[{{ language.language_id }}][full_description]" placeholder="{{ entry_description }}" id="input-full_description{{ language.language_id }}" data-toggle="summernote_s" data-lang="{{ summernote }}" class="form-control autosave">{{ folder_description[language.language_id] ? folder_description[language.language_id].full_description }}</textarea>
+                      </div>
+                    </div>
+
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="tab-pane fade" id="tab-field">
+              <ul class="nav nav-tabs" id="field-language">
+                {% for language in languages %}
+                  <li>
+                    <a data-toggle="tab" href="#field-language{{ language.language_id }}"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/>
+                      {{ language.name }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+              <div class="tab-content">
+                {% for language in languages %}
+                  <div class="tab-pane fade" id="field-language{{ language.language_id }}">
+                    <div class="form-group">
+                      <div class="col-sm-10">
+                        <span class="btn btn-success" onclick="addField({{ language.language_id }});" data-toggle="tooltip" title="{{ button_add_field }}" data-original-title="{{ button_add_field }}">
+                          <i class="fa fa-plus">
+                            {{ button_add_field }}</i>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table table-striped table-bordered table-hover shadow2">
+                        <thead>
+                          <tr>
+                            <td class="text-left" style="width:50%;">{{ column_grouping }}</td>
+                            <td class="text-left">{{ column_table }}</td>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td style="vertical-align: top;">
+                              <table class="table table-striped table-bordered table-hover shadow2" id="grouping_fields_table{{ language.language_id }}">
+                                <thead>
+                                  <tr>
+                                    <td class="text-left">{{ column_field_field }}</td>
+                                    <td class="text-left">{{ column_field_name }}</td>
+                                    <td class="text-left">{{ column_grouping_content }}</td>
+                                    <td style="width:145px;">{{ column_action }}</td>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for field in group_fields[language['language_id']] %}
+                                    <tr id="gfield-row{{ field.folder_field_uid }}" {% if field.draft==2 %} class="remove_element" {% endif %} {% if field.draft==1 or field.draft==3 %} class="new_element" {% endif %}>
+                                      <td class="text-left pointer" onclick="editField('{{ field.folder_field_uid }}','group');" {% if field.level > 0 %} style="padding-left:30px;" {% endif %}>{{ field.field_name }}</td>
+                                      <td class="text-left pointer" onclick="editField('{{ field.folder_field_uid }}','group');">
+                                        {% if field.grouping_name is empty %}
+                                          <span style="color:#ccc;">{{ text_name_not_select }}</span>
+                                        {% else %}
+                                          {{ field.grouping_name }}
+                                        {% endif %}
+                                      </td>
+                                      <td class="text-left pointer" onclick="editField('{{ field.folder_field_uid }}','group');">
+                                        {% if field.grouping_tree_name is not empty %}
+                                          {{ text_content_grouping_tree2 }}
+                                          {{ field.grouping_tree_name }}
+                                        {% else %}
+                                          {{ text_content_grouping_list2 }}
+                                        {% endif %}
+                                      </td>
+                                      <td class="text-right" id="gfield-row-button{{ field.folder_field_uid }}">
+                                        {% if field.draft == 2 %}
+                                          <button type="button" class="btn btn-default" onclick="undoRemoveField('{{ field.folder_field_uid }}');" data-toggle="tooltip" title="{{ button_undo }}">
+                                            <i class="fa fa-undo"></i>
+                                          </button>
+                                        {% else %}
+                                          <button type="button" class="btn btn-default" onclick="up(this, 'move_field&field_uid={{ field.folder_field_uid }}&grouping=1');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}">
+                                            <i class="fa fa-arrow-up"></i>
+                                          </button>
+                                          <button type="button" class="btn btn-default" onclick="down(this, 'move_field&field_uid={{ field.folder_field_uid }}&grouping=1');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}">
+                                            <i class="fa fa-arrow-down"></i>
+                                          </button>
+                                          <button type="button" class="btn btn-default" onclick="removeField('{{ field.folder_field_uid }}');" data-toggle="tooltip" title="{{ button_remove }}">
+                                            <i class="fa fa-minus-circle"></i>
+                                          </button>
+                                        {% endif %}
+                                      </td>
+                                    </tr>
+                                  {% endfor %}
+
+                                </tbody>
+                                <tfoot></tfoot>
+                              </table>
+                            </td>
+                            <td style="vertical-align: top;">
+                              <table class="table table-striped table-bordered table-hover shadow2" id="tcolumn_fields_table{{ language.language_id }}">
+                                <thead>
+                                  <tr>
+                                    <td class="text-left">{{ column_field_field }}</td>
+                                    <td class="text-left">{{ column_field_name }}</td>
+                                    <td class="text-left">{{ column_field_sort }}</td>
+                                    <td style="width:145px;">{{ column_action }}</td>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% set default_sort_order = 1 %}
+                                  {% for field in table_fields[language['language_id']] %}
+                                    <tr id="tfield-row{{ field.folder_field_uid }}" {% if field.draft==2 %} class="remove_element" {% endif %} {% if field.draft==1 or field.draft==3 %} class="new_element" {% endif %}>
+                                      <td class="text-left pointer" onclick="editField('{{ field.folder_field_uid }}','table');">{{ field.field_name }}</td>
+                                      <td class="text-left pointer" onclick="editField('{{ field.folder_field_uid }}','table');">
+                                        {% if field.tcolumn_name is not empty%}
+                                          {{ field.tcolumn_name }}
+                                        {% else %}
+                                          <span style="color:#ccc;">{{ text_name_not_select }}</span>
+                                        {%endif %}
+                                      </td>
+                                      <td class="text-left pointer">
+                                        <label class="radio-inline text-center" style="width: 100%;"><input name="default_sort[{{ language.language_id }}]" value="{{ field.folder_field_uid }}" type="radio" {% if field.default_sort %} checked {% endif %} class="autosave" onclick="$('#select_default_sort_order').remove(); $(this).parent().append('<a id=\'select_default_sort_order\' class=\'asc\' onclick=\'orderDefaultSort(this, {{ language.language_id }});return false;\'></a>');">
+                                          {% if field.default_sort %}
+                                            <a id='select_default_sort_order' class='{% if field.default_sort == 1 %}asc{% else %}desc{% set default_sort_order = 2 %}{% endif %}' onclick='orderDefaultSort(this, {{ language.language_id }});return false;'></a>
+                                          {% endif %}
+                                        </label>
+                                      </td>
+                                      <td class="text-right" id="tfield-row-button{{ field.folder_field_uid }}">
+                                        {% if field.draft == 2 %}
+                                          <button type="button" class="btn btn-default" onclick="undoRemoveField('{{ field.folder_field_uid }}');" data-toggle="tooltip" title="{{ button_undo }}">
+                                            <i class="fa fa-undo"></i>
+                                          </button>
+                                        {% else %}
+                                          <button type="button" class="btn btn-default" onclick="up(this, 'move_field&field_uid={{ field.folder_field_uid }}&tcolumn=1');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}">
+                                            <i class="fa fa-arrow-up"></i>
+                                          </button>
+                                          <button type="button" class="btn btn-default" onclick="down(this, 'move_field&field_uid={{ field.folder_field_uid }}&tcolumn=1');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}">
+                                            <i class="fa fa-arrow-down"></i>
+                                          </button>
+                                          <button type="button" class="btn btn-default" onclick="removeField('{{ field.folder_field_uid }}');" data-toggle="tooltip" title="{{ button_remove }}">
+                                            <i class="fa fa-minus-circle"></i>
+                                          </button>
+                                        {% endif %}
+                                      </td>
+                                    </tr>
+                                  {% endfor %}
+                                </tbody>
+                                <tfoot></tfoot>
+                              </table>
+                              <input type="hidden" name="default_sort_order[{{ language.language_id }}]" value="{{ default_sort_order }}" class="autosave">
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="tab-pane fade" id="tab-filter">
+              <div class="form-group">
+                <div class="col-sm-10">
+                  <span class="btn btn-success" onclick="addFilter();" data-toggle="tooltip" title="{{ button_add_filter }}" data-original-title="{{ button_add_filter }}">
+                    <i class="fa fa-plus"></i>
+                  </span>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover shadow2" id="folder_filters">
+                  <thead>
+                    <tr>
+                      <td class="text-left">{{ column_field_name }}</td>
+                      <td class="text-left">{{ column_condition }}</td>
+                      <td class="text-left">{{ column_value }}</td>
+                      <td class="text-left">{{ column_action }}</td>
+                      <td style="width:98px;"></td>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    {% for filter in filters %}
+                      <tr id="filter-row{{ filter.filter_id }}" {% if filter.draft==2 %} class="remove_element" {% endif %} {% if filter.draft==1 %} class="new_element" {% endif %}>
+                        <td class="text-left">{{ filter.field_name }}</td>
+                        <td class="text-left">{{ filter.condition }}</td>
+                        <td class="text-left">{{ filter.value }}</td>
+                        <td class="text-left" {% if filter.action == 'color'%} style="background-color: #{{ filter.action_params.background }}; color: #{{ filter.action_params.color }};" {% endif %}>{{ filter.action_title }}</td>
+                        <td class="text-right" id="filter-row-button{{ filter.filter_id }}">
+                          {% if filter.draft == 2 %}
+                            <button type="button" onclick="undoRemoveFilter('{{ filter.filter_id }}');" data-toggle="tooltip" title="{{ button_undo }}" class="btn btn-danger">
+                              <i class="fa fa-undo"></i>
+                            </button>
+                          {% else %}
+                            <span class="btn btn-success" onclick="editFilter('{{ filter.filter_id }}');" data-toggle="tooltip" title="{{ button_edit_filter }}" data-original-title="{{ button_edit_filter }}">
+                              <i class="fa fa-pencil"></i>
+                            </span>
+                            <button type="button" onclick="removeFilter('{{ filter.filter_id }}');" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger">
+                              <i class="fa fa-minus-circle"></i>
+                            </button>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+
+                  </tbody>
+
+                  <tfoot></tfoot>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="tab-button">
+              <span class="btn btn-success" onclick="addButton();" data-toggle="tooltip" title="{{ add_button }}" data-original-title="{{ add_button }}">
+                <i class="fa fa-plus-circle"></i>
+              </span>
+              <div class="table-responsive">
+                <table class="table table-hover shadow2" id="table_button">
+                  <thead>
+                    <th class="text-left">{{ column_button_name }}</th>
+                    <th class="text-left">{{ column_button_field }}</th>
+                    <th class="text-left">{{ column_button_route }}</th>
+                    <th class="text-left">{{ column_button_action }}</th>
+                    <th class="text-left" style="width: 145px;"></th>
+                  </thead>
+                  <tbody>
+                    {% for button in buttons %}
+                      <tr id="button-row{{ button.folder_button_uid }}" {% if button.draft==2 %} class="remove_element" {% endif %} {% if button.draft==1 %} class="new_element" {% endif %}>
+                        <td class="text-left ">
+                          <span class="btn btn-default btncolor{% if button.draft==2 %}remove_element{% endif %} {% if button.draft==1 %}new_element{% endif %}" onclick="editButton('{{ button.folder_button_uid }}');" id="button-button{{ button.folder_button_uid }}" data-toggle="tooltip" title="{{edit_button}}" data-original-title="{{edit_button}}" style="{% if button.color is not empty %}color:#{{ button.color }};{% endif %}{% if button.background is not empty %}background-color:#{{ button.background }};{% endif %}{% if button.picture %}padding:3px 6px 3px 3px;{% endif %}">
+                            <img src="{{ button.picture25 }}">
+                            {{ button.name }}</span>
+                        </td>
+                        <td class="text-left pointer" onclick="editButton('{{ button.folder_button_uid }}');">
+                          {% for field in button.fields %}
+                            {{ field.name }}
+                            {% if not loop.index0 %},
+                            {% endif %}
+                          {% endfor %}
+                        </td>
+                        <td class="text-left pointer" onclick="editButton('{{ button.folder_button_uid }}');">
+                          {% for route in button.routes %}
+                            {{ route.name }}
+                          {% endfor %}
+                        </td>
+                        <td class="text-left pointer" onclick="editButton('{{ button.folder_button_uid }}');">
+                          {{ button.action_name }}
+                        </td>
+                        <td class="text-right" id="remove_button{{ button.folder_button_uid }}">
+                          {% if button.draft == 2 %}
+                            <button type="button" onclick="undoRemoveButton('{{ button.folder_button_uid }}');" data-toggle="tooltip" title="{{ button_undo }}" class="btn btn-default">
+                              <i class="fa fa-undo"></i>
+                            </button>
+                          {% else %}
+                            <button type="button" class="btn btn-default" onclick="up(this, 'move_button&button_uid={{ button.folder_button_uid }}');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}">
+                              <i class="fa fa-arrow-up"></i>
+                            </button>
+                            <button type="button" class="btn btn-default" onclick="down(this, 'move_button&button_uid={{ button.folder_button_uid }}');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}">
+                              <i class="fa fa-arrow-down"></i>
+                            </button>
+                            <button type="button" onclick="removeButton('{{ button.folder_button_uid }}');" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-default">
+                              <i class="fa fa-minus-circle"></i>
+                            </button>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div> 
+            </div>
+            <div class="tab-pane fade" id="tab-additional">
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="select-show_toolbar">{{ entry_toolbar }}</label>
+                <div class="col-sm-10">
+                  <select class="form-control autosave" id="select-show_toolbar" name="additional_params[toolbar]">
+                    <option value="always_show" {% if additional_params.toolbar is empty or additional_params.toolbar == 'always_show' %} selected="selected" {% endif %}>{{ text_toolbar_always_show }}</option>
+                    <option value="empty_hide" {% if additional_params.toolbar == 'empty_hide' %} selected="selected" {% endif %}>{{  text_toolbar_empty_hide }}</option>
+                    <option value="always_hide" {% if additional_params.toolbar == 'always_hide' %} selected="selected" {% endif %}>{{  text_toolbar_always_hide }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="select-show_navigation">{{ entry_navigation }}</label>
+                <div class="col-sm-10">
+                  <select class="form-control autosave" id="select-show_navigation" name="additional_params[navigation]">
+                    <option value="always_show" {% if additional_params.navigation == 'always_show' %} selected="selected" {% endif %}>{{ text_navigation_always_show }}</option>
+                    <option value="show_in_toolbar" {% if additional_params.navigation == 'show_in_toolbar' %} selected="selected" {% endif %}>{{ text_navigation_show_in_toolbar }}</option>
+                    <option value="toolbar_hidden_show" {% if additional_params.navigation == 'toolbar_hidden_show' %} selected="selected" {% endif %}>{{  text_navigation_toolbar_hidden_show }}</option>
+                    <option value="always_hide" {% if additional_params.navigation is empty or additional_params.navigation == 'always_hide' %} selected="selected" {% endif %}>{{  text_navigation_always_hide }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="select-collapse_group">{{ entry_collapse_group }}</label>
+                <div class="col-sm-10">
+                  <select class="form-control autosave" id="select-collapse_group" name="additional_params[collapse_group]">
+                    <option value="0" {% if not additional_params.collapse_group %} selected="selected" {% endif %}>{{ text_group_show }}</option>
+                    <option value="1" {% if additional_params.collapse_group %} selected="selected" {% endif %}>{{  text_group_collapse }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="select-show_count_group">{{ entry_show_count_group }}</label>
+                <div class="col-sm-10">
+                  <select class="form-control autosave" id="select-show_count_group" name="additional_params[show_count_group]">
+                    <option value="0" {% if not additional_params.show_count_group %} selected="selected" {% endif %}>{{ text_selectors_hide }}</option>
+                    <option value="1" {% if additional_params.show_count_group %} selected="selected" {% endif %}>{{  text_selectors_show }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="select-hide_selectors">{{ entry_hide_selectors }}</label>
+                <div class="col-sm-10">
+                  <select class="form-control autosave" id="select-hide_selectors" name="additional_params[hide_selectors]">
+                    <option value="0" {% if not additional_params.hide_selectors %} selected="selected" {% endif %}>{{ text_selectors_show }}</option>
+                    <option value="1" {% if additional_params.hide_selectors %} selected="selected" {% endif %}>{{  text_selectors_hide }}</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</form>
+<script type="text/javascript">
+  loadSummernote();
+
+  let summernoteLang = {};
+  summernoteLang['{{ code }}'.split('-')[0]] = JSON.parse('{{ text_editor | json_encode() | e("js") }}');
+  $.extend($.summernote.lang, summernoteLang);
+
+  if ($('input[name=\'doctype_uid\']').val() > 0) {
+    $('#input-doctype').attr('disabled', 'disabled');
+  }
+
+  $('input[name=\'doctype_name\']').autocomplete({
+    'source': function (request, response) {
+      $.ajax({
+        url: 'index.php?route=doctype/doctype/autocomplete&filter_name=' + encodeURIComponent(request),
+        dataType: 'json',
+        cache: false,
+        success: function (json) {
+
+          json.unshift({doctype_uid: 0, name: '{{ text_none }}'});
+          response($.map(json, function (item) {
+            return {label: item['name'], value: item['doctype_uid']}
+          }));
+        }
+      });
+    },
+    'select': function (item) {
+      if (item['value']) {
+        $('input[name=\'doctype_name\']').val(item['label']);
+        $('input[name=\'doctype_uid\']').val(item['value']);
+
+      } else {
+        $('input[name=\'doctype_name\']').val("");
+        $('input[name=\'doctype_uid\']').val("0");
+      }
+      autosave();
+    }
+  });
+
+  function addField(language_id) {
+    if ($('input[name=\'doctype_uid\']').val() > 0) {
+      $('#input-doctype').attr('disabled', 'disabled');
+    }
+    $('#modal-afield').remove();
+
+    html = '<div id="modal-afield" class="modal fade">';
+    html += '  <div class="modal-dialog modal-lg">';
+    html += '    <div class="modal-content">';
+    html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '</div>';
+
+    $('body').append(html);
+
+    $('#modal-afield').modal('show');
+    $('#modal-afield').draggable({handle: '.modal-header'});
+
+    $.ajax({
+      url: 'index.php?route=doctype/folder/window_field&doctype_uid=' + $('input[name=\'doctype_uid\']').val() + '&folder_uid=' + getURLVar('folder_uid') + '&language_id=' + language_id,
+      type: 'get',
+      cache: false,
+      dataType: 'html',
+      success: function (data) {
+        $('#modal-afield .modal-load-mask').remove();
+        $('#modal-afield .modal-content').prepend(data);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        $('#modal-afield .modal-load-mask .fa').remove();
+        $('#modal-afield .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}!</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+      }
+    });
+  }
+
+  function editField(folder_field_uid, part) {
+    if ($('#gfield-row' + folder_field_uid).hasClass('remove_element') || $('#tfield-row' + folder_field_uid).hasClass('remove_element')) {
+      alert('{{ text_field_not_editable }}');
+      exit;
+    }
+
+    $('#modal-afield').remove();
+
+    html = '<div id="modal-afield" class="modal fade">';
+    html += '  <div class="modal-dialog modal-lg">';
+    html += '    <div class="modal-content">';
+    html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '</div>';
+
+    $('body').append(html);
+
+    $('#modal-afield').modal('show');
+    $('#modal-afield').draggable({handle: '.modal-header'});
+
+    $.ajax({
+      url: 'index.php?route=doctype/folder/window_field&folder_field_uid=' + folder_field_uid + '&part=' + part,
+      type: 'get',
+      cache: false,
+      dataType: 'html',
+      success: function (data) {
+        $('#modal-afield .modal-load-mask').remove();
+        $('#modal-afield .modal-content').prepend(data);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        $('#modal-afield .modal-load-mask .fa').remove();
+        $('#modal-afield .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+      }
+    });
+  }
+
+  function removeField(field_uid) {
+    $.ajax({
+      url: 'index.php?route=doctype/folder/remove_field&folder_field_uid=' + field_uid,
+      dataType: 'json',
+      cache: false,
+      success: function (data) {
+        $('#gfield-row' + field_uid).addClass('remove_element');
+        $('#tfield-row' + field_uid).addClass('remove_element');
+        html = '<button type="button"  class="btn btn-default" onclick="undoRemoveField(\'' + field_uid + '\');" data-toggle="tooltip" title="{{ button_undo }}"><i class="fa fa-undo"></i></button>';
+        $('#gfield-row-button' + field_uid).html(html);
+        $('#tfield-row-button' + field_uid).html(html);
+      }
+    });
+    $('.tooltip').hide();
+  };
+
+  function undoRemoveField(field_uid) {
+    $.ajax({
+      url: 'index.php?route=doctype/folder/undo_remove_field&folder_field_uid=' + field_uid,
+      dataType: 'json',
+      cache: false,
+      success: function (data) {
+        $('#gfield-row' + field_uid).removeClass('remove_element');
+        $('#tfield-row' + field_uid).removeClass('remove_element');
+        html = '<button type="button" class="btn btn-default" onclick="up(this, \'move_field&field_uid=' + field_uid + '&grouping=1\');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ' + '<button type="button" class="btn btn-default" onclick="down(this, \'move_field&field_uid=' + field_uid + '&grouping=1\');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ' + '<button type="button" class="btn btn-default" onclick="removeField(\'' + field_uid + '\');" data-toggle="tooltip" title="{{ button_remove }}"><i class="fa fa-minus-circle"></i></button>';
+        $('#gfield-row-button' + field_uid).html(html);
+        html = '<button type="button" class="btn btn-default" onclick="up(this, \'move_field&field_uid=' + field_uid + '&tcolumn=1\');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ' + '<button type="button" class="btn btn-default" onclick="down(this, \'move_field&field_uid=' + field_uid + '&tcolumn=1\');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ' + '<button type="button" class="btn btn-default" onclick="removeField(\'' + field_uid + '\');" data-toggle="tooltip" title="{{ button_remove }}"><i class="fa fa-minus-circle"></i></button>';
+        $('#tfield-row-button' + field_uid).html(html);
+      }
+    });
+    $('.tooltip').hide();
+  };
+
+  function orderDefaultSort(el, id) {
+    if ($('input[name=\'default_sort_order[' + id + ']\']').val() == '1') {
+      $('input[name=\'default_sort_order[' + id + ']\']').val('2');
+      $(el).removeClass('asc');
+      $(el).addClass('desc');
+    } else {
+      $('input[name=\'default_sort_order\[' + id + ']\']').val('1');
+      $(el).removeClass('desc');
+      $(el).addClass('asc');
+    }
+    autosave();
+  }
+
+  function addFilter() {
+    $('#modal-afilter').remove();
+
+    html = '<div id="modal-afilter" class="modal fade">';
+    html += '  <div class="modal-dialog modal-lg">';
+    html += '    <div class="modal-content">';
+    html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '</div>';
+
+    $('body').append(html);
+
+    $('#modal-afilter').modal('show');
+    $('#modal-afilter').draggable({handle: '.modal-header'});
+
+    $.ajax({
+      url: 'index.php?route=doctype/folder/add_filter&folder_uid=' + getURLVar('folder_uid'),
+      type: 'get',
+      dataType: 'html',
+      cache: false,
+      success: function (data) {
+        $('#modal-afilter .modal-load-mask').remove();
+        $('#modal-afilter .modal-content').prepend(data);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        $('#modal-afilter .modal-load-mask .fa').remove();
+        $('#modal-afilter .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}!</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+      }
+    });
+  }
+
+  function editFilter(folder_filter_uid) {
+    $('#modal-afilter').remove();
+
+    html = '<div id="modal-afilter" class="modal fade">';
+    html += '  <div class="modal-dialog modal-lg">';
+    html += '    <div class="modal-content">';
+    html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '</div>';
+
+    $('body').append(html);
+
+    $('#modal-afilter').modal('show');
+    $('#modal-afilter').draggable({handle: '.modal-header'});
+
+    $.ajax({
+      url: 'index.php?route=doctype/folder/edit_filter&folder_filter_uid=' + folder_filter_uid,
+      type: 'get',
+      dataType: 'html',
+      cache: false,
+      success: function (data) {
+        $('#modal-afilter .modal-load-mask').remove();
+        $('#modal-afilter .modal-content').prepend(data);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        $('#modal-afilter .modal-load-mask .fa').remove();
+        $('#modal-afilter .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+      }
+    });
+  }
+
+  function removeFilter(filter_id) {
+    $.ajax({
+      url: 'index.php?route=doctype/folder/remove_filter&filter_id=' + filter_id,
+      dataType: 'json',
+      cache: false,
+      success: function (data) {
+        $('#filter-row' + filter_id).addClass('remove_element');
+        html = '<button type="button" onclick="undoRemoveFilter(\'' + filter_id + '\');" data-toggle="tooltip" title="{{ button_undo }}" class="btn btn-danger"><i class="fa fa-undo"></i></button>';
+        $('#filter-row-button' + filter_id).html(html);
+      }
+    });
+    $('.tooltip').hide();
+  };
+
+  function undoRemoveFilter(filter_id) {
+    $.ajax({
+      url: 'index.php?route=doctype/folder/undo_remove_filter&filter_id=' + filter_id,
+      dataType: 'json',
+      cache: false,
+      success: function (data) {
+        $('#filter-row' + filter_id).removeClass('remove_element');
+        html = '<span class="btn btn-success" onclick="editFilter(\'' + filter_id + '\');" data-toggle="tooltip" title="{{ button_edit_filter }}" data-original-title="{{ button_edit_filter }}"><i class="fa fa-pencil"></i></span> ' + '<button type="button" onclick="removeFilter(\'' + filter_id + '\');" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button>';
+        $('#filter-row-button' + filter_id).html(html);
+      }
+    });
+    $('.tooltip').hide();
+  };
+
+  function addButton() {
+    $('#modal-abutton').remove();
+
+    html = '<div id="modal-abutton" class="modal fade">';
+    html += '  <div class="modal-dialog modal-lg">';
+    html += '    <div class="modal-content">';
+    html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '</div>';
+
+    $('body').append(html);
+
+    $('#modal-abutton').modal('show');
+    $('#modal-abutton').draggable({handle: '.modal-header'});
+
+    $.ajax({
+      url: 'index.php?route=doctype/folder/add_button&folder_uid=' + getURLVar('folder_uid'),
+      type: 'get',
+      dataType: 'html',
+      cache: false,
+      success: function (data) {
+        $('#modal-abutton .modal-load-mask').remove();
+        $('#modal-abutton .modal-content').prepend(data);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        $('#modal-abutton .modal-load-mask .fa').remove();
+        $('#modal-abutton .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}!</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+      }
+    });
+  }
+
+  function editButton(button_uid) {
+    $('#modal-abutton').remove();
+
+    html = '<div id="modal-abutton" class="modal fade">';
+    html += '  <div class="modal-dialog modal-lg">';
+    html += '    <div class="modal-content">';
+    html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '</div>';
+
+    $('body').append(html);
+
+    $('#modal-abutton').modal('show');
+    $('#modal-abutton').draggable({handle: '.modal-header'});
+
+    $.ajax({
+      url: 'index.php?route=doctype/folder/edit_button&button_uid=' + button_uid,
+      type: 'get',
+      dataType: 'html',
+      cache: false,
+      success: function (data) {
+        $('#modal-abutton .modal-load-mask').remove();
+        $('#modal-abutton .modal-content').prepend(data);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        $('#modal-abutton .modal-load-mask .fa').remove();
+        $('#modal-abutton .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}!</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+      }
+    });
+
+  }
+
+  function removeButton(button_uid) {
+    $.ajax({
+      url: 'index.php?route=doctype/folder/remove_button&button_uid=' + button_uid,
+      dateType: 'json',
+      cache: false,
+      success: function (data) {
+        $('#button-row' + button_uid).addClass('remove_element');
+        $('#button-button' + button_uid).addClass('remove_element');
+        html = '<button type="button" onclick="undoRemoveButton(\'' + button_uid + '\');" data-toggle="tooltip" title="{{ button_undo }}" class="btn btn-default"><i class="fa fa-undo"></i></button>';
+        $('#remove_button' + button_uid).html(html);
+      }
+    });
+    $('.tooltip').hide();
+  };
+  function undoRemoveButton(button_uid) {
+    $.ajax({
+      url: 'index.php?route=doctype/folder/undo_remove_button&button_uid=' + button_uid,
+      dateType: 'json',
+      cache: false,
+      success: function (data) {
+        $('#button-row' + button_uid).removeClass('remove_element');
+        $('#button-button' + button_uid).removeClass('remove_element');
+        html = '<button type="button"  class="btn btn-default" onclick="up(this, \'move_button&button_uid=' + button_uid + '\');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ' + '<button type="button"  class="btn btn-default" onclick="down(this, \'move_button&button_uid=' + button_uid + '\');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ' + '<button type="button" onclick="removeButton(\'' + button_uid + '\');" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-default"><i class="fa fa-minus-circle"></i></button>';
+        $('#remove_button' + button_uid).html(html);
+      }
+    });
+    $('.tooltip').hide();
+  };
+
+  function up(element, url) {
+    $.ajax({
+      url: 'index.php?route=doctype/folder/' + url + '&direction=up',
+      dataType: 'json',
+      cache: false,
+      success: function (json) {
+        if (json['success']) {
+          var row = $(element).parents("tr:first");
+          var row2 = row.prev();
+          row.insertBefore(row2);
+          row.addClass('new_element');
+          row2.addClass('new_element');
+          row.find(".btncolor").addClass('new_element');
+          row2.find(".btncolor").addClass('new_element');
+        }
+      }
+    });
+    $('.tooltip').hide();
+  };
+
+  function down(element, url) {
+    $.ajax({
+      url: 'index.php?route=doctype/folder/' + url + '&direction=down',
+      dataType: 'json',
+      cache: false,
+      success: function (json) {
+        if (json['success']) {
+          var row = $(element).parents("tr:first");
+          var row2 = row.next();
+          row.insertAfter(row2);
+          row.addClass('new_element');
+          row2.addClass('new_element');
+          row.find(".btncolor").addClass('new_element');
+          row2.find(".btncolor").addClass('new_element');
+
+        }
+      }
+    });
+    $('.tooltip').hide();
+  };
+
+
+  // -->
+</script>
+
+
+<script type="text/javascript"><!--
+
+    $(".autosave").change(function () {
+        autosave();
+    });
+
+    var autosave_data = [];
+    
+    $.each($('.autosave'), function () {
+        name = $(this).attr('name').replace(/\[/g, '');
+        name = name.replace(/\]/g, '');
+        if ($(this).attr('type') == "radio") {
+            value = $('input[name=\'' + $(this).attr('name') + '\']:checked').val();
+        } else {
+            value = $(this).val();
+        }
+        autosave_data[name] = $.trim(value);
+    });
+
+    function autosave() {
+        $.each($('.autosave'), function () {
+            name = $(this).attr('name').replace(/\[/g, '');
+            name = name.replace(/\]/g, '');
+            param = $(this).attr('name');
+            if (param === "doctype_name") {
+                param = 'doctype_uid';
+                value = $('input[name=\'doctype_uid\']').val();
+            } else if ($(this).attr('type') == "radio") {
+                value = $('input[name=\'' + $(this).attr('name') + '\']:checked').val();
+            } else {
+                value = $(this).val();
+            }
+
+            if (autosave_data[name] !== $.trim(value) && (name != "doctype_name")) {
+
+                $.ajax({
+                    url: 'index.php?route=doctype/folder/save_folder&folder_uid={{ folder_uid }}',
+                    type: 'post', cache: false,
+                    data: param + "=" + encodeURIComponent(value),
+                    dataType: 'html',
+                    beforeSend: function () {
+                        $('#modal-button-add').button('loading');
+                    },
+                    success: function (data) {
+                    }
+                });
+                autosave_data[name] = $.trim(value);
+                //return false;
+            }
+        });
+    }
+
+
+    $('#language a:first').tab('show');
+    $('#field-language a:first').tab('show');
+
+
+    $(document).ready(function () {
+        $('body').append($('#modal-abutton'));
+        var url = window.location.href;
+        var params = url.split("#");   
+        
+        if (typeof params[1] !== 'undefined') {
+            $('.nav-tabs a[href="#' + params[1] + '"]').tab('show');
+        }        
+    });
+    
+    $(document).on("submit","form",function(e){
+        //переключаем summernote в визуальный режим из режима исходного кода, чтобы сохранить возможные внесенные изменения
+        summernotes = $('[data-toggle="summernote_s"]');
+        $.each(summernotes, function(){
+            if ($(this).summernote('codeview.isActivated')) {
+                    $(this).summernote('codeview.deactivate'); 
+            }
+        })
+        autosave();
+    })      
+
+    $('#modal-abutton').on('hidden.bs.modal', function (e) {
+        $(this).find('.alert').remove();
+    })
+
+    window.onbeforeunload = function (e) {
+        $(".autosave").trigger('change');
+        $('#block_loading').show();
+    };
+    
+    $('#general_tabs a').on('shown.bs.tab', function(event){       
+        var tab = $(this).attr('href');
+        $('input[name=\'active_tab\']').val(tab);
+        var url = window.location.href;
+        var params = url.split("#");  
+        history.pushState(null, null, params[0] + tab);
+        
+    });</script>{{ footer }}

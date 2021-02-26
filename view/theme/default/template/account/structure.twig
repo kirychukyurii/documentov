@@ -1,0 +1,25 @@
+{{ header }}
+<div class="container-fluid">
+    <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-doctype" class="form-horizontal">
+        <div class="row text-center">
+            <br><br>
+            <h4>{{ select_structure }}</h4>
+        </div>    
+        <div class="row text-center">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6">
+                <select name="structure_uid" class="form-control text-center">
+                    {% for structure in structures %}
+                        <option value="{{ structure.document_uid }}" {% if structure.document_uid == structure_uid %}selected="selected"{% endif %}>{{ structure.name }}</option>    
+                    {% endfor %}                
+                </select>
+            </div>    
+            <div class="col-sm-3"></div>
+        </div>   
+        <div class="text-center">
+            <br>    
+            <button type="submit" class="btn btn-primary">{{ button_continue }}</button>
+        </div>   
+    </form>    
+</div>
+{{ footer }}

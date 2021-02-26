@@ -1,0 +1,26 @@
+</div>
+
+<script type="text/javascript">
+  $('#document_form').keypress(function (e) {
+    if (e.ctrlKey && (e.keyCode == 10 || e.keyCode == 13)) {
+      $('#button-save_document').trigger('click');
+    }
+  });
+  function save_draft() {
+    $.ajax({url: 'index.php?route=document/document/save_draft&document_uid={{ document_uid }}', type: 'post', data: $('#document_form input[type=\'text\'], #document_form input[type=\'number\'], #document_form input[type=\'password\'], #document_form input[type=\'hidden\'], #document_form input[type=\'radio\']:checked, #document_form input[type=\'checkbox\']:checked, #document_form select, #document_form textarea'), dataType: 'json', success: function (json) {}});
+  };
+
+  navDocumentov.setFieldDraft();
+  $(".form-control").on('change', function () {
+    navDocumentov.updateFieldDraft();
+  });
+  $(document).mousemove(function (e) { // на тот случай, если пользователь заполнил поле и сразу потянулся закрывать вкладку
+    if (e.pageY <= 5) {
+      navDocumentov.updateFieldDraft();
+    }
+  });
+
+  $(".summernote").on("summernote.change", function (e) { // callback as jquery custom event
+  });
+</script>
+{{ footer }}

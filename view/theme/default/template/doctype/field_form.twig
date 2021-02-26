@@ -1,0 +1,287 @@
+<div class="modal-header">
+  <div class="pull-right">
+    <button type="button" class="btn btn-default" onclick="{% if field_uid %}edit{% else %}add{% endif %}();" data-loading-text="{{ text_loading }}">
+      <i class="fa fa-save"></i>
+    </button>
+    <button class="btn btn-default" data-dismiss="modal" type="button">
+      <i class="fa fa-reply"></i>
+    </button>
+  </div>
+  <div class="pull-left">
+    <h4 class="modal-title text-left">{{ title }}</h4>
+  </div>
+</div>
+
+<div class="modal-body">
+  <ul class="nav nav-tabs">
+    <li class="active">
+      <a data-toggle="tab" href="#tab-form">{{ tab_form }}</a>
+    </li>
+    <li>
+      <a data-toggle="tab" href="#attributes">{{ tab_attributes }}</a>
+    </li>
+    <li>
+      <a data-toggle="tab"  id="field_form_tab_usage" href="#field_usage">{{ tab_usage }}</a>
+    </li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane fade in active" id="tab-form">
+      <div class="form-horizontal">
+        <div class="form-group">
+          <div class="col-sm-6">
+            <label class="control-label">{{ text_field_name }}</label>
+            <input type="text" name="field_name" id="input-field_name" class="form-control" placeholder="{{ text_field_name }}" value="{{ field_name }}"/>
+            <label class="control-label">{{ text_field_type }}</label>
+            {% if field_uid %}
+              <input type="text" name="field_type_name" {% if field_uid %} readonly="true" {% endif %} class="form-control" value="{{ field_type_name }}"/>
+              <input type="hidden" name="field_type" id="input-field_type" value="{{ field_type }}"/>
+            {% else %}
+              <select class="form-control" id="input-field_type" name="field_type">
+                <option value="0">{{ text_select }}</option>
+                {% for field in fields %}
+                  <option value='{{ field.name }}'>{{ field.title }}</option>
+                {% endfor %}
+              </select>
+            {% endif %}
+          </div>
+          <div class="col-sm-6">
+            <label class="control-label">
+              <span data-toggle="tooltip" title="{{ help_field_description }}">{{ text_field_description }}</span>
+            </label>
+            <textarea class="form-control ta_f-description" id="textarea-field_descripion" name="field_description">{{ field_description }}</textarea>
+          </div>
+        </div>
+        <hr>
+        <div id="form">{{ form_twig }}</div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="attributes">
+      <div class='form-horizontal' id="attributes_params">
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="input-change_field">{{ text_change_field }}</label>
+          <div class="col-sm-9">
+            <label class="checkbox-inline">
+              <input type="checkbox" name="change_field" id="input-change_field" value="1" {% if change_field %} checked="checked" {% endif %}>
+              {% if setting %}
+                {{ entry_change_setting }}
+              {% else %}
+                {{ entry_change_field }}
+              {% endif %}
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-6">
+            <label class="control-label" for="input-field_access_form">
+              <span data-toggle="tooltip" title="{{ help_access_form }}">{{ text_access_form }}</span>
+            </label>
+            <div>
+              {% import "default/template/macros/fields.twig" as mfields %}
+              {{ mfields.show(access_form, doctype_uid, 'field_access_form', text_macros_field) }}
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <label class="control-label" for="input-field_access_view">
+              <span data-toggle="tooltip" title="{{ help_access_view }}">{{ text_access_view }}</span>
+            </label>
+            <div>
+              {% import "default/template/macros/fields.twig" as mfields %}
+              {{ mfields.show(access_view, doctype_uid, 'field_access_view', text_macros_field) }}
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="input-required">
+            <span data-toggle="tooltip" title="{{ help_required }}">{{ text_required }}</span>
+          </label>
+          <div class="col-sm-3">
+            <label class="checkbox-inline">
+              <input type="checkbox" name="required" id="input-required" value="1" {% if required %} checked="checked" {% endif %}></label>
+          </div>
+          <label class="col-sm-3 control-label" for="input-unique">
+            <span data-toggle="tooltip" title="{{ help_unique }}">{{ text_unique }}</span>
+          </label>
+          <div class="col-sm-3">
+            <label class="checkbox-inline">
+              <input type="checkbox" name="unique" id="input-unique" value="1" {% if unique %} checked="checked" {% endif %}></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="input-ft_index">
+            <span data-toggle="tooltip" title="{{ help_ft_index }}">{{ text_ft_index }}</span>
+          </label>
+          <div class="col-sm-3">
+            <label class="checkbox-inline">
+              <input type="checkbox" name="ft_index" id="input-ft_index" value="1" {% if ft_index %} checked="checked" {% endif %}></label>
+          </div>
+          <label class="col-sm-3 control-label" for="input-history">
+            <span data-toggle="tooltip" title="{{ help_history }}">{{ text_history }}</span>
+          </label>
+          <div class="col-sm-3">
+            <label class="checkbox-inline" id="label-history">
+              <input type="checkbox" name="history" id="input-history" value="1" {% if history %} checked="checked" {% endif %}></label>
+          </div>
+        </div>
+
+        <div class="form-group">      
+          <div class="col-md-12" style='padding-top: 9px;'>
+            <small><b>{{ text_field_id }}</b>: {{ field_uid }}</small>
+          </div>  
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="field_usage">
+        {{ text_loading }}
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <div class="row">
+    <div class="col-md-3 col-sm-6">
+      <button type="button" class="btn btn-default btn-block" id="modal-button-add" onclick="{% if field_uid %}edit{% else %}add{% endif %}();" data-loading-text="{{ text_loading }}">{{ button_save }}</button>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="visible-xs" style="margin-top: 15px;"></div>
+      <button class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+function validateDoctypeFieldParams() {
+  let fieldName = $('#input-field_name').val();
+  if (!fieldName) {
+    alert('{{ text_required_fieldname }}');
+    return false;
+  }
+  let regex = new RegExp('[^0-9a-zA-Z\u0400-\u052F\u2DE0-\u2DFF\uA640-\uA69F_\\-\\.\\ ]+'); //вся кириллица
+  if (regex.test(fieldName)) {
+    alert('{{ text_incorrect_fieldname }}');
+    return false;
+  }
+  if (!$('[name=field_type]').val() || $('[name=field_type]').val() == '0') {
+    alert('{{ text_required_fieldtype }}');
+    return false;
+  }
+  return true;
+}
+{% if field_uid %}
+  function edit() {
+    if (validateDoctypeFieldParams()) {
+      $.ajax({
+        url: 'index.php?route=doctype/doctype/save_field&field_uid={{ field_uid }}',
+        type: 'post',
+        data: $('#form [name^="field["][type!=\'checkbox\'][type!=\'radio\'], #input-field_name, #input-field_type, #textarea-field_descripion, #form input[name^="field["][type=\'checkbox\']:checked, #form input[name^="field["][type=\'radio\']:checked, #attributes_params [name^="field["][type!=\'checkbox\'][type!=\'radio\'], #attributes_params input[type=\'checkbox\']:checked, #attributes_params input[type=\'radio\']:checked, #attributes_params input[type=\'hidden\']'),
+        dataType: 'json',
+        beforeSend: function () {
+          $('#modal-button-add').button('loading');
+        },
+        success: function (json) {
+          {% if setting %}
+            setting = 1;
+          {% else %}
+            setting = 0;{% endif %}html = '<td class="text-left pointer" onclick="editField(\'{{ field_uid }}\',' + setting + ');">';
+          html += '<input type="hidden" name="fields[]" value="{{ field_uid }}">' + json['field_name'] + '</td>';
+          var attributes = " ";
+          if (json['attributes']) {
+            attributes += " ";
+            $.each(json['attributes'], function () {
+              attributes += '<span class="badge" title="' + this.text + '"><i class="fa fa-' + this.pic + '"></i></span> ';
+            });
+          }
+          html += '<td class="text-left pointer" onclick="editField(\'{{ field_uid }}\',' + setting + ');">' + json['field_type_title'] + '</td>';
+          if (setting == 1) {
+            html += '<td class="text-left pointer" onclick="editField(\'{{ field_uid }}\',' + setting + ');">' + attributes + '</td>';
+            html += '<td class="text-left pointer" onclick="editField(\'{{ field_uid }}\',' + setting + ');" id="setting_field_value{{ field_uid }}"></td>';
+          } else {
+            html += '<td class="text-left pointer" onclick="editField(\'{{ field_uid }}\',' + setting + ');">' + json['params_description'] + attributes + '</td>';
+          }
+
+          html += '<td class="text-right" id="field-row-button{{ field_uid }}">';
+
+          html += '<button type="button"  class="btn btn-default" onclick="up(this, \'move_field&field_uid={{ field_uid }}\');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ';
+          html += '<button type="button"  class="btn btn-default" onclick="down(this, \'move_field&field_uid={{ field_uid }}\');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ';
+          html += '<button type="button"  class="btn btn-default" onclick="removeField(\'{{ field_uid }}\',' + setting + ');" data-toggle="tooltip" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button>';
+          html += '</td>';
+
+          $('#field-row{{ field_uid }}').html(html);
+          $('#field-row{{ field_uid }}').addClass('new_element');
+          $('#modal-afield').modal('hide');
+        }
+      })
+    }
+
+  };
+{% else %}
+  $('select[name=\'field_type\']').on('change', function () {
+    $('#form').html('');
+    $('#attributes_params input').removeAttr('disabled');
+    // $('#input-history').removeAttr('disabled');
+    $.ajax({
+      url: 'index.php?route=doctype/doctype/get_form_field&field_type=' + encodeURIComponent(this.value) + '&doctype_uid={{ doctype_uid }}',
+      dataType: 'json',
+      success: function (html) {
+        $('#form').html(html);
+      }
+    });
+  });
+  function add() {
+    if (validateDoctypeFieldParams()) {
+      $.ajax({
+        url: 'index.php?route=doctype/doctype/add_field&doctype_uid={{ doctype_uid }}' + '&setting={{ setting }}',
+        type: 'post',
+        data: $('#form [name^="field["][type!=\'checkbox\'][type!=\'radio\'], #input-field_name, #input-field_type, #textarea-field_descripion, #form input[name^="field["][type=\'checkbox\']:checked, #form input[name^="field["][type=\'radio\']:checked, #attributes_params input[type=\'checkbox\']:checked, #attributes_params input[type=\'radio\']:checked, #attributes_params input[type=\'hidden\']'),
+        dataType: 'json',
+        beforeSend: function () {
+          $('#modal-button-add').button('loading');
+        },
+        success: function (json) {
+          setting = json['field_setting'];
+          html = '<tr id="field-row' + json['doctype_field_uid'] + '" class="new_element">' + '<td class="text-left pointer" onclick="editField(\'' + json['doctype_field_uid'] + '\',' + setting + ');"><input type="hidden" name="fields[]" value="' + json['doctype_field_uid'] + '">' + json['field_name'] + '</td>' + '<td class="text-left pointer" onclick="editField(\'' + json['doctype_field_uid'] + '\',' + setting + ');">' + json['field_type_title'] + '</td>';
+          var attributes = " ";
+          if (json['attributes']) {
+            attributes += " ";
+            $.each(json['attributes'], function () {
+              attributes += '<span class="badge" title="' + this.text + '"><i class="fa fa-' + this.pic + '"></i></span> ';
+            });
+          }
+          if (setting == 1) {
+            html += '<td class="text-left pointer" onclick="editField(\'' + json['doctype_field_uid'] + '\',' + setting + ');">' + attributes + '</td>';
+            html += '<td  class="text-left pointer" onclick="editField(\'' + json['doctype_field_uid'] + '\',' + setting + ');" id="setting_field_value{{ field_uid }}"></td>';
+          } else {
+            html += '<td class="text-left pointer" onclick="editField(\'' + json['doctype_field_uid'] + '\',' + setting + ');">' + json['params_description'] + attributes + '</td>';
+          }
+          html += '<td id="field-row-button' + json['doctype_field_uid'] + '" class="text-right">';
+
+          html += '<button type="button"  class="btn btn-default" onclick="up(this, \'move_field&field_uid=' + json['doctype_field_uid'] + '\');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ';
+          html += '<button type="button"  class="btn btn-default" onclick="down(this, \'move_field&field_uid=' + json['doctype_field_uid'] + '\');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ';
+          html += '<button type="button"  class="btn btn-default" onclick="removeField(\'' + json['doctype_field_uid'] + '\',' + setting + ');" data-toggle="tooltip"><i class="fa fa-minus-circle"></i></button>' + '</td>' + '</tr>';
+          if (setting === 1) { // системное поле
+            $('#doctype_setting_fields>tbody').append(html);
+          } else {
+            $('#doctype_fields tbody').append(html);
+          }
+          $('#modal-afield').modal('hide');
+        }
+      });
+
+    }
+  };
+//
+{% endif %};
+
+//field_usage
+$('#field_form_tab_usage').on('show.bs.tab', function(e){
+    $('#field_usage').html('{{ text_loading }}');
+    $.ajax({
+      url: 'index.php?route=doctype/doctype/get_usage&field_uid={{ field_uid }}',
+      dataType: 'html',
+      success: function (html) {
+        $('#field_usage').html(html);
+      }
+    });
+});
+
+</script>

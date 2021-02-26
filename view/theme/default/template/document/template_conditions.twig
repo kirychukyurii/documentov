@@ -1,0 +1,262 @@
+<script>
+  (function () {
+    let conditionFields = JSON.parse('{{ condition_fields | json_encode() | e("js") }}');
+    let idDocumentBlockId = '#document_block_id-{{ document_uid }}{{ render_id }} ';
+    $.each(conditionFields, function(fieldUid, fieldValue){
+      let $input = $("<input>").attr('type','hidden').addClass('field_id_' + fieldUid + ' template_confition_value').val(fieldValue);
+      $(idDocumentBlockId).append($input);
+    });
+    let template_conditions = JSON.parse('{{ conditions | json_encode() | e("js") }}');    
+    let condition_block,
+      condition;
+    $.each(template_conditions, function () {
+      if (!this.condition || !this.action) {
+        return;
+      }
+      let conditionBlock = this;
+      parseConditions(this.condition, this.action);
+      let fields = {}; // чтобы не повесить два обработчика по одному и тому же условию    
+      $.each(this.condition, function () { // добавляем обработчики на каждое поле
+        if (! fields[this.field_uid]) {
+          onChangeFieldCondition(this.field_uid, conditionBlock.condition, conditionBlock.action);
+          fields[this.field_uid] = true;
+        }
+      });
+    });
+
+    function onChangeFieldCondition(field_uid, conditions, actions) {
+      $(idDocumentBlockId + '.field_id_' + field_uid + ':not(".template_confition_value")').on('change', function () {
+        parseConditions(conditions, actions);
+      });
+    }
+
+    function parseConditions(conditions, actions) {
+      if (! actions) {
+        return; // действий нет, игнорируем условие
+      }
+      let comparisonResults = [];
+      let index = 0;
+      let tempResult;
+      comparisonResults[index] = true;
+      $.each(conditions, function (i) {
+        let fieldValue = $(idDocumentBlockId + '.field_id_' + this.field_uid).val() || '';
+        let comparison,
+          comparisonValue;
+        if (this.comparison == 'equal_field' || this.comparison == 'not_equal_field') { // сравнение со значением из поля
+          comparisonValue = $(idDocumentBlockId + '.field_id_' + this.value_id).val() || '';
+          comparison = this.comparison.replace(/_field/, '');
+        } else { // сравнение со значением, введенным админом
+          comparisonValue = this.value_value || '';
+          comparison = this.comparison;
+        }
+        
+        switch (comparison) {
+          case 'equal':
+            if (fieldValue == comparisonValue) {
+              tempResult = true;
+            } else {
+              tempResult = false;
+            }
+            break;
+          case 'not_equal':
+            if (fieldValue != comparisonValue) {
+              tempResult = true;
+            } else {
+              tempResult = false;
+            }
+            break;
+          case 'consist':
+            if (fieldValue.indexOf(comparisonValue) > -1) {
+              tempResult = true;
+            } else {
+              tempResult = false;
+            }
+            break;
+          case 'not_consist':
+            if (fieldValue.indexOf(comparisonValue) < 0) {
+              tempResult = true;
+            } else {
+              tempResult = false;
+            }
+            break;
+          default: tempResult = false;
+            break;
+        }
+        if (i == 0) { // первое условие
+          comparisonResults[index] = tempResult;
+        } else if (this.join === 'or') {
+          index++; // это условие с ИЛИ, записываем в новый элемент массива результатов
+          comparisonResults[index] = tempResult;
+        } else {
+          comparisonResults[index] = comparisonResults[index] && tempResult;
+        }
+      });
+
+      // comparisonResults - массив из элементов с И, соединенных через ИЛИ (с1 & c2 || c3 => [true|false, true|false,])
+      let $arg;
+      $.each(comparisonResults, function () {
+        if (this == true) { // запускаем действия
+          $.each(actions, function () {
+            switch (this.action) {
+              case 'show':
+                $arg = $(idDocumentBlockId + this.argument);
+                if (!$arg.length) {
+                  // возможно, показывается кнопка, которая не находится в idDocumentBlockId
+                  $arg = $(this.argument);
+                }
+                $arg.show();
+                break;
+              case 'hide':
+                $arg = $(idDocumentBlockId + this.argument);
+                if (!$arg.length) {
+                  // возможно, скрывается кнопка, которая не находится в idDocumentBlockId
+                  $arg = $(this.argument);
+                }
+                $arg.hide();
+                break;
+              case 'record':
+                // подставляем в выражение значения полей
+                let expression = this.template.replace(/\{\{ ?f_([a-f0-9]{32}) ?\}\}/mg, function (str, uid) {
+                  let field_uid = uid.replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5');
+                  
+                  let type = $(idDocumentBlockId + '.field_id_' + field_uid).attr('type');
+                  if (type === undefined) {
+                    if ($(idDocumentBlockId + '[name^=\'field\[' + field_uid + '\]\']').is('select')) {
+                      type = 'select';
+                    } else if ($(idDocumentBlockId + '[name^=\'field\[' + field_uid + '\]\']').is('textarea')) {
+                      type = 'textarea';
+                    }
+                  }
+                  let value;
+                  switch (type) {
+                    case undefined: 
+                      value = $(idDocumentBlockId + '.field_id_' + field_uid).html();
+                      if (value === undefined) {
+                        value = '';
+                      }
+                      break;
+                    default: value = $(idDocumentBlockId + '.field_id_' + field_uid).val();
+                  }
+                  if ($.isNumeric(value)) {
+                    return value;
+                  } else {
+                    v = value.replace(/,/, '.') // числа с запятой в качестве разделителя целой и дробной частей
+                    v = v.replace(/\ /g, '') // числа с разделителем триад
+                    if ($.isNumeric(v)) {
+                      return v
+                    }
+                  }
+                  return '\'' + value + '\'';
+                });
+                let value = '';
+                try {
+                  value = eval(expression);
+                } catch (error) {
+                  value = expression;
+                }
+                if (!value) value = ''; 
+                let field = this.argument.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+                if (field[0]) { // UID поля найден, ищем поле
+                  // имя элемента в виде массива, например, чекбоксы Списка
+                  let $elem = $(idDocumentBlockId + '[name=\'field\[' + field[0] + '\]\[\]\']');                   
+                  if (!$elem.length) {
+                    // имя элемента НЕ в виде массива
+                    $elem = $(idDocumentBlockId + '[name=\'field\[' + field[0] + '\]\']');
+                  }
+                  if ($elem.length) { // элемент поля найден          
+                    switch ($elem.get(0).nodeName) {
+                      case 'INPUT':
+                        let typeEl = $elem.get(0).type;
+                        if (typeEl == 'radio' || typeEl == 'checkbox') {
+                          // в value может быть несколько значений, перечисленных через запятую
+                          values = value.toString().split(',')
+                          $.each($elem, function(){
+                            let val = $(this).val();
+                            if (values.indexOf(val) > -1) {
+                              $(this).prop('checked',true);
+                              $(this).trigger('change');                              
+                            } else {
+                              $(this).prop('checked',false)
+                            }
+                          });
+                          break;
+                        }
+                      case 'SELECT':
+                      case 'TEXTAREA':
+                        $elem.val(value);
+                        $elem.trigger('change',['templcond']); //если скрытое поле (например, Ссылка) нужно инициировать событие изменения на hidden, чтобы обработать видимую часть поля
+                        break;
+                      case 'default':
+                        $elem.val(value);  
+                    }
+
+                  } else { // пишем в блок
+                    $(this.argument).html(value);
+                  }
+                }
+                break;
+              case 'download':
+                // действие Загрузка
+                actionDownload.call(this);
+                break;
+            }
+          });
+
+          // выходим из массива
+          return false;
+        }
+      });
+    }
+
+    function actionDownload() {
+        if (!this.selected_doctype_field_uid) {
+          return;
+        }
+        let valueWidget = {
+          'documentUid': $(idDocumentBlockId + '.field_id_' + this.current_doctype_field_uid).val() || '',
+          'fieldUid': this.selected_doctype_field_uid
+        };
+        let fieldArg = this.argument.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+        let fieldWidget = {
+          'fieldUid': fieldArg[0]
+        }
+        let docUid = '{{ doctype_uid }}';
+        if (docUid) {
+          fieldWidget.doctypeUid = docUid;
+          docUid = '';
+        } else {
+          docUid = '{{ document_uid }}';
+        }
+        //if (docUid) {
+          //fieldWidget.documentUid = docUid;
+        //}
+        fieldWidget.documentUid = '{{ document_uid }}'; // Создание = файл = род УИД
+
+        let recordedFieldBlockClass = this.argument; //.field_block_1c4defae-fc1f-11e9-b0b3-a61470f4787e
+        let promise = Documentov.getFieldWidget(valueWidget, '{{ mode }}', fieldWidget);
+        promise.then((html) => {
+          if (html.indexOf(recordedFieldBlockClass.slice(1)) > -1) {
+            $(recordedFieldBlockClass).replaceWith(html);
+            
+            // поле переписали, нужно снова повесить обработчик изменений
+            let fieldUid = this.argument.slice(13);
+            $.each(template_conditions, function () {
+              let conditionBlock = this;
+              $.each(conditionBlock, function(){
+                $.each(this, function(){
+                if (fieldUid == this.field_uid) {
+                  // вешаем обработчик
+                  onChangeFieldCondition(fieldUid, conditionBlock.condition, conditionBlock.action);         
+                }    
+                });
+            
+              });
+            });
+            $(idDocumentBlockId + '.field_id_' + fieldUid).trigger('change');
+          }          
+        }).catch(function (error) {
+          console.error("Error getting widget:", error);
+        });        
+      };
+  })();
+</script>

@@ -1,0 +1,81 @@
+  <div class="form-horizontal">
+    <div class="form-group">
+        <div class="panel panel-default {{ MODULE_NAME }}-panel">
+          <div class="panel-heading {{ MODULE_NAME }}-panel_heading">
+            <div>
+              <label class="control-label">
+                <span data-toggle="tooltip" title="{{ help_table_templates }}">{{ text_table_templates }}</span>
+              </label>
+            </div>
+            <div class="text-right">  
+              <button type="button" class="btn btn-default btn-sm {{ MODULE_NAME }}-btn-add" title="{{ button_add }}">
+                <i class="fa fa-plus-circle"></i>
+              </button>
+            </div>  
+          </div>  
+          <div class="panel-body">
+            <div class="panel-group" id="{{ MODULE_NAME }}-accordion_templates">
+              <template id="{{ MODULE_NAME }}-template_accordion_row">
+                <div class="panel panel-default {{ MODULE_NAME }}-accordion_row">
+                  <div class="panel-heading {{ MODULE_NAME }}-panel_heading">
+                    <div>
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#{{ MODULE_NAME }}-template_accordion" href="#{{ MODULE_NAME }}-collapse">{{ text_new_doctype }}</a>
+                      </h4>
+                    </div>
+                    <div class="text-right">
+                      <button class="btn btn-default btn-sm" onclick="$(this).parents('.{{ MODULE_NAME }}-accordion_row').remove();">
+                        <i class="fa fa-remove"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div id="{{ MODULE_NAME }}-collapse" class="panel-collapse collapse">
+                    <div class="panel-body">
+                      <div class="form-group {{ MODULE_NAME }}-divdt">
+                        <div class="col-md-3 col-sm-4 col-xs-3 text-right {{ MODULE_NAME }}-divdt_label">
+                          {{ text_doctype }}
+                        </div>
+                        <div class="col-md-9 col-sm-8 col-xs-9 text-left {{ MODULE_NAME }}-divdt_value">  
+                          <input type="hidden" class="hidden">
+                          <input class="form-control input-sm" type="text">
+                        </div>
+                      </div>  
+                      <div class="row">
+                        <div class="col-sm-12">
+                          <div class="{{ MODULE_NAME }}-block_manage_template">                   
+                            <button class="btn btn-default btn-sm {{ MODULE_NAME }}-button_template">
+                              <i class="fa fa-pencil"></i>
+                            </button>
+                            <input type="hidden" class="hidden">
+                          </div>
+                          <div class="{{ MODULE_NAME }}-block_content_template">
+                            {{ text_empty_template }}
+                          </div>  
+                        </div>                  
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>            
+          </div>          
+        </div>
+        {# Шаблон окна редактирования шаблона #}
+        <template id="{{ MODULE_NAME }}-window_template">
+          <div class="row">
+            <div class="col-sm-12">
+              <textarea></textarea>
+            </div>
+          </div>
+        </template>  
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label"><span data-toggle="tooltip" title="{{ help_show_history }}">{{ text_show_history }}</span></label>
+        <div class="col-sm-9">
+            <label class="checkbox-inline">
+              <input type="checkbox" name="field[show_history]" value="1" {% if params.show_history == 1 %}checked="checked"{% endif %}>
+            </label>
+        </div>
+    </div>
+  </div>  

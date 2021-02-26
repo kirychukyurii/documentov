@@ -1,0 +1,26 @@
+[error]
+php_not_found = Не найден интерпретатор PHP. Установите правильный путь к запускаемому файлу PHP в секции Path конфигурационного файла daemon/documentov.conf и перезагрузите демон
+get_tasks = Ошибка при получении задач: %s
+start_task = Задача %s: При запуске команды %s произошла ошибка %s
+add_task_db = Ошибка при добавлении задачи: %s
+del_task = Ошибка при удалении задачи %s: %s
+del_task_db = Ошибка при удалении задачи %s из база данных: %s
+start_command = Ошибка при запуске команды %s : %s
+get_optim_list = Ошибка при получении таблиц, нуждающихся в оптимизации: %s
+get_optim_tbl = Ошибка при получении таблицы для оптимизации: %s
+optim_tbl = Ошибка при оптимизации таблицы %s: %s
+clear_session = Ошибка при очистки таблицы сессий ОС
+not_find_proc = ЗАДАЧА %d: не найден процесс с PID %s
+task_error = ЗАДАЧА %s завершена с ошибкой: %v
+task_error_comm = ЗАДАЧА %s (команда %s) завершена с ошибкой: %v
+json_encode_data = Ошибка при формировании JSON: %s
+ldap_connect = Ошибка при подключении к контроллеру Active Directory: %s
+ldap_bind = Ошибка при аутентификации в Active Directory: %s
+ldap_search = Ошибка при поиске в каталоге Active Directory: %s
+
+[info]
+task = ЗАДАЧА %s: %s %v
+start_rotation = Запуск ротации лог-файлов
+start_optimization = Запуск оптимизации таблиц базы данных
+start_cleaning_session = Запуск очистки устаревших PHP-сессий
+service_started = Служба планировщика задач запущена

@@ -1,0 +1,757 @@
+
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#condition-tab" data-toggle="tab">{{ text_tab_condition }}</a></li>
+    <li><a href="#condition-tab-action_true" data-toggle="tab">{{ text_tab_actions_true }}</a></li>
+    <li><a href="#condition-tab-action_false" data-toggle="tab">{{ text_tab_actions_false }}</a></li>
+</ul>
+
+<div class="tab-content">
+    <!-- Условие -->
+    <div class="tab-pane fade in active" id="condition-tab">
+        <div class="container-fluid">
+            <span class="btn btn-default" onclick="modal_action(-1);"><i class="fa fa-plus-circle"> {{ text_add_condition|upper }}</i></span>
+            <br><br>
+        </div>        
+        <table class="table table-bordered table-hover" id="table-conditions">
+            <tbody>
+            {% set condition_index = 0 %}    
+            {% for condition in action.condition %}
+                <tr id="condition{{ condition_index }}">
+                    <td style="width:70px;">
+                        {% if condition_index > 0 %}
+                        <select name="action[condition][{{ condition_index }}][join]">
+                            <option value="and"{% if condition.join == 'and' %} selected="selected"{% endif %}>{{ text_and|upper }}</option>
+                            <option value="or"{% if condition.join == 'or' %} selected="selected"{% endif %}>{{ text_or|upper }}</option>
+                        </select>
+                        {% endif %}
+                    </td>
+                    <td class="text-left pointer" onclick="modal_action({{ condition_index }});">
+                        {{ condition.description }}
+                        <input type="hidden" name="action[condition][{{ condition_index }}][first_type_value]" value="{{ condition.first_type_value }}">
+                        <input type="hidden" name="action[condition][{{ condition_index }}][first_value_field_name]" value="{{ condition.first_value_field_name }}">
+                        <input type="hidden" name="action[condition][{{ condition_index }}][first_value_field_uid]" value="{{ condition.first_value_field_uid }}">
+                        <input type="hidden" name="action[condition][{{ condition_index }}][first_value_field_getter]" value="{{ condition.first_value_field_getter }}">
+                        {% for param_name,param_value in condition.first_value_method_params %}
+                            <input type="hidden" name="action[condition][{{ condition_index }}][first_value_method_params][{{ param_name }}]" value='{{ param_value }}'>                            
+                        {% endfor %}
+                        <input type="hidden" name="action[condition][{{ condition_index }}][first_value_var]" value="{{ condition.first_value_var }}">
+                        <input type="hidden" name="action[condition][{{ condition_index }}][comparison_method]" value="{{ condition.comparison_method }}">
+                        <input type="hidden" name="action[condition][{{ condition_index }}][second_type_value]" value="{{ condition.second_type_value }}">
+                        <input type="hidden" name="action[condition][{{ condition_index }}][second_value_field_name]" value="{{ condition.second_value_field_name }}">
+                        <input type="hidden" name="action[condition][{{ condition_index }}][second_value_field_uid]" value="{{ condition.second_value_field_uid }}">
+                        <input type="hidden" name="action[condition][{{ condition_index }}][second_value_field_getter]" value="{{ condition.second_value_field_getter }}">
+                        {% for param_name,param_value in condition.second_value_method_params %}
+                            <input type="hidden" name="action[condition][{{ condition_index }}][second_value_method_params][{{ param_name }}]" value='{{ param_value }}'>                            
+                        {% endfor %}
+                        <input type="hidden" name="action[condition][{{ condition_index }}][second_value_widget]" value="{{ condition.second_value_widget }}">
+                        <input type="hidden" name="action[condition][{{ condition_index }}][second_value_var]" value="{{ condition.second_value_var }}">                                                    
+                    </td>
+                    <td style="width:50px;">
+                        <span class="btn btn-default" onclick="$(this).parent().parent().remove();"><i class="fa fa-remove"></i>
+                    </td>
+                </tr>    
+                {% set condition_index = condition_index + 1 %}
+            {% endfor %}    
+            </tbody>
+        </table>
+    </div>
+
+    <div class="tab-pane fade" id="condition-tab-action_true">          
+        <div class="container">
+            <button class="btn btn-default" onclick="inner_actions_true.editAction()" data-toggle="tooltip" title="{{ text_add_button }}" style="margin-bottom:8px;"><i class="fa fa-plus-circle"> {{ text_add_action|upper }}</i></button>
+        </div> 
+        <div id="condition-inner_actions_true"></div>   
+        <div class="container">
+          <label class="checkbox-inline control-label" title="{{ help_route_stop }}">
+            <input type="checkbox" name="action[stop][true]" value="1" {% if action.stop.true %}checked="checked"{% endif %}> {{ text_route_stop }} <i class="fa fa-question-circle-o"></i>            
+          </label>
+        </div>         
+    </div>
+
+    <div class="tab-pane fade" id="condition-tab-action_false">
+        <div class="container-fluid">
+            <button class="btn btn-default" onclick="inner_actions_false.editAction()" data-toggle="tooltip" title="{{ text_add_button }}"  style="margin-bottom:8px;"><i class="fa fa-plus-circle"> {{ text_add_action|upper }}</i></button>
+        </div> 
+        <div id="condition-inner_actions_false"></div>    
+        <div class="container">
+          <label class="checkbox-inline control-label" title="{{ help_route_stop }}">
+            <input type="checkbox" name="action[stop][false]" value="1" {% if action.stop.false %}checked="checked"{% endif %}> {{ text_route_stop }} <i class="fa fa-question-circle-o"></i>            
+          </label>
+        </div>                   
+    </div>
+
+
+</div>
+<input type="hidden" name="action[inner_actions_true]" value='{{ action.inner_actions_true }}'>
+<input type="hidden" name="action[inner_actions_false]" value='{{ action.inner_actions_false }}'>
+<input type="hidden" name="inner_actions_descriptions_true" value='{{ inner_actions_description_true }}'>
+<input type="hidden" name="inner_actions_descriptions_false" value='{{ inner_actions_description_false }}'>
+
+<script>
+    if (typeof  ActionContainer === "undefined") {
+        addScript("view/javascript/action/actioncontainer/actioncontainer.js?v=1");
+    }  
+
+    var inner_actions_true = new ActionContainer('condition', 'input[name=\'action[inner_actions_true]\']', '#condition-inner_actions_true', 'input[name=\'inner_actions_descriptions_true\']', '{{ doctype_uid }}', 'true', '{{context}}', '{{ route_uid }}');
+    inner_actions_true.initac();
+    var inner_actions_false = new ActionContainer('condition', 'input[name=\'action[inner_actions_false]\']', '#condition-inner_actions_false', 'input[name=\'inner_actions_descriptions_false\']', '{{ doctype_uid }}', 'false', '{{context}}', '{{ route_uid }}');
+    inner_actions_false.initac();
+    var condition_index = {{ condition_index }};
+
+    function modal_action(index) {
+        $('#modalCondition').remove();
+
+        html = '<div id="modalCondition" class="modal fade" role="dialog">' +
+                '   <div class="modal-dialog">' +
+                '       <div class="modal-content">' +
+                '           <div class="modal-header">' +
+                '               <div class="pull-right">' +
+                '                   <button type="button" class="btn btn-default button-condition-save" data-loading-text="{{ text_loading }}" data-dismiss="modal"><i class="fa fa-save"></i></button>' +
+                '                   <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-reply"></i></button>' +
+                '               </div>' +
+                '               <div class="pull-left">' +
+                '                   <h4 class="modal-title text-left">{{ text_tab_condition }}</h4>' +
+                '               </div>' +
+                '           </div>' +
+                '           <div class="modal-body">' +
+                '               <div class="form-horizontal">' +
+                '                   <div class="form-group" id="condition-first_value">' +
+                '                       <label class="col-sm-3 control-label" for="input-condition-first_value_field_name"><span data-toggle="tooltip" title="{{ help_first_value }}">{{ entry_first_value }}</span></label>' +
+                '                       <div class="col-sm-9">' +                
+                '                           <select name="condition-first_type_value" id="select-condition-first_type_value" class="form-control">' +
+                '                               <option value="0" selected="selected">{{ text_first_field }}</option>' +
+                '                               <option value="1">{{ text_first_variable }}</option>' +
+                '                           </select>' +
+                '                           <div id="condition-block_first_field">' +                
+                '                               <label class="radio-inline"><input type="radio" name="condition-first_value_field_type" checked="checked" value="0">{{ text_macros_field['simple'] }}</label>' +
+                '                               <label class="radio-inline"><input type="radio" name="condition-first_value_field_type" value="1">{{ text_macros_field['setting'] }}</label>' +
+                '                               <input type="text" name="condition-first_value_field_name" id="input-condition-first_value_field_name" placeholder="{{ entry_first_value_field }}" class="form-control">' +
+                '                               <input type="hidden" name="condition-first_value_field_uid" id="input-condition-first_value_field_uid">' +
+                '                               <select name="condition-first_value_field_getter" id="select-condition-first_value_field_getter" class="form-control">' +
+                '                                   <option value ="" selected="selected"> {{ text_default_method }}</option>' +
+                '                               </select>' +
+                '                           </div>' +
+                '                           <div id="condition-block_first_variable" style="display:none;">' +
+                '                               <select name="condition-first_value_var" id="select-condition-first_value_var" class="form-control">';
+        {% for value,name in vars %}
+        html += '                                   <option value="{{ value }}">{{ name }}</option>';
+        {% endfor %}
+        html += '                               </select>' +
+                '                           </div>' +          
+                '                       </div>' +  
+                '                   </div>' +
+                '                   <div class="form-group" id="condition-first_value_field_getter_form">' +
+                '                   </div>' +
+                '                   <div class="form-group" id="condition-comparison_method" style="background-color:#F2FFF2;">' +
+                '                       <label class="col-sm-3 control-label" for="input-second_value_type"><span data-toggle="tooltip" title="{{ help_comparison_method }}">{{ text_comparison_method }}</span></label>' +
+                '                       <div class="col-sm-9">' +
+                '                           <select name="condition-comparison_method" id="select-condition-comparison_method" class="form-control">' +
+                '                               <option value="equal" selected="selected">{{ text_condition_equal }}</option>' +
+                '                               <option value="notequal">{{ text_condition_notequal }}</option>' +
+                '                               <option value="more">{{ text_condition_more }}</option>' +
+                '                               <option value="moreequal">{{ text_condition_moreequal }}</option>' +
+                '                               <option value="less"{% if action.comparison_method == 'less' %} selected="selected" {% endif %}>{{ text_condition_less }}</option>' +
+                '                               <option value="lessequal"{% if action.comparison_method == 'lessequal' %} selected="selected" {% endif %}>{{ text_condition_lessequal }}</option>' +
+                '                               <option value="contains"{% if action.comparison_method == 'contains' %} selected="selected" {% endif %}>{{ text_condition_contains }}</option>' +
+                '                               <option value="notcontains"{% if action.comparison_method == 'notcontains' %} selected="selected" {% endif %}>{{ text_condition_notcontains }}</option>' +
+                '                               <option value="include"{% if action.comparison_method == 'include' %} selected="selected" {% endif %}>{{ text_condition_include }}</option>' +
+                '                               <option value="notinclude"{% if action.comparison_method == 'notinclude' %} selected="selected" {% endif %}>{{ text_condition_notinclude }}</option>' +
+                '                           </select>' +   
+                '                       </div>' +    
+                '                   </div>' +
+                '                   <div class="form-group" id="condition-second_value">' +
+                '                       <label class="col-sm-3 control-label" for="select-condition-second_type_value"><span data-toggle="tooltip" title="{{ help_second_value }}">{{ entry_second_value }}</span></label>' +
+                '                       <div class="col-sm-9">' +
+                '                           <select name="condition-second_type_value" id="select-condition-second_type_value" class="form-control">' +
+                '                               <option value="0" selected="selected">{{ text_field }}</option>' +
+                '                               <option value="1">{{ text_manual_input }}</option>' +
+                '                               <option value="2">{{ text_variable }}</option>' +
+                '                           </select>' +
+                '                           <div id="condition-block_second_field">' +
+                '                               <label class="radio-inline"><input type="radio" name="condition-second_value_field_type" checked="checked" value="0">{{ text_macros_field['simple'] }}</label>' +
+                '                               <label class="radio-inline"><input type="radio" name="condition-second_value_field_type" value="1">{{ text_macros_field['setting'] }}</label>' +
+                '                               <input type="text" name="condition-second_value_field_name" id="input-condition-second_value_field_name" placeholder="{{ entry_second_value_field }}" class="form-control">' +
+                '                               <input type="hidden" name="condition-second_value_field_uid" id="input-condition-second_value_field_uid" value="">' +
+                '                               <select name="condition-second_value_field_getter" id="select-condition-second_value_field_getter" class="form-control">' +
+                '                                   <option value="" selected="selected"> {{ text_default_method }}</option>' +
+                '                               </select>' +
+                '                           </div>' + 
+                '                           <div id="condition-block_second_manual"></div>' +
+                '                           <div id="condition-block_second_variable" style="display:none;">' +
+                '                               <select name="condition-second_value_var" id="select-condition-second_value_var" class="form-control">';
+        {% for value,name in vars %}
+        html += '                                   <option value="{{ value }}">{{ name }}</option>';
+        {% endfor %}
+        html += '                               </select>' +
+                '                           </div>' +    
+                '                       </div>' +
+                '                       <div class="" id="condition-second_value_field_getter_form">' +
+                '                       </div>' +
+                '                   </div>' +
+                '               </div>';
+        if (index > -1) {
+            html += '           <input type="hidden" id="condition_index" value="' + index + '">';
+            html += '           <input type="hidden" id="condition_join" value="' + $('select[name=\'action\[condition\]\[' + index + '\]\[join\]\']').val() + '">';
+        }        
+            
+        html += '           </div>' +
+                '           <div class="modal-footer">' +
+                '               <div class="row">' +
+                '                   <div class="col-md-6 col-sm-6">' +
+                '                       <button type="button" class="btn btn-default btn-block button-condition-save" data-loading-text="{{ text_loading }}" data-dismiss="modal">{{ button_save }}</button>' +
+                '                   </div>' +
+                '                   <div class="col-md-3 col-sm-6">' +
+                '                       <div style="margin-top: 15px;" class="visible-xs"></div>' +
+                '                           <button type="button"n class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>' +
+                '                   </div>' +
+                '               </div>' +
+                '           </div>' +
+                '       </div>' +
+                '   </div>' +
+                '</div>';   
+        $('body').append(html);     
+        $('#modalCondition').modal('show');    
+        $('#modalCondition').draggable({handle: '.modal-header'});
+        $('#modalCondition').on('hidden.bs.modal', function () {
+          $('#modalCondition').remove();
+        });
+        //ОБРАБОТЧИКИ
+        
+        //загрузка формы геттера первого поля
+
+        $('select[name=\'condition-first_value_field_getter\']').on('change', function () {
+            var data = {};
+            if ($('#condition_index').val() !== "undefined") {
+                var search = new RegExp('action\\[condition\\]\\[' + $('#condition_index').val() + '\\]\\[first_value_method_params\\]');
+                $.each($('input[name^=\'action\[condition\]\[' + $('#condition_index').val() +'\]\[first_value_method_params\]\']'), function(){
+                    let val = $(this).val();
+                    data[$(this).attr('name').replace(search,'method_params')] = val ? JSON.parse(val) : '';
+                });
+            }
+            $('#condition-first_value_field_getter_form').html('');
+            var field_uid = $('input[name=\'condition-first_value_field_uid\']').val();
+            var url = 'index.php?route=doctype/doctype/get_field_method_form&method=' + encodeURIComponent(this.value) + '&field_uid=' + field_uid + '&method_params_name_hierarchy=[first_value_method_params]&doctype_uid={{ doctype_uid }}';
+            $.ajax({
+                url: url,
+                data: data,
+                type: 'post',
+                dataType: 'json',
+                success: function (html) {
+                    if (html !== "") {
+                        $('#condition-first_value_field_getter_form').html(html);
+                    }
+                }
+            });
+            if ($('#select-condition-second_type_value').val() == "1") {
+                //если в качестве второго аргумента - значение вручную, при изменении поля первого аргумента нужно перегрузить виджет
+                if (typeof $('input[name=\'condition-field_widget_value\']').val() !== 'undefined') {
+                    var value = $('input[name=\'condition-field_widget_value\']').val();
+                } else {
+                    var value = '';
+                }           
+                ReloadConditionSecondFieldWidget($('input[name=\'condition-first_value_field_uid\']').val(), value, $(this).val());
+            }
+        });
+        
+        //загрузка формы геттера второго поля
+        $('select[name=\'condition-second_value_field_getter\']').on('change', function () {
+            var data = {};
+            if ($('#condition_index').val() !== "undefined") {
+                var search = new RegExp('action\\[condition\\]\\[' + $('#condition_index').val() + '\\]\\[second_value_method_params\\]');
+                $.each($('input[name^=\'action\[condition\]\[' + $('#condition_index').val() +'\]\[second_value_method_params\]\']'), function(){
+                    let val = $(this).val();
+                    data[$(this).attr('name').replace(search,'method_params')] = val ? JSON.parse(val) : '';
+                });
+            }
+            
+            $('#condition-second_value_field_getter_form').html('');
+            var field_uid = $('input[name=\'condition-second_value_field_uid\']').val();
+            var url = 'index.php?route=doctype/doctype/get_field_method_form&method=' + encodeURIComponent(this.value) + '&field_uid=' + field_uid + '&method_params_name_hierarchy=[second_value_method_params]&doctype_uid={{ doctype_uid }}';
+            $.ajax({
+                url: url,
+                data: data,
+                type: 'post',
+                dataType: 'json',
+                success: function (html) {
+                    if (html !== "") {
+                        $('#condition-second_value_field_getter_form').html(html);
+                    }
+                }
+            });
+        });
+        
+        // КОНЕЦ ОБРАБОТЧИКОВ
+        
+        if (index > -1) {            
+            //инициализация полей
+            //первый аргумент - поле
+            $('#select-condition-first_type_value').val($('input[name=\'action\[condition\]\[' + index + '\]\[first_type_value\]\']').val());   
+            if ($('#select-condition-first_type_value').val() == "0" && typeof $('input[name=\'action\[condition\]\[' + index + '\]\[first_value_field_uid\]\']').val() !== "undefined") {                
+                $('#input-condition-first_value_field_name').val($('input[name=\'action\[condition\]\[' + index + '\]\[first_value_field_name\]\']').val());
+                $('#input-condition-first_value_field_uid').val($('input[name=\'action\[condition\]\[' + index + '\]\[first_value_field_uid\]\']').val());
+                if (typeof $('input[name=\'action\[condition\]\[' + index + '\]\[second_value_widget\]\']').val() !== "undefined") {
+                    //инициализируем виджет значения
+                    $('#condition-block_second_manual').html('');
+                    $('#condition-block_second_manual').append('<input type="hidden" name="condition-field_widget_value">');
+                    $('input[name=\'condition-field_widget_value\']').val($('input[name=\'action\[condition\]\[' + index + '\]\[second_value_widget\]\']').val());
+                }                
+                ReloadConditionParamFieldMethodList('select[name=\'condition-first_value_field_getter\']', 'getter', $('input[name=\'action\[condition\]\[' + index + '\]\[first_value_field_uid\]\']').val(), $('input[name=\'action\[condition\]\[' + index + '\]\[first_value_field_getter\]\']').val(),
+                        function(){                              
+                            $('select[name=\'condition-first_value_field_getter\']').val($('input[name=\'action\[condition\]\[' + index + '\]\[first_value_field_getter\]\']').val());               
+                            $('select[name=\'condition-first_value_field_getter\']').trigger('change');                                            
+                        });
+            }
+            $('#select-condition-second_type_value').val($('input[name=\'action\[condition\]\[' + index + '\]\[second_type_value\]\']').val());
+
+            //первый аргумент - переменная
+            if ($('#select-condition-first_type_value').val() == "1" && typeof $('input[name=\'action\[condition\]\[' + index + '\]\[first_value_var\]\']').val() !== "undefined") {
+                $('#select-condition-first_value_var').val($('input[name=\'action\[condition\]\[' + index + '\]\[first_value_var\]\']').val());
+                //есть значение виджета второго аргумента
+                if ($('#select-condition-second_type_value').val() == "1" && typeof $('input[name=\'action\[condition\]\[' + index + '\]\[second_value_widget\]\']').val() !== "undefined") {
+                    $('#condition-block_second_manual').html('');
+                    $('#condition-block_second_manual').append('<input type="text" name="condition-field_widget_value" class="form-control">');
+                    $('input[name=\'condition-field_widget_value\']').val($('input[name=\'action\[condition\]\[' + index + '\]\[second_value_widget\]\']').val());                                        
+                }
+            }    
+            $('#select-condition-comparison_method').val($('input[name=\'action\[condition\]\[' + index + '\]\[comparison_method\]\']').val());
+            if (typeof $('input[name=\'action\[condition\]\[' + index + '\]\[second_value_field_uid\]\']').val() !== "undefined") {
+                $('#input-condition-second_value_field_name').val($('input[name=\'action\[condition\]\[' + index + '\]\[second_value_field_name\]\']').val());
+                $('#input-condition-second_value_field_uid').val($('input[name=\'action\[condition\]\[' + index + '\]\[second_value_field_uid\]\']').val());                
+                ReloadConditionParamFieldMethodList('select[name=\'condition-second_value_field_getter\']', 'getter', $('input[name=\'action\[condition\]\[' + index + '\]\[second_value_field_uid\]\']').val(), $('input[name=\'action\[condition\]\[' + index + '\]\[second_value_field_getter\]\']').val(),
+                        function(){
+                            $('select[name=\'condition-second_value_field_getter\']').val($('input[name=\'action\[condition\]\[' + index + '\]\[second_value_field_getter\]\']').val());               
+                            $('select[name=\'condition-second_value_field_getter\']').trigger('change');                                            
+                        });                
+            }
+            if (typeof $('input[name=\'action\[condition\]\[' + index + '\]\[second_value_var\]\']').val() !== "undefined") {
+                $('#select-condition-second_value_var').val($('input[name=\'action\[condition\]\[' + index + '\]\[second_value_var\]\']').val());
+            }    
+        } 
+        
+        //ОБРАБОТЧИКИ
+        $('input[name=\'condition-first_value_field_name\']').autocomplete({
+            'source': function (request, response) {
+                let doctypeUID = "0"
+                let setting = "1"
+                if ($('input[name=\'condition-first_value_field_type\']:checked').val() != '1') {                   
+                    doctypeUID = '{{ doctype_uid }}';
+                    setting = 0
+                }
+                $.ajax({
+                    url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid=' + doctypeUID + "&setting=" + setting,
+                    dataType: 'json',
+                    success: function (json) {
+                        json.unshift({
+                            field_uid: 0,
+                            name: '{{ text_none }}'
+                        });
+                        response($.map(json, function (item) {
+                            var result = {
+                                value: item['field_uid'],
+                                label: item['name']
+                            };
+                            if (item['field_uid'] != "0") {
+                                if (item['setting'] === "1") {
+                                    result['setting'] = 1;
+                                    result['label'] = '<span style="font-style:italic">' + item['name'] + '</span>';
+                                } else {
+                                    result['label'] = item['name'];
+                                }
+                            }
+                            return result;
+                        }));
+                    } //end success
+                }); //end ajax
+            }, //end source   
+            'select': function (item) {
+                if (item['value']) {
+                    var label = item['label'];
+                    if (item['setting'] === 1) {
+                        $('input[name=\'condition-first_value_field_name\']').css("font-style", "italic");
+                        label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+                    } else {
+                        $('input[name=\'condition-first_value_field_name\']').css("font-style", "");
+                    }
+                    if ($('input[name=\'condition-first_value_field_uid\']').val() !== item['value']) {
+                        ReloadConditionParamFieldMethodList('select[name=\'condition-first_value_field_getter\']', 'getter', item['value'],null);
+                        $('select[name=\'condition-first_value_field_getter\']').val('');
+                        $('#condition-first_value_field_getter_form').html('');
+                    }
+                    $('input[name=\'condition-first_value_field_name\']').val(label);
+                    $('input[name=\'condition-first_value_field_uid\']').val(item['value']);
+                    if ($('#select-condition-second_type_value').val() == "1") {
+                        //изменили поле, перезагружаем виджет
+                        var value = $('input[name=\'condition-field_widget_value\']').val();
+                        if (!value) {
+                            value = $('select[name=\'condition-field_widget_value\']').val();
+                        }
+                        if (!value) {
+                            value = $('textarea[name=\'condition-field_widget_value\']').val();
+                        }
+
+                        if (value !== undefined) {
+                            ReloadConditionSecondFieldWidget($('input[name=\'condition-first_value_field_uid\']').val(), value,'');
+                        } else {
+                            ReloadConditionSecondFieldWidget($('input[name=\'condition-first_value_field_uid\']').val(), '','');
+                        }
+                    }
+                } else {
+                    ReloadConditionParamFieldMethodList('select[name=\'condition-first_value_field_getter\']', '', 0, '',null);
+                    $('input[name=\'condition-first_value_field_name\']').val('');
+                    $('input[name=\'condition-first_value_field_uid\']').val('');
+                    $('#condition-first_value_field_getter_form').html('');
+                }
+            }
+        });
+
+        $('input[name=\'condition-second_value_field_name\']').autocomplete({
+            'source': function (request, response) {
+                let doctypeUID = "0"
+                let setting = "1"
+                if ($('input[name=\'condition-second_value_field_type\']:checked').val() != '1') {                   
+                    doctypeUID = '{{ doctype_uid }}';
+                    setting = "0"
+                }
+                $.ajax({
+                    url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid=' + doctypeUID + '&setting=' + setting,
+                    dataType: 'json',
+                    success: function (json) {
+                        json.unshift({
+                            field_uid: 0,
+                            name: '{{ text_none }}'
+                        });
+                        response($.map(json, function (item) {
+                            var result = {
+                                value: item['field_uid'],
+                                label: item['name']
+                            };
+                            if (item['field_uid'] != "0") {
+                                if (item['setting'] === "1") {
+                                    result['setting'] = 1;
+                                    result['label'] = '<span style="font-style:italic">' + item['name'] + '</span>';
+                                } else {
+                                    result['label'] = item['name'];
+                                }
+                            }
+                            return result;
+                        }));
+                    } //end success
+                }); //end ajax
+            }, //end source   
+            'select': function (item) {
+                if (item['value']) {
+                    var label = item['label'];
+                    if (item['setting'] === 1) {
+                        $('input[name=\'condition-second_value_field_name\']').css("font-style", "italic");
+                        label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+                    } else {
+                        $('input[name=\'condition-second_value_field_name\']').css("font-style", "");
+                    }
+                    if ($('input[name=\'condition-second_value_field_uid\']').val() !== item['value']) {
+                        ReloadConditionParamFieldMethodList('select[name=\'condition-second_value_field_getter\']', 'getter', item['value'],'',null);
+                        $('select[name=\'condition-second_value_field_getter\']').val('');
+                        $('#condition-second_value_field_getter_form').html('');
+                    }
+                    $('input[name=\'condition-second_value_field_name\']').val(label);
+                    $('input[name=\'condition-second_value_field_uid\']').val(item['value']);
+                } else {
+                    ReloadConditionParamFieldMethodList('select[name=\'condition-second_value_field_getter\']', '', 0, '',null);
+                    $('input[name=\'condition-second_value_field_name\']').val('');
+                    $('input[name=\'condition-second_value_field_uid\']').val('');
+                    $('#condition-second_value_field_getter_form').html('');
+                }
+            }
+        });
+
+        $('#select-condition-first_type_value').on('change', function(){
+            if ($(this).val() == "0") {
+                $('#condition-block_first_field').show();
+                $('#condition-block_first_variable').hide();
+            } else {
+                $('#condition-block_first_field').hide();
+                $('#condition-block_first_variable').show();
+            }
+        });
+        
+        if ($('#select-condition-first_type_value').val() === "0") {
+            $('#condition-block_first_field').show();
+            $('#condition-block_first_variable').hide();
+        } else {
+            $('#condition-block_first_field').hide();
+            $('#condition-block_first_variable').show();
+        }        
+        
+        $('#select-condition-second_type_value').on('change', function () {
+            if ($(this).val() == "0") {
+                $('#condition-block_second_field').show();
+                $('#condition-second_value_field_getter_form').show();
+                $('#condition-block_second_manual').hide();
+                $('#condition-block_second_variable').hide();
+            } else if ($(this).val() == "1") {
+                var field_method = $('#select-condition-first_value_field_getter').val();
+                ReloadConditionSecondFieldWidget($('input[name=\'condition-first_value_field_uid\']').val(), '', field_method);
+                $('#condition-block_second_field').hide();
+                $('#condition-second_value_field_getter_form').hide();
+                $('#condition-block_second_manual').show();
+                $('#condition-block_second_variable').hide();
+            } else {
+                $('#condition-block_second_field').hide();
+                $('#condition-second_value_field_getter_form').hide();
+                $('#condition-block_second_manual').hide();
+                $('#condition-block_second_variable').show();            
+            }
+        });
+        
+        if ($('#select-condition-second_type_value').val() === "0") {
+            $('#condition-block_second_field').show();
+            $('#condition-second_value_field_getter_form').show();
+            $('#condition-block_second_manual').hide();
+            $('#condition-block_second_variable').hide();
+        } else if ($('#select-condition-second_type_value').val() == "1") {
+            //var field_method = $('#select-condition-first_value_field_getter').val();
+            //ReloadConditionSecondFieldWidget($('input[name=\'condition-first_value_field_uid\']').val(), '', field_method);
+            $('#condition-block_second_field').hide();
+            $('#condition-second_value_field_getter_form').hide();
+            $('#condition-block_second_manual').show();
+            $('#condition-block_second_variable').hide();
+        } else {
+            $('#condition-block_second_field').hide();
+            $('#condition-second_value_field_getter_form').hide();
+            $('#condition-block_second_manual').hide();
+            $('#condition-block_second_variable').show();            
+        }
+        
+        $('.button-condition-save').on('click', function(){
+            var text = '';
+            var html = '<td style="width:70px;">';
+            var html_finish = '</td><td style="width:50px;">';
+            var index = $('#condition_index').val();
+            var mode = '';
+            if (typeof index == 'undefined') {
+                index = condition_index++;
+                mode = 'append';
+            }
+            if (index > 0) {
+                html += '<select name="action[condition][' + index + '][join]"><option value="and"';
+                if ($('#condition_join').val() === 'and') {
+                    html += ' selected="selected"';
+                }        
+                html += '>{{ text_and|upper }}</option><option value="or"';
+                if ($('#condition_join').val() === 'or') {
+                    html += ' selected="selected"';
+                }        
+                html += '>{{ text_or|upper }}</option></select>';
+                html_finish += '<span class="btn btn-default" onclick="$(this).parent().parent().remove();"><i class="fa fa-remove"></i>';
+            }
+            html += '</td><td class="text-left pointer" onclick="modal_action(' + index + ');">';
+            html_finish += '</td>';
+            html += '<input type="hidden" name="action[condition][' + index + '][first_type_value]" value="' + $('#select-condition-first_type_value').val() + '">';
+            let getParamsObject = function($elements){
+                    let methodParams = {};                    
+                    $.each($elements, function(){
+                      let name = $(this).attr('name');
+                      let names = name.substring(0, name.length - 1).split('][');
+                      let link = '';
+                      for (let level = 1; level < names.length; level++) {                        
+                        if (!link) {
+                          if (!methodParams[names[level]]) {
+                          methodParams[names[level]] = {};
+                          }
+
+                          link = methodParams[names[level]];
+                        } else {
+                          if (level == (names.length-1)) {
+                            link[names[level]] = $(this).val();
+                          } else {
+                            link[names[level]] = {};
+                          }                        
+                          link = link[names[level]];
+                        }
+                      }
+                    });             
+                    return methodParams;
+            };
+            if ($('#select-condition-first_type_value').val() === "0") {
+                //первый аргумент - поле
+                text += $('#input-condition-first_value_field_name').val();
+                html += '<input type="hidden" name="action[condition][' + index + '][first_value_field_name]" value="' + $('#input-condition-first_value_field_name').val() + '">';
+                html += '<input type="hidden" name="action[condition][' + index + '][first_value_field_uid]" value="' + $('#input-condition-first_value_field_uid').val() + '">';
+                html += '<input type="hidden" name="action[condition][' + index + '][first_value_field_getter]" value="' + $('#select-condition-first_value_field_getter').val() + '">';
+                //форма геттера
+                let $elements = $('#condition-first_value_field_getter_form').find($('[name^=\'action\[\']'));
+                if ($elements.length) {
+                  let methodParams = getParamsObject($elements)
+                  $.each(methodParams, function(pName, pVal){
+                      html += '<input type="hidden" name="action[condition][' + index + '][first_value_method_params][' + pName + ']" value=\'' + JSON.stringify(pVal) + '\'>';
+                  });
+                }
+            } else {
+                //первый аргумент - переменная
+                text += $('#select-condition-first_value_var').find(':selected').text();
+                html += '<input type="hidden" name="action[condition][' + index + '][first_value_var]" value="' + $('#select-condition-first_value_var').val() + '">';
+
+            }
+            //метод сравнения
+            text += ' ' + $('#select-condition-comparison_method').find(':selected').text() + " ";
+            html += '<input type="hidden" name="action[condition][' + index + '][comparison_method]" value="' + $('#select-condition-comparison_method').val() + '">';
+            html += '<input type="hidden" name="action[condition][' + index + '][second_type_value]" value="' + $('#select-condition-second_type_value').val() + '">';
+            switch ($('#select-condition-second_type_value').val()) {
+                case "0":
+                    //второй аргумент - поле
+                    html += '<input type="hidden" name="action[condition][' + index + '][second_value_field_name]" value="' + $('#input-condition-second_value_field_name').val() + '">';
+                    html += '<input type="hidden" name="action[condition][' + index + '][second_value_field_uid]" value="' + $('#input-condition-second_value_field_uid').val() + '">';
+                    html += '<input type="hidden" name="action[condition][' + index + '][second_value_field_getter]" value="' + $('#select-condition-second_value_field_getter').val() + '">';
+                    //форма геттера
+                    let $elements = $('#condition-second_value_field_getter_form').find($('[name^=\'action\[\']'));
+                    if ($elements.length) {
+                      let methodParams = getParamsObject($elements)
+                      $.each(methodParams, function(pName, pVal){
+                        html += '<input type="hidden" name="action[condition][' + index + '][second_value_method_params][' + pName + ']" value=\'' + JSON.stringify(pVal) + '\'>';
+                      });
+                    }
+                  
+                    text += $('input[name=\'condition-second_value_field_name\']').val();
+                    html += text + html_finish;
+                    if (mode === 'append') {
+                        $('#table-conditions tbody').append('<tr id="condition' + index + '">' + html + '</tr>');
+                    } else {
+                        $('#condition' + index).html(html);
+                    }                      
+                    break;
+                case "1":
+                    //второй аргумент - значение, введенное в виджет
+                    //field_value может быть записан в массиве (н-р, множественное ссылочное поле), проверяем
+                    var all_elements = $('#condition-block_second_manual').find($('[name^=\'condition-field_widget_value\']'));
+                    var field_value = "";
+                    if (all_elements.length > 1) {
+                       $.each(all_elements, function(){
+                           if ($(this).attr('type') === "radio" || $(this).attr('type') === "checkbox") {
+                               if ($(this).prop('checked')) {
+                                   field_value += $(this).val() + ',';
+                               }                                
+                           } else {
+                               field_value += $(this).val() + ',';
+                           }
+                           
+                       }); 
+                       field_value = field_value.substr(0,field_value.length-1);
+                    } else {
+                        field_value = all_elements.val();
+                    }
+                    html += '<input type="hidden" name="action[condition][' + index + '][second_value_widget]" value="' + field_value + '">';
+                    if ($('#select-condition-first_type_value').val() === "0") {
+                        //первый аргумент - поле, получаем отображаемое значение данного типа поля по value в виджете
+                        $.ajax({
+                            url: 'index.php?route=doctype/doctype/get_field_view&field_uid=' + encodeURIComponent($('input[name=\'condition-first_value_field_uid\']').val()) + '&field_value=' + encodeURIComponent(field_value),
+                            success: function(json){
+                                text += json;
+                                html += text.replace(/<\/?[^>]+>/g,'') + html_finish;
+                                if (mode === 'append') {
+                                    $('#table-conditions tbody').append('<tr id="condition' + index + '">' + html + '</tr>');
+                                } else {
+                                    $('#condition' + index).html(html);
+                                }                            
+                            },
+                        });
+                    } else {
+                        //первый аргумент - переменная, введенное значение в виджет и будет являться отображаемым
+                        html += text + field_value + html_finish;
+                        if (mode === 'append') {
+                            $('#table-conditions tbody').append('<tr id="condition' + index + '">' + html + '</tr>');
+                        } else {
+                            $('#condition' + index).html(html);
+                        }                         
+                    }    
+                    break;
+                case "2":
+                    //второй аргумент - переменная
+                    text += $('#select-condition-second_value_var').find(':selected').text();
+                    html += '<input type="hidden" name="action[condition][' + index + '][second_value_var]" value="' + $('#select-condition-second_value_var').val() + '">';
+                    html += text + html_finish;
+                    if (mode === 'append') {
+                        $('#table-conditions tbody').append('<tr id="condition' + index + '">' + html + '</tr>');
+                    } else {
+                        $('#condition' + index).html(html);
+                    }  
+                    break;
+
+            }
+        });    
+        
+        $("#modalCondition").on('hidden.bs.modal', function(){
+            $(this).remove();
+        });
+        
+    }
+    
+    function ReloadConditionParamFieldMethodList(selector, methodtype, field_uid, value, callback) {
+        if (field_uid === 0) {
+            $(selector).html('');
+            $(selector).append($('<option>', {
+                value:
+                    '',
+                text: '{{ text_default_method }}'
+            }));
+            $(selector).val = value;
+            return;
+        }
+        var url = 'index.php?route=doctype/doctype/get_field_methods&field_uid=' + field_uid + '&method_type=' + methodtype;
+        $.ajax({
+            url: url,
+            dataType: 'json'
+        }).done(function (data) {
+            if (data) {
+                data.unshift({
+                    name: '',
+                    alias: '{{ text_default_method }}'
+                });
+            } else {
+                data = [{'name': '', alias: '{{ text_default_method }}'}]
+            }
+            $(selector).html('');
+            data.forEach(function (item, i, data) {
+                $(selector).append($('<option>', {
+                    value: item['name'],
+                    text: item['alias']
+                }));
+            })
+            $(selector).val(value);
+            if (typeof callback == "function" && callback) {
+                callback();
+            }
+        }); //end ajax
+    }
+
+    function ReloadConditionSecondFieldWidget(field_uid, field_value, field_method) {
+        selector = '#condition-block_second_manual';
+        if (field_method || $('#select-condition-first_type_value').val() == "1") {
+            var html = "<input type='text' name='condition-field_widget_value' value='" + field_value + "' class='form-control'/>";
+            $(selector).html(html);
+            return;
+        }
+        if (!field_uid) {
+            $(selector).html('');
+            return;
+        }
+        var url = 'index.php?route=doctype/doctype/get_field_widget&field_uid=' + field_uid + '&widget_name=condition-field_widget_value';
+        if (field_value) {
+            url += '&field_value=' + encodeURI(field_value);
+        }
+        $.ajax({
+            url: url, 
+            cache: false, 
+            dataType: 'html'
+        }).done(function (html) {
+                $(selector).html(html);
+        }); //end ajax
+    }
+
+    //из-за второго модального окна теряется скролл, исправляем        
+    $(document).on('hidden.bs.modal', function (event) {
+        if ($('.modal:visible').length) {
+            $('body').addClass('modal-open');
+        }
+    });
+
+
+</script>

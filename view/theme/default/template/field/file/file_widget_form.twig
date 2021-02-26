@@ -1,0 +1,57 @@
+<div class="{{ BLOCK }}">
+ 
+    {% if widget_name or filter_form %}
+        <input type="text" name="{{ NAME }}" value="{{ field_value }}" class="{{ ID }} form-control">
+    {% else %}    
+        <input type="hidden" class="{{ ID }}"/>
+        <div id="field_files_{{ ID }}">
+            {% if files is empty %}
+                {{ text_no_files }}
+                <input
+                    type="hidden" name="{{ NAME }}[]" class="{{ ID }}" value=""/>
+                {# поле содержит ид файлов через запятую #}
+            {% endif %}
+        </div>
+
+        {% if files is not empty %}
+            <table class="table table-hover" id="table-field_file{{ ID }}">
+                {% for file in files %}
+                    <tr id="tbl_field_file{{ file.file_uid }}">
+                        <td>
+                            {% if file.link_preview is not empty %}<img src="{{ file.link_preview }}">{% endif%}</td>
+                        <td><span>{{ file.file_name }}</span><input type="hidden" name="{{ NAME }}[]" value="{{ file.file_uid }}"/></td>
+                        <td class="text-right">
+                            <span class="btn" name="button-field_file_remove_file_{{ unique }}">
+                                <i class="fa fa-remove"></i>
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+        <form enctype="multipart/form-data" id="form-{{ NAME }}" method="post">
+            <div class="btn btn-success fileup-btn">
+                {% if limit_files == 1 %}
+                    {{ button_select_file }}
+                {% else %}
+                    {{ button_select_files }}
+                {% endif %}
+                <input type="file" id="upload-{{ unique }}" {% if limit_files != 1 %} multiple {% endif %}>
+            </div>
+
+            <div class="queue" id="upload-{{ unique }}-queue"></div>
+        </form>
+    {% endif %}
+    <div class="modal fade" id="modal_{{ ID }}" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h3>{{ text_loading_file }}</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

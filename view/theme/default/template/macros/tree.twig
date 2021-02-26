@@ -1,0 +1,16 @@
+{% macro list(items, step = 0) %}
+    {% import _self as tree %}
+     <ul class="dropdown-menu">
+    {% for item in items %}
+       
+            {% if item.type == 'text' %}
+                <li><a tabindex="-1" href="{{ item.link }}">{{ item.name }}</a></li>            
+                {% if item.children %}
+                {{ tree.list(item.children, step + 1) }}
+                {% endif %}
+            {% else %}
+                <li class="divider"></li>
+            {% endif %}                    
+    {% endfor %}
+    </ul>
+{% endmacro %}

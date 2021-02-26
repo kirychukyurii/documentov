@@ -1,0 +1,103 @@
+{{ header }}{{ column_left }}
+<div id="block_loading"><nobr>{{ text_loading }}</nobr></div>
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <a href="{{ add }}" data-toggle="tooltip" title="{{ button_add }}" class="btn btn-success"><i class="fa fa-plus"></i></a>
+        <button type="button" id="button-delete" form="form-product" formaction="{{ delete }}" data-toggle="tooltip" title="{{ button_delete }}" class="btn btn-danger" onclick="confirm('{{ text_confirm }}', () => { $('#form-product').submit() } );" disabled="false"><i class="fa fa-trash-o"></i></button>
+      </div>
+      <h1>{{ heading_title }}</h1>
+
+    </div>
+  </div>
+  <div class="container-fluid">{% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+
+          <div class="panel-body">
+            <input class="form-control" id="search" placeholder="{{ text_search }}" type="text" autocomplete="off" autofocus><br>
+            <form action="{{ delete }}" method="post" enctype="multipart/form-data" id="form-product">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="list_folder">
+                  <thead class="background1">
+                    <tr>
+                      <th style="width: 1px;" class="text-center"><input type="checkbox" name="folder_selected_all" id="check-folder_selected_all" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" /></th>
+                      <th class="text-left">{% if sort == 'fd.name' %} <a href="{{ sort_name }}" class="{{ order|lower }}">{{ column_name }}</a> {% else %} <a href="{{ sort_name }}">{{ column_name }}</a> {% endif %}</th>
+                      <th class="text-left">{% if sort == 'fd.short_description' %} <a href="{{ sort_short_description }}" class="{{ order|lower }}">{{ column_description }}</a> {% else %} <a href="{{ sort_short_description }}">{{ column_description }}</a> {% endif %}</th>
+                      <th class="text-left">{% if sort == 'f.date_added' %} <a href="{{ sort_date_added }}" class="{{ order|lower }}">{{ column_created }}</a> {% else %} <a href="{{ sort_date_added }}">{{ column_created }}</a> {% endif %}</th>
+                      <th class="text-left">{% if sort == 'f.date_edited' %} <a href="{{ sort_date_edited }}" class="{{ order|lower }}">{{ column_modified }}</a> {% else %} <a href="{{ sort_date_edited }}">{{ column_modified }}</a> {% endif %}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  
+                  {% for folder in folders %}
+                  <tr>
+                    <td class="text-center">{% if folder.folder_uid in selected %}
+                      <input type="checkbox" name="folder_selected[]" value="{{ folder.folder_uid }}" checked="checked" />
+                      {% else %}
+                      <input type="checkbox" name="folder_selected[]" value="{{ folder.folder_uid }}" />
+                      {% endif %}</td>
+                    <td class="text-left pointer" onclick="window.location='{{ folder.edit }}';">{{ folder.name }}</td>
+                    <td class="text-left pointer" onclick="window.location='{{ folder.edit }}';">{{ folder.description }}</td>
+                    <td class="text-left pointer" onclick="window.location='{{ folder.edit }}';">{{ folder.date_added }}</td>
+                    <td class="text-left pointer" onclick="window.location='{{ folder.edit }}';">{{ folder.date_edited }}</td>
+                  </tr>
+                  {% endfor %}
+
+                    </tbody>
+                  
+                </table>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+   
+<script type="text/javascript">
+    $('input[name*=\'folder_selected\']').on('change', function () {
+        var selected = $('input[name^=\'folder_selected\']:checked');
+        if (selected.length > 0) {
+            $('#button-delete').prop('disabled', false);
+        } else {
+            $('#button-delete').prop('disabled', true);
+        }
+    });          
+
+// IE and Edge fix!
+$('button[form=\'form-product\']').on('click', function(e) {
+	$('#form-product').attr('action', $(this).attr('formaction'));
+});
+
+window.onbeforeunload = function (e) { 
+  $('#block_loading').show();  
+}; 
+
+$(document).ready(function(){
+  $("#search").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#list_folder tbody tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+    if (value) {
+       $('#check-folder_selected_all').hide();
+    } else {
+       $('#check-folder_selected_all').show();
+    }    
+  });
+});
+
+</script></div>
+{{ footer }} 

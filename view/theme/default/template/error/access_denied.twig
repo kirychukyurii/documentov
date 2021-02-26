@@ -1,0 +1,12 @@
+{{ header }}
+<div class="container">
+    <br>
+    <div class="alert alert-danger">
+      {% if error %} 
+      {{ error }}
+      {% else %} 
+      {{ error_access_denied }}
+      {% endif %}         
+    </div>
+</div>
+{{ footer }}

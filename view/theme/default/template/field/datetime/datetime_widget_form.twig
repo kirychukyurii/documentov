@@ -1,0 +1,63 @@
+<div class="{{ BLOCK }}">
+  <input type="text" name="{{ NAME }}" id="{{ ID }}{{ unique }}" class="{{ ID }} form-control" value="{{ field_value }}" autocomplete="off">
+  <script>
+    (function () {
+      if (typeof datetime_clear_field === "undefined") {
+        addScript("view/javascript/field/datetime/datetime_function.js");
+      }
+      if (typeof field_functions !== "undefined") {
+        field_functions.push(function () {
+          datetime_clear_field('{{ ID }}{{ unique }}')
+        }); // перед отправкой на сервер удаляем маску
+      }
+      if (!$.datetimepicker) {
+      addScript('view/javascript/jquery/datetimepicker/jquery.datetimepicker.full.min.js');
+        addStyle('view/javascript/jquery/datetimepicker/jquery.datetimepicker.min.css');
+      }
+      let langCode = '{{ code }}'.split('-')[0];
+      $.datetimepicker.setLocale(langCode);
+      let i18n = {};
+      if (langCode != 'en') {
+        i18n[langCode] = {
+          months: [
+            '{{ January }}',
+            '{{ February }}',
+            '{{ March }}',
+            '{{ April }}',
+            '{{ May }}',
+            '{{ June }}',
+            '{{ July }}',
+            '{{ August }}',
+            '{{ September }}',
+            '{{ October }}',
+            '{{ November }}',
+            '{{ December }}'
+          ],
+          dayOfWeek: [
+            '{{ Monday }}',
+            '{{ Tuesday }}',
+            '{{ Wednesday }}',
+            '{{ Thursday }}',
+            '{{ Friday }}',
+            '{{ Saturday }}',
+            '{{ Sunday }}'
+          ]
+        }
+      }
+      $('input[id=\'{{ ID }}{{ unique }}\']').datetimepicker({
+        i18n: i18n,
+        lang: langCode,
+        timepicker: '{{ format }}'.search(/[His]/) >= 0 ? true : false,
+        datepicker: '{{ format }}'.search(/[dmY]/) >= 0 ? true : false,
+        format: '{{ format }}',
+        yearStart: 1900,
+        scrollMonth: false,
+        scrollTime: false,
+        scrollInput: false,
+        validateOnBlur: false, // неверно проверяет формат Y-m (после потери фокуса - тек дата)
+        dayOfWeekStart: '{{ week_start }}',
+        mask: true
+      });
+    })();
+  </script>
+</div>

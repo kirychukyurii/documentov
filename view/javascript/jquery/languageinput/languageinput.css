@@ -1,0 +1,8 @@
+.language-input {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+}
+.language-input__text {
+  flex-grow: 1;
+}

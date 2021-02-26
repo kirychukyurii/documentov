@@ -1,0 +1,36 @@
+<hr>
+<div class="container-fluid form-horizontal">
+    <div class="form-group">
+        <label class="col-sm-3 text-right">{{ method_data.info["text_method_operation"] }}</label>
+        <div class="col-sm-4" style="padding: 0px;"> 
+            <select name="action{{ method_params_name_hierarchy }}[operation][value]" class="form-control">
+                <option value="add"{% if method_params['operation']['value'] == 'add' or method_params['operation']['value'] is empty %} selected="selected"{% endif %}>{{ method_data.info["text_method_operation_plus"] }}</option>
+                <option value="sub"{% if method_params['operation']['value'] == 'sub' %} selected="selected"{% endif %}>{{ method_data.info["text_method_operation_minus"] }}</option>
+            </select>
+        </div>
+        <label class="col-sm-1 text-right">{{ method_data.info["text_method_dimension_on"] }}</label>
+        <div class="col-sm-3" style="padding: 0px;"> 
+            <select name="action{{ method_params_name_hierarchy }}[dimension][value]" class="form-control">
+                <option value="min"{% if method_params['dimension']['value'] == 'min' %} selected="selected"{% endif %}>{{ method_data.info["text_method_dimension_min"] }}</option>
+                <option value="hour"{% if method_params['dimension']['value'] == 'hour' %} selected="selected"{% endif %}>{{ method_data.info["text_method_dimension_hour"] }}</option>
+                <option value="day"{% if method_params['dimension']['value'] == 'day' or method_params['dimension']['value'] == 'day' is empty %} selected="selected"{% endif %}>{{ method_data.info["text_method_dimension_day"] }}</option>
+                <option value="month"{% if method_params['dimension']['value'] == 'month' %} selected="selected"{% endif %}>{{ method_data.info["text_method_dimension_month"] }}</option>
+                <option value="year"{% if method_params['dimension']['value'] == 'year' %} selected="selected"{% endif %}>{{ method_data.info["text_method_dimension_year"] }}</option>
+            </select>
+        </div>
+    </div>    
+  
+    <div class="form-group">
+            {% import "default/template/macros/field_method_parameter.twig" as fmpar %}
+            {{ fmpar.show(method_params_prefix_hierarchy, method_params_name_hierarchy, 'source', method_params, method_data, true) }}   
+    </div>
+    <div class="form-group">
+            <div class="checkbox" style="margin-left: 15px;">
+                <label class="checkbox-inline">
+                    <input type="checkbox" value="1" name="action{{ method_params_name_hierarchy }}[save][value]" id="{{ method_params_prefix_hierarchy }}_separator_checkbox-save"{% if method_params['save']['value']  == 1 %} checked="checked"{% endif %}> {{ method_data.info.text_method_save }} 
+                </label>
+            </div>
+    </div>    
+    
+   
+</div> 

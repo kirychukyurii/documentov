@@ -1,0 +1,36 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="{{ MODULE_NAME}}-select-format"><span data-toggle="tooltip" title="{{ help_format }}">{{ entry_format }}</span></label>
+    <div class="col-sm-9">        
+        <select name="field[format]" id="{{ MODULE_NAME}}-select-format" class="form-control">
+            <option value="d.m.Y H:i:s" {%if params.format == "d.m.Y H:i:s" %} selected {%endif%}>{{ text_format_dqmqY_Heies }}</option>
+            <option value="d.m.Y H:i" {%if params.format == "d.m.Y H:i" %} selected {%endif%}>{{ text_format_dqmqY_Hei }}</option>
+            <option value="d/m/Y H:i:s" {%if params.format == "d/m/Y H:i:s" %} selected {%endif%}>{{ text_format_dvmvY_Heies }}</option>
+            <option value="d/m/Y H:i" {%if params.format == "d/m/Y H:i" %} selected {%endif%}>{{ text_format_dvmvY_Hei }}</option>
+            <option value="m-d-Y H:i:s" {%if params.format == "m-d-Y H:i:s" %} selected {%endif%}>{{ text_format_mxdxY_Heies }}</option>
+            <option value="m-d-Y H:i" {%if params.format == "m-d-Y H:i" %} selected {%endif%}>{{ text_format_mxdxY_Hei }}</option>
+            <option value="Y-m-d H:i:s" {%if params.format == "Y-m-d H:i:s" %} selected {%endif%}>{{ text_format_Yxmxd_Heies }}</option>
+            <option value="Y-m-d H:i" {%if params.format == "Y-m-d H:i" %} selected {%endif%}>{{ text_format_Yxmxd_Hei }}</option>
+            <option value="d.m.Y" {%if params.format == "" or params.format == "d.m.Y" %} selected {%endif%}>{{ text_format_dqmqY }}</option>
+            <option value="d/m/Y" {%if params.format == "d/m/Y" %} selected {%endif%}>{{ text_format_dvmvY }}</option>
+            <option value="m-d-Y" {%if params.format == "m-d-Y" %} selected {%endif%}>{{ text_format_mxdxY }}</option>
+            <option value="Y-m-d" {%if params.format == "Y-m-d" %} selected {%endif%}>{{ text_format_Yxmxd }}</option>
+            <option value="Y-m" {%if params.format == "Y-m" %} selected {%endif%}>{{ text_format_Yxm }}</option>
+            <option value="y-m" {%if params.format == "y-m" %} selected {%endif%}>{{ text_format_yxm }}</option>
+            <option value="m-d" {%if params.format == "m-d" %} selected {%endif%}>{{ text_format_mxd }}</option>
+            <option value="H:i:s" {%if params.format == "H:i:s" %} selected {%endif%}>{{ text_format_Heies }}</option>
+            <option value="H:i" {%if params.format == "H:i" %} selected {%endif%}>{{ text_format_Hei }}</option>
+        </select>
+    </div>
+</div>   
+<div class="form-group" id="{{ MODULE_NAME }}-timeblock">
+    <label class="col-sm-3 control-label">
+      <span data-toggle="tooltip" title="{{ help_time }}">{{ entry_time }}</span>
+    </label>
+    <div class="col-sm-9">
+        <select name="field[time]" class="form-control">
+          <option value="start"{% if params.time == "start" or params.time is empty %} selected{% endif %}>{{ text_time_start }}</option>
+          <option value="current"{% if params.time == "current" %} selected {% endif %}>{{ text_time_current }}</option>
+          <option value="end"{% if params.time == "end" %} selected {% endif %}>{{ text_time_end }}</option>
+        </select>
+    </div>
+</div>   

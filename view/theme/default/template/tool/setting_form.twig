@@ -1,0 +1,73 @@
+  
+    <div class="modal-header">
+        <div class="pull-right">
+            <button type="button" class="btn btn-default" id="modal-button-add" onclick="saveSetting('{{ setting_id }}');" data-loading-text="{{ text_loading }}"><i class="fa fa-save"></i></button>
+            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-reply"></i></button>
+        </div>    
+        <div class="pull-left"><h4 class="modal-title text-left">{{ text_edit }}</h4></div>
+    </div>
+
+    <div class="modal-body" id="form_setting">
+        <div class="form-horizontal">
+                <div class="form-group">
+                    {{ help }}<hr>
+                    <label class="col-sm-4 control-label" style="padding-top:0px;">{{ key }}</label>
+                    <div class="col-sm-8">
+                        <input type="{{ type }}" name="value" value="{{ value }}" class="form-control" id="input-value">
+                    </div>
+                    <hr>
+                    
+                </div>                
+                  
+        </div>
+    </div>    
+                    
+    <div class="modal-footer">
+        <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <button type="button" class="btn btn-default btn-block" id="modal-setting-save" onclick="saveSetting('{{ setting_id }}');" data-loading-text="{{ text_loading }}">{{ button_save }}</button>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                        <div style="margin-top: 15px;" class="visible-xs"></div>
+                        <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+                </div>
+
+        </div>
+    </div>                    
+ 
+           
+<script type="text/javascript">
+ 
+
+ function saveSetting() {
+        $.ajax({
+            url: 'index.php?route=tool/setting/save&setting_id={{ setting_id }}',
+            type: 'post',
+            cache: false,
+            data: $('#form_setting input[type=\'text\'], #form_setting input[type=\'password\']'),
+            dataType: 'json',
+            beforeSend: function() {
+                    $('#modal-setting-save').button('loading');
+            },            
+            success: function(json) {
+                if (json['success']) {
+                  let val = '';
+                  const type = $('#input-value').attr('type');
+                  switch (type) {
+                    case 'password':
+                      if ($('#input-value').val()) {
+                        val = '*******';
+                      }
+                      break;
+                    default:  
+                      val = $('#input-value').val();
+                      break;
+                  }
+                    $('#setting_value{{ setting_id }}').html(escapeHtml(val));
+                }
+                $('#modal-setting').modal('hide');
+            }
+        });
+    };
+
+</script>

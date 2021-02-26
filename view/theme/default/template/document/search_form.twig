@@ -1,0 +1,206 @@
+{{ header }}
+<div id="block_loading">{{ text_loading }}</div>
+<div class="container-fluid no-print" style="border-bottom: 1px solid #ddd;" id="folder_navigation"><h2>{{ text_fulltextsearch }}</h2></div> 
+<div class="navbar" id="folder_toolbar">
+    <div id="document_toolbar">
+        {% for button in buttons %}
+            &nbsp; <button class="btn btn-default shadow2" style="{% if button.color is not empty %}color:#{{ button.color }};{% endif %}{% if button.background is not empty %}background-color:#{{ button.background }};{% endif %}{% if button.picture %}padding:3px 6px 3px 3px;{% endif %}" id="folder_button{{ button.folder_button_uid }}" onclick="folder_button_action('{{ button.folder_button_uid }}');" data-toggle="tooltip" title="{{ button.title }}" data-loading-text="{{ text_loading }}"{% if button.documents or button.documents is empty %} disabled {% endif %}>{% if button.picture %}<img src="{{ button.picture }}"> {% endif %}<span{% if button.hide_button_name and button.picture %} class="text-hide-{{ button.hide_button_name }}"{% endif %}>{{ button.name }}</span></button>&nbsp;
+            {% endfor %}   
+
+    </div>   
+    <div class="form-group col-xs-12">        
+        <span class="col-xs-10 col-sm-11"><input type="text" id="ftsearch" class="form-control shadow2 input-md" placeholder="{{entry_fulltextsearch}}" onkeyup="ftsearch_keyup_handler(event)" value="{{search_string}}"/></span>
+        <button id="ftsearch_btn" class="btn btn-default shadow2 col-xs-2 col-sm-1 " onclick="ftsearch()"><i class="fa fa-search"></i></button>        
+    </div> 
+
+</div>
+<div class="container-fluid background0">
+    <div id="tcolumn" class="tcolumn col-sm-12 fixxed" style="display: block; width: 98%;">
+        {{text_fulltextsearch_manual}}
+    </div>    
+</div>
+<script>
+    let folderParams = {
+        folderUid: 'search',
+        hideToolbar: '{{ toolbar }}',
+        limit: '{{ pagination_limit }}',
+        limits: [],
+        filters: [],
+        filterConditions: [],
+        groupingTree: '0',
+        language: {},
+    };
+
+    {% for pagination_limit in pagination_limits %}
+        folderParams.limits.push({{ pagination_limit }});
+    {% endfor %}
+    {% for text_index,text_value in text_navigator_documentov %}
+        folderParams.language['{{ text_index }}'] = '{{ text_value }}';
+    {% endfor %}
+
+
+        var navDocumentov = new NavigatorDocumentov(folderParams);
+        navDocumentov.setSearchType('fulltext');
+
+        window.onresize = function () {
+            $('#tcolumn').height($('body').height() - $('.sticky').outerHeight(true) - $('#main_menu').outerHeight(true) - $('#folder_toolbar').outerHeight(true) - $('footer').outerHeight(true) - $('.background1').outerHeight(true) - $('#folder_navigation').outerHeight(true));
+        }
+        navDocumentov.loadTable = function (params) {            
+            
+            if (!params) {
+                $('#ftsearch_btn').attr("disabled", "disabled");
+                return;
+            }   
+            let nav = this;
+            this.historyCache = [];
+            $('.tooltip').hide();
+            $('#tcolumn').fadeOut(0);
+            $('#tcolumn').html();
+            $('#document_toolbar').fadeOut(0);
+            //$('#folder_toolbar').html(folder_toolbar);
+            var add_url = '';
+            add_url += '&page=' + nav.page + '&limit=' + nav.limit;
+            $.ajax({
+                url: 'index.php?route=document/search/get_documents&' + encodeURI(params) + encodeURI(add_url),
+                dataType: 'json',
+                cache: false,
+                beforeSend: function (xhr) {
+                    $('#block_loading').show();
+                },
+                success: function (json) {
+                    if (json['total_documents'] !== 0) {
+                        var html = '<div><table class="table table-bordered table-hover table-sticky">' +
+                            '    <thead class="background1"><tr><th>{{text_doctype}}</th><th>{{ document_title }}</th>' +
+                            '     <th>{{ search_result }}</th><th>{{ entry_date_added }}</th></tr></thead><tbody>';
+                        $.each(json['documents'], function (index, document) {
+                            html += '<tr style="cursor:pointer;" onclick="navDocumentov.openDocument(\'' + document['document_uid'] + '\')"><td>' + this['doctype_name'] + ' </td>';
+                            if (this['title']) {
+                                html += '<td>' + this['title'] + '</td>';
+                            } else {
+                                html += '<td>no title</td>';
+                            }
+                            html += '<td>' + this['text'] + '</td>';
+                            html += '</td>';
+                            html += '<td>' + this['created'] + '</td></tr>';
+                        });
+
+                        html += '</tbody></table>';
+                        html += '</div>';
+                        //пагинация
+                        html += '<div class="folder-pagination"><div class="col-sm-9 text-left"> ' + json ['pagination'] + '</div><div class="col-sm-3 text-right form-inline">' + json['text_total_documents'] + ' ' + json['total_documents'] + ' ' + json['text_show_documents'];
+                        html += '<select name="limit" onchange="navDocumentov.changeLimit(this);" class="form-control">';
+                        $.each(nav.limits, function () {
+                            html += '<option value="' + this + '"';
+                            if (nav.limit == this) {
+                                html += ' selected="selected"';
+                            }
+                            html += '>' + this + '</option>';
+                        });
+                        html += '</select>';
+                        html += '<br><br>&nbsp;';   //без группировки нижняя панель наезжает на таблицу 
+
+                        html += '</div>';
+                    } else {
+                        var html = '<div><h3>' + json['documents'] + '</h3></div>';
+                        html += '<div>{{ text_fulltextsearch_manual }}</div>';
+                    }
+
+                    //console.log("exec time: " + json['query_time']);
+                    $('#tcolumn').html(html);
+                    //nav.folder_toolbar = $('#folder_toolbar').html();
+                    $('#tcolumn').fadeIn(300);
+                    nav.tableParams = params;
+                    $("#tcolumn").animate({scrollTop: 0}, "slow");
+                    $('#block_loading').hide();
+                    $('#ftsearch').prop("disabled", false);
+                    $('#ftsearch_btn').prop("disabled", false);
+                    nav.ajaxError = 0;
+                },
+                error: function (xhr) {
+                    navDocumentov.errorAjax(xhr); 
+                    console.log(801);
+                    if (xhr.status && nav.ajaxError) {
+                        console.log(802);
+                        let error = xhr.responseText.match(/(.*?){"/m);
+                        nav.showWindow(nav.language.textHeaderError, nav.language.textError + ': ' + error[1]);
+                        nav.ajaxError = 0;
+                    }
+                },
+                complete: function (xhr) {
+                    if (nav.ajaxError) {
+                        nav.errorNetwork(this);
+                    }
+
+                }
+            });
+            var url = window.location.href;
+            var arr = url.split("&document_uid=");
+            var newurl = 'index.php?route=document/search&' + encodeURI(params) + encodeURI(add_url);
+            history.pushState(null, null, newurl);
+
+            $.ajax({
+                url: 'index.php?route=account/account/set_lastpage&controller=document/search&' + encodeURI(params) + encodeURI(add_url)
+            });
+        };
+
+        $(document).ready(function () {
+            var $url = window.location.href;
+            var $params = $url.split("&");
+            var $clear_url = "";
+            var $search_param = "";
+            $.each($params, function () {
+                $search_param = this.split("=");
+                if ($search_param.length > 1 && $search_param[0] === 'search' && navDocumentov._validate_search_string(decodeURI($search_param[1]))) 
+                {                    
+                    if (navDocumentov.tableParams) {
+                        navDocumentov.tableParams += "&";
+                    }
+                    navDocumentov.tableParams += decodeURI(this);
+                } else {
+                    $clear_url += this + '&';
+                }
+            });
+            //history.pushState(null, null, $clear_url.slice(0,-1));            
+            var $arr = $url.split("&document_uid=");
+            if ($arr[1] !== undefined && $arr[1] && $arr[1] != '0') {
+                navDocumentov.openDocument($arr[1]);
+                navDocumentov.historyCacheActual = 0;
+            } else {
+                navDocumentov.loadTable(navDocumentov.tableParams);                
+            }
+            $('#tcolumn').height($('body').height() - $('.sticky').outerHeight(true) - $('#main_menu').outerHeight(true) - $('#folder_toolbar').outerHeight(true) - $('footer').outerHeight(true) - $('.background1').outerHeight(true) - $('#folder_navigation').outerHeight(true) - 5);
+        });
+
+        function ftsearch() {
+
+            var search_str = $('#ftsearch').val();
+            var search_str_quot = search_str.replace(/"/g, '&quot;');
+            $('#ftsearch').attr('value', search_str_quot);
+            if (search_str) {
+                navDocumentov.page = 1;
+                navDocumentov.loadTable('search=' + search_str);
+                $('#ftsearch_btn').prop("disabled", true);
+                $('#ftsearch').prop("disabled", true);
+            }
+
+        }
+
+        function ftsearch_keyup_handler(e) {
+            let search_string = $('#ftsearch').val();
+            if (search_string) {
+                if (navDocumentov._validate_search_string(search_string)) {
+                    $('#ftsearch_btn').removeAttr("disabled");
+                    if (e.which === 13) {
+                        ftsearch();
+                    }
+                } else {
+                    $('#ftsearch_btn').attr("disabled", "disabled");
+                }
+            }
+
+        }
+
+
+
+</script>
+{{ footer }}

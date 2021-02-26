@@ -1,0 +1,258 @@
+{{ header }}
+
+<div class="container-fluid">
+  <div class="pull-right">
+    <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+      <i class="fa fa-reply"></i>
+    </a>
+  </div>
+  <h1>{{ heading_title }}</h1>
+  <hr>
+  <div class="row">
+    <div class="col-sm-3 text-right">
+      <b>{{ text_customers_online }}</b>
+    </div>
+    <div class="col-sm-9">{{ customers_online }}</div>
+  </div>
+  <div class="row">
+    <div class="col-sm-3 text-right">
+      <b>{{ text_customers_last_hour }}</b>
+    </div>
+    <div class="col-sm-9">{{ customers_last_hour }}</div>
+  </div>
+  <div class="row">
+    <div class="col-sm-3 text-right">
+      <b>{{ text_customers_today }}</b>
+    </div>
+    <div class="col-sm-9">{{ customers_today }}</div>
+  </div>
+  <div class="row">
+    <div class="col-sm-3 text-right">
+      <b>{{ text_customers_yesterday }}</b>
+    </div>
+    <div class="col-sm-9">{{ customers_yesterday }}</div>
+  </div>
+  <hr>
+  <div class="panel-group" id="accordion">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a class="accordion-toggle" data-parent="#accordion" data-toggle="collapse" href="#filter-collapse" style="color: #14628c; font-weight: bold;">{{ text_filter }}
+          <i class="fa fa-caret-down"></i>
+        </a><br></h4>
+    </div>
+    <div class="panel-collapse collapse" id="filter-collapse">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <label class="control-label">{{ column_date1 }}</label>
+            <input type="text" name="filter_date_1" id="input-filter_date_1" class="form-control" value="{{ filter_date_1 }}">
+          </div>
+          <div class="col-sm-4">
+            <label class="control-label">{{ column_date2 }}</label>
+            <input type="text" name="filter_date_2" id="input-filter_date_2" class="form-control" value="{{ filter_date_2 }}">
+          </div>
+          <div class="col-sm-4">
+            <label class="control-label">{{ column_customer }}</label>
+            <input type="text" name="filter_customer_name" id="input-customer_name" class="form-control" value="{{ filter_customer_name }}">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <label class="control-label">{{ column_event }}</label>
+            <select class="form-control" id="select-filter_type" name="filter_type">
+              <option value="0">{{ text_none }}</option>
+              {% for type in event_types %}
+                <option value="{{ type.id }}" {% if type.id == filter_type %} selected="selected" {% endif %}>{{ type.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-sm-4">
+            <label class="control-label">{{ column_ip }}</label>
+            <input type="text" name="filter_ip" id="input-customer_name" class="form-control" value="{{ filter_ip }}">
+          </div>
+          <div class="col-sm-4 text-center">
+            <br>
+            <button class="btn btn-success" onclick="service_stat_reload();">{{ button_filter }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="table-responsive">
+  <table class="table table-bordered table-hover">
+    <thead>
+      <th>
+        <a class="pointer{% if sort == 'date' %} {{ order }}{% endif %}" onclick="change_sort('date');">{{ column_date }}</a>
+      </th>
+      <th>
+        <a class="pointer{% if sort == 'customer_name' %} {{ order }}{% endif %}" onclick="change_sort('customer_name');">{{ column_customer }}</a>
+      </th>
+      <th>
+        <a class="pointer{% if sort == 'type' %} {{ order }}{% endif %}" onclick="change_sort('type');">{{ column_event }}</a>
+      </th>
+      <th>{{ column_description }}</th>
+      <th>
+        <a class="pointer{% if sort == 'ip' %} {{ order }}{% endif %}" onclick="change_sort('ip');">{{ column_ip }}</a>
+      </th>
+    </thead>
+    <tbody>
+      {% for event in events %}
+        <tr>
+          <td>{{ event.date }}</td>
+          <td>{{ event.customer_name }}</td>
+          <td>{{ event.type }}</td>
+          <td>{{ event.params }}</td>
+          <td>{{ event.ip }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="folder-pagination">
+    <div class="col-sm-6 text-left">
+      {{ pagination }}
+    </div>
+    <div class="col-sm-6 text-right form-inline">
+      {{ text_total_events }}
+      {{ total_events }}
+      {{ text_show_events }}
+      <select class="form-control" name="limit" onchange="service_stat_change_limit(this);">'
+        {% if pagination_limits is not empty %}
+          {% for limit in pagination_limits %}
+            <option value="{{ limit }}" {% if limit == pagination_limit %} selected="selected" {% endif %}>{{ limit }}</option>';
+          {% endfor %}
+        {% endif %}
+      </select>
+    </div>
+  </div>
+</div></div><br><br><script typa="text/javascript">
+var page = 1;
+var limit = {{ pagination_limit }}
+var sort = "{{ sort }}";
+var order = "{{ order }}";
+var filter_type = "{{ filter_type }}";
+var filter_customer_name = "{{ filter_customer_name }}";
+var filter_date_1 = "{{ filter_date_1 }}";
+var filter_date_2 = "{{ filter_date_2 }}";
+var filter_ip = "{{ filter_ip }}";
+
+if (typeof(navDocumentov) == "undefined") { // документ создается не из журнала или другого документа
+  let navParams = {
+    language: {}
+  };{% for text_index,text_value in text_navigator_documentov %}navParams.language['{{ text_index }}'] = '{{ text_value }}';{% endfor %}var navDocumentov = new NavigatorDocumentov(navParams);
+}
+
+navDocumentov.onPage = function (num_page) {
+  page = num_page;
+  service_stat_reload();
+}
+
+function service_stat_change_limit(limit_page) {
+  limit = limit_page.value;
+  service_stat_reload();
+}
+function change_sort(column) {
+  if (sort == column) { // переключаетя сортировка
+    if (order == 'asc') {
+      order = 'desc';
+    } else {
+      order = 'asc';
+    }
+  } else {
+    sort = column;
+    order = 'asc';
+  }
+  service_stat_reload();
+}
+
+function service_stat_reload() {
+  url = 'index.php?route=extension/service/stat/form&page=' + page + '&limit=' + limit + '&sort=' + sort + '&order=' + order;
+  filter_type = $('select[name=\'filter_type\']').val();
+  if (filter_type) {
+    url += '&filter_type=' + filter_type;
+  }
+  filter_customer_name = $('input[name=\'filter_customer_name\']').val();
+  if (filter_customer_name) {
+    url += '&filter_customer_name=' + filter_customer_name;
+  }
+  filter_date_1 = $('input[name=\'filter_date_1\']').val();
+  if (filter_date_1) {
+    url += '&filter_date_1=' + filter_date_1;
+  }
+  filter_date_2 = $('input[name=\'filter_date_2\']').val();
+  if (filter_date_2) {
+    url += '&filter_date_2=' + filter_date_2;
+  }
+  filter_ip = $('input[name=\'filter_ip\']').val();
+  if (filter_ip) {
+    url += '&filter_ip=' + filter_ip;
+  }
+  window.location = url;
+}
+if (!$.datetimepicker) {
+  addScript('view/javascript/jquery/datetimepicker/jquery.datetimepicker.full.min.js');
+  addStyle('view/javascript/jquery/datetimepicker/jquery.datetimepicker.min.css');
+}
+let langCode = '{{ code }}'.split('-')[0];
+$.datetimepicker.setLocale(langCode);
+let i18n = {};
+if (langCode != 'en') {
+  i18n[langCode] = {
+    months: [
+      '{{ January }}',
+      '{{ February }}',
+      '{{ March }}',
+      '{{ April }}',
+      '{{ May }}',
+      '{{ June }}',
+      '{{ July }}',
+      '{{ August }}',
+      '{{ September }}',
+      '{{ October }}',
+      '{{ November }}',
+      '{{ December }}'
+    ],
+    dayOfWeek: [
+      '{{ Monday }}',
+      '{{ Tuesday }}',
+      '{{ Wednesday }}',
+      '{{ Thursday }}',
+      '{{ Friday }}',
+      '{{ Saturday }}',
+      '{{ Sunday }}'
+    ]
+  }
+}
+$('input[name*=\'filter_date_\']').datetimepicker({
+  i18n: i18n,
+  lang: langCode,
+  lang: '{{ code }}',
+  timepicker: '{{ datetime_format }}'.search(/[His]/) > 0 ? true : false,
+  format: '{{ datetime_format }}',{% if code != "en" %}dayOfWeekStart : 1,{% endif %}
+});
+
+$('input[name=\'filter_customer_name\']').autocomplete({
+  'source': function (request, response) {
+    $.ajax({
+      url: 'index.php?route=document/document/autocomplete&doctype_uid=2&field_uid=11&filter_name=' + encodeURIComponent(request),
+      dataType: 'json',
+      success: function (json) {
+        response($.map(json, function (item) {
+          return {label: item['name'], value: item['document_uid']}
+        }));
+      }
+    });
+  },
+  'select': function (item) {
+    if (item['value']) {
+      $('input[name=\'filter_customer_name\']').val(item['label']);
+    }
+  }
+});
+
+$('input[name*=\'filter_\']').on('keydown', function (event) {
+  if (event.which == 13) { // нажат Enter
+    service_stat_reload();
+  }
+});</script>{{ footer }}

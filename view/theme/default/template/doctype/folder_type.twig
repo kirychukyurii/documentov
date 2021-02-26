@@ -1,0 +1,27 @@
+{{ header }}
+<div class="container-fluid">
+    <hr>
+    <form action="{{ action }}" method="post" id="form_select_type" enctype="multipart/form-data" class="form-horizontal">
+        <div class="form-group">
+            <div class="col-sm-1"></div>
+            <label class="col-sm-3 control-label" for="select-folder_type">{{ text_select_folder_type }}</label>
+            <div class="col-sm-7">
+                <select name="folder_type" id="select-folder_type" class="form-control">
+                    {% for folder in folder_types %}
+                        <option value="{{ folder.type }}">{{ folder.title }}</option>
+                    {% endfor %}
+                </select>  <br>     
+            </div>   
+            <div class="col-sm-1"></div>                
+        </div>
+        <div class="form-group">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <button type="submit" class="btn btn-primary" form="form_select_type">{{ button_select }}</button>
+            </div>
+            <div class="col-sm-4"></div>
+
+        </div>       
+  </form>              
+</div>
+{{ footer }}            

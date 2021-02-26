@@ -1,0 +1,92 @@
+<div id="document_toolbar">
+  &nbsp;<button class="btn btn-default shadow2" id="button-save_document" data-toggle="tooltip" title="{{ button_save }}" data-loading-text="{{ text_loading }}">
+    <i class="fa fa-save"></i>
+    {{ button_save }}</button>&nbsp;
+                        &nbsp;<button class="btn btn-default shadow2" id="button-cancel_document" data-toggle="tooltip" title="{{ button_cancel }}">
+    <i class="fa fa-reply"></i>
+    {{ button_cancel }}</button>&nbsp;
+  <div id="block_loading">{{ text_loading }}</div>
+</div>
+<script type="text/javascript">
+  var field_functions = []; // массив функций, которые будут запущены перед отправкой данных на сервер
+
+  if (typeof(navDocumentov) == "undefined") { // документ создается не из журнала или другого документа
+    let navParams = {
+      language: {}
+    };
+    //
+    {% for text_index,text_value in text_navigator_documentov %}navParams.language['{{ text_index }}'] = '{{ text_value }}';{% endfor %}
+    //
+    var navDocumentov = new NavigatorDocumentov(navParams);
+  }
+
+  $('#button-save_document').on('click', function () {
+    if ($('#button-save_document').attr('disabled')) {
+      return false;
+    }
+    if (field_functions.length > 0) {
+      let result = "";
+      let stop = false;
+      $.each(field_functions, function () {
+        result = this();
+        if (result) {
+          alert(result);
+          stop = true;
+          return false;
+        }
+      });
+      if (stop) {
+        return;
+      }
+    }
+    $.ajax({
+      url: 'index.php?route=document/document&document_uid={{ document_uid }}{% if folder_uid is not empty %}&folder_uid={{ folder_uid }}{% endif %}&json',
+      type: 'post',
+      data: $('#document_form input[type=\'text\'], #document_form input[type=\'file\'], #document_form input[type=\'number\'], #document_form input[type=\'password\'], #document_form input[type=\'hidden\'], #document_form input[type=\'radio\']:checked, #document_form input[type=\'checkbox\']:checked, #document_form select, #document_form textarea'),
+      dataType: 'json',
+      beforeSend: function (xhr) {
+        $('#block_loading').show();
+        $('#button-save_document').attr('disabled', 'disabled');
+      },
+      success: function (json) {
+        $('#button-save_document').removeAttr('disabled');
+        navDocumentov.answerServer(json);
+        navDocumentov.ajaxError = 0;
+      },
+      error: function (xhr) {
+        navDocumentov.errorAjax(xhr);
+      },
+      complete: function () {
+        if (!navDocumentov.errorNetwork(this) && !navDocumentov.ajaxError) {
+          $('#button-save_document').removeAttr('disabled');
+        }
+      }
+    });
+
+  });
+
+  $('#button-cancel_document').on('click', function () {
+    var time_fade_out = (new Date()).getTime();
+    var folder = '{{ folder_uid }}';
+    $.ajax({
+      url: 'index.php?route=document/document/remove&document_uid={{ document_uid }}', 
+      type: 'get', 
+      dataType: 'json',
+      success: function() {
+        if (!folder) {
+            if (window.history.length>1) {
+              window.history.back();
+            } else {          
+              console.log('close window');
+              window.close();
+            }
+        } else {
+          navDocumentov.loadTableCache();
+        }
+      }  
+    });
+
+
+
+  });
+</script>

@@ -1,0 +1,16 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label"><span data-toggle="tooltip" title="{{ help_action_log }}">{{ entry_action_log }}</span></label>
+    <div class="col-sm-3">             
+        {% if action_log == 1 %}  
+        <label class="radio-inline"><input type="radio" name="action_log" value="1" checked="checked" /> {{ text_yes }}</label> 
+        <label class="radio-inline"><input type="radio" name="action_log" value="0" /> {{ text_no }}</label> 
+        {% else %}
+        <label class="radio-inline"> <input type="radio" name="action_log" value="1" /> {{ text_yes }}</label>  
+        <label class="radio-inline"> <input type="radio" name="action_log" value="0"  checked="checked"/> {{ text_no }}</label>
+        {% endif %}
+    </div>    
+     <div class="col-sm-6 text-right">
+      ID: {{ action_id}}
+     </div>
+</div>
+     

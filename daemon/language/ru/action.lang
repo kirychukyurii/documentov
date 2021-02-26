@@ -1,0 +1,244 @@
+[error]
+get = Ошибка при получении действия (UID=%s): %s
+get_type = Ошибка при загрузке типа действия %s (UID=%s, %s): %s, JSON: %s
+get_executer = Не найдено действие маршрута или кнопка для UID=%s
+set_executer = Ошибка при установке родительского контейнера действия: %s
+load_route_actions = Ошибка при загрузке действий точки маршрута (UID=%s): %s
+load_route_actions_scan = Ошибка при чтении действий точки маршрута (UID=%s): %s
+load_field_method_params = Ошибка при загрузке поля в параметрах действия (UID=%s): %s
+action_not_found = Ошибка при получении действия (UID=%s) типа документа: действие не найдено
+update_db = Ошибка при обновлении действия в базе данных: %s
+delete_db = Ошибка при удалении действия (UID=%s) из базы данных: %s 
+json_encode_params = Ошибка при кодировании параметров действия в JSON (%+v): %s
+json_decode_params = Ошибка при декодировании JSON параметров действия (UID=%s, тип=%s): %s
+unknown_type_action = Неизвестный тип действия: %s (UID=%s)
+save_document = Ошибка при сохранении документа (UID=%s): %s
+template_file_not_found = Не найден файл шаблона действия %s.%s
+template_file_get = Ошибка при чтении файла шаблона действия %s.%s: %s
+save_get_doc_for_save = Ошибка при сохранении создаваемого документа: %s
+no_access = Нет доступа
+infinite_loop = Превышено допустимое количество вызовов контекстов маршрута. Перепроектируйте тип документа таким образом, чтобы не вызывать контексты более %d раз
+action_access_get_document = Ошибка в действии Доступ при получении значения поля с документами для предоставления доступа: %s
+action_access_no_doctype = Не выбран тип документов для доступа
+action_access_get_doctype = Ошибка в действии Доступ при получении значения поля с типом документов для предоставления доступа: %s
+action_access_get_author = Ошибка в действии Доступ при получении значения поля с автором документов: %s
+action_access_get_documents = Ошибка в действии Доступ при формировании списка документов: %s
+action_autopress_get_button = Ошибка при получении кнопки для автонажатия: %s
+action_autopress_error = Ошибка при автонажатии: %s
+action_conditions_parse_action = Ошибка при загрузке типа действия %s внутри Условия (UID=%s): %s (JSON: %s)
+action_condition_document_not_found = Не найден текущий документ
+action_condition_no_fieldmethod_arg = Ошибка в действии Условие: в аргументе условия не загружен метод поля %s
+action_condition_comparison = Ошибка при обработке условий сравнения действия Условие (UID=%s, документ=%s): %s
+action_creation_get_params = Ошибка при получении параметров созданного документа: %s. JSON: %s
+action_creation_saving_new_doc = Ошибка при сохранении созданного документа: %s
+action_creation_saving_new_doc_route = Ошибка маршрута в созданном документе: %s
+action_creation_get_author = Ошибка в действии Создание при получении автора создаваемого документа: %s
+action_creation_get_parent_field_value = Ошибка в действии Создание при получении значения поля (UID=%s) из родительского документа (UID=%s): %s
+action_creation_creation = Ошибка в действии Создание при создании документа: %s
+action_creation_saving_new_doc_uid = Ошибка в действии Создание при записи результата работы (%s) в поле (UID=%s) родительского документа (UID=%s): %s
+action_creation_get_field_template = Ошибка при проверке полей по шаблону документа: %s
+action_email_no_address_field_uid = Ошибка в действии Электропочта (UID=%s) при получении адресата: %s
+action_email_no_file_field_uid = Ошибка в действии Электропочта (UID=%s): на найдено поле с файлов
+action_email_create_dir = Ошибка создания директории для действия Электропочта: %s
+action_email_copy_file = Ошибка при копировании файла из файлового хранилища для отправки действием Электропочта: %s
+action_email_address = Ошибка в действии Электропочта при получении адресата: %s
+action_email_address2 = Ошибка при получении адресатов для электронных писем в действии Электропочта (UID=%s): %s
+action_export_f_get_result_filename_field = Ошибка при получении поля с именем файла для записи результата в действии %s: %s
+action_export_f_execute_method_template_field = Ошибка при выполнении метода поля с шаблоном: %s
+action_export_f_execute_method_filename_field = Ошибка при выполнении метода поля с названием результирующего файла: %s
+action_export_f_mkdir_export_file = Ошибка при создании директории для выгрузки экспорированного файла: %s
+action_export_f_write_result_file = Ошибка при записи экспортированного файла в результирующее поле: %s
+action_export_f_get_result_field_value = Ошибка при получении значения результирующего поля: %s
+action_export_f_get_result_field = Ошибка при получении поля для записи результата: %s
+action_export_f_get_documents_field = Ошибка при получении поля с документами для экспорта: %s
+action_export_f_get_xlsx_row = Ошибка при получении строки XLSX-файла: %s
+action_export_f_get_field_value = Ошибка при получении значения поля для записи в ячейку: %s
+action_export_f_get_token = Ошибка при формировании токена доступа: %s
+action_export_f_save_xlsx_file = Ошибка при сохранении XLSX-файла: %s
+action_export_f_load_docx_file = Ошибка при загрузке DOCX-файла шаблона: %s
+action_export_f_get_var = Ошибка при получении переменной документа: %s
+action_export_f_get_doctype = Ошибка при получении типа документа: %s
+action_export_f_save_docx_file = Ошибка при сохранении DOCX-файла: %s
+action_export_f_pdf_generation = Ошибка при генерации PDF: %s
+action_export_f_pdf_creation = Ошибка при создании PDF: %s
+action_export_f_pdf_saving = Ошибка при сохранении PDF-файла: %s
+action_export_f_get_documents_field_value = Ошибка при получении значения поля с документами: %s
+action_export_f_csv_file_creation = Ошибка при создании CSV файла: %s
+action_export_f_xlsx_template_no_sheet = В XLSX-файле шаблона нет ни одного листа
+action_http_request_get_data_field = Ошибка при получении поля с данными: %s
+action_http_request_get_form_data = Ошибка при получении параметров запроса
+action_http_request_get_result_field = Ошибка при получении поля для записи результата запроса: %s
+action_http_request_execute_method_result_field = Ошибка при выполнении метода поля для записи результата запроса: %s
+action_http_request_get_result_field_value = Ошибка при получении значения поля для записи результата запроса: %s
+action_http_request_save_result_field_value = Ошибка при сохранении результата запроса в поле "%s": %s
+action_http_request_parse_response = Ошибка при чтении ответа от сервера: %s. %+v
+action_http_request_load_data_form = Ошибка при загрузке параметров формы: %s
+action_import_f_field_file_method = Ошибка при выполнении метода поля для получения пути к импорируемому файлу: %s
+action_import_f_form_data = Ошибка при получении данных формы действия: %s
+action_import_f_creation_doc = Ошибка при создании документа: %s
+action_import_f_doctype_not_found = Ошибка при получении типа импортируемых документов: %s
+action_message_creation_mess = Ошибка при формировании сообщения: %s
+action_move = Указанный идентификатор (%s) не является ни точкой маршрута, ни идентификатором поля
+action_move_route_get_document_field = Ошибка при получении значения поля с документом для перемещения: %s
+action_move_document_get_route_field = Ошибка при получении значения поля с точкой маршрута для перемещения: %s
+action_notification_get_recipient = Ошибка при получении значения поля с сотрудниками для уведомления: %s
+action_notification_get_document = Ошибка при получении значения поля с документами для уведомления: %s
+action_notification_update_db = Ошибка в действии Уведомление при обновлении базы данных: %s
+action_notification_delete_db = Ошибка в действии Уведомление при удалении уведомлений из базы данных: %s
+action_record_no_target_field_uid = Ошибка в действии Запись (UID=%s): действие настроено на запись в несуществующее поле (UID=%s)
+action_record_no_target_document_uid = Ошибка в действии Запись (UID=%s) при получении идентификатора документа для записи значения из поля (UID=%s): %s
+action_record_get_target_field = Ошибка при получении поля для записи: %s
+action_record_target_method = Ошибка при выполнении действия Запись (%s) в методе записываемого поля: %s
+action_record_get_target_document = Ошибка при получении документа для записи: %s
+action_record_save_target_field = Ошибка при сохранении значения поля: %s
+action_redirect_get_adress_field = Ошибка при получении значения поля (UID=%s) с адресом для перенаправления: %s
+action_redirect_get_adress_doc = Ошибка при получении документа с идентификатором %s для перенаправления
+action_remove_get_doc_field = Ошибка при получении поля с (UID=%s) с удаляемым документом: %s
+action_remove_get_doc_field_value = Ошибка при получении значения поля (%s) с удаляемым документом: %s
+action_remove_get_doc = Ошибка при получении документа для удаления: %s
+action_remove_error = Ошибка при удалении документа (UID=%s): %s
+action_remove_error_del_current_doc = Ошибка при удалении текущего документа: %s
+action_report_get_condition_value = Ошибка при получении значения поля для условия: %s
+action_report_doctype_condition_request = Ошибка при формировании условия по типу документа "%s": %s
+action_report_field_condition_request = Ошибка при формировании условия по полю отчета "%s": %s
+action_report_marshal_params = Ошибка при серилизации параметров запроса: %s. %+v
+action_report_request_execute = Ошибка при выполнении запроса документов: %s
+action_report_get_drilldown_field_value = Ошибка при получения значения документа для расшифровки: %s
+action_report_get_result_field = Ошибка при получении поле для записи отчета: %s
+action_report_write_result_file = Ошибка при записи отчета в результирующее поле: %s
+action_report_get_result_field_value = Ошибка при получении значения результирующего поля: %s
+action_report_html_template_error = Ошибка при формировании отчета в формате HTML: %s
+action_repoft_get_form_data = Ошибка при получении данных формы действия: %s
+action_repoft_get_form_data_field_id = Ошибка при получении идентификатора поля из формы действия: %s
+action_report_get_group_field = Ошибка при получении значения поля "%s" отчета: %s
+action_repoft_get_drilldown_field = Ошибка при получении поля расшифровки: %s
+action_report_json_result = Ошибка при формировании результирующего JSON-массива: %s
+action_selection_get_document = Ошибка при получении списка документов из поля в действии Выборка (UID=%s) в документе (UID=%s, %s): %s
+action_selection_get_doctype = Ошибка при получении типов документов из поля в действии Выборка (UID=%s) в документе (UID=%s, %s): %s
+action_selection_get_value_confition = Ошибка при получении значения для условия из поля: %s
+action_selection_request_error = Ошибка при выполнении выборки: %s
+action_selection_get_result_field = Ошибка при получении поля для записи результат выборки: %s
+action_selection_save_result_field = Ошибка при получении поля с результатом выборки: %s
+action_timer_get_name = Ошибка при получении названия таймера из поля: %s
+action_timer_get_document_field = Ошибка при получении поля с документом для выполнения таймера: %s
+action_timer_get_start = Ошибка при получении поля со временем запуска: %s
+action_timer_save_db = Ошибка при записи таймера в базу данных: %s
+action_timer_delete_db = Ошибка при удалении таймера из базы данных: %s
+action_timer_load_action = Ошибка при загрузке действия Таймера для запуска согласно расписания: %s
+action_timer_get_document = Ошибка в действии (%s) при получении документа для запуска таймера: %s
+action_timer_get_timername_field = Ошибка в действии (%s) при получении поля для записи идентификатора таймера: %s
+action_timer_move_to_route = Ошибка в действии (%s) при перемещении документа (UID=%s) на точку маршрута (UID=%s): %s
+action_timer_load_timers = Ошибка при загрузке установленных таймеров действия Таймер из базы данных: %s. Попробуйте перезагрузить демон
+action_timer_load_timer = Ошибка при загрузке установленного таймера из базы данных: %s
+action_timer_reload = Действие Таймер не может быть восстановлено и выполнено: Action: %+v; ActionType: %+v 
+action_timer_get_route = Ошибка при получении целевой точки в действии Таймер: %s
+action_timer_gets = Ошибка при получении таймеров документа: %s
+
+[info]
+pressed_button = Нажата кнопка "%s"
+action_name = Контекст: %s, Действие: %s
+action_disabled = Действие (%s, UID=%s) отключено
+subsystem_started = Подсистема действий запущена
+doclink_fuid_is_empty = Нет документов для получения значения в параметрах метода (поле "%s", UID документа = %s) 
+action_record_ok_value = В поле "%s" <a href="%s">документа</a> записано значение "%s"
+action_record_ok_value_from = <strong>Из <a href="%s">Документа</a></strong>
+action_record_ok_value_setting_field = В настроечное поле "%s" записано значение "%s"
+action_condition_true = Условие верно: запуск действий
+action_condition_true_empty = Условие верно: нет действий для запуска
+action_condition_false = Условие ложно: запуск действий
+action_condition_false_empty = Условие ложно: нет действий для запуска
+action_condition_true_complete = Действия из блока Условие.Верно выполнены
+action_condition_false_complete = Действия из блока Условие.Ложно выполнены
+action_access_no_subject = Ошибка в действии Доступ: не выбран субъект доступа
+action_access_no_documents = Нет документов для предоставления доступа
+action_access_get_subject = Ошибка в действии Доступ при получении значения поля с субъектом доступа: %s
+action_access_no_subjects = Нет субъектов доступа, т.к. поле %s не содержит подходящих пользовательских идентификаторов
+action_access_get_documents = Ошибка при получении списка документов: %s
+action_access_doc = <a href="%s">документ %d</a>
+action_access_allow_1 = %s получил(-а) доступ на %d док.: %s
+action_access_allow_2 = %s получили доступ к %d док.: %s
+action_access_deny_1 = %s потерал(-а) доступ на %d док.: %s
+action_access_deny_2 = %s потеряли доступ к %d док.: %s
+action_autopress_no_button = Не выбрана кнопка для автонажатия
+action_autopress_success = Кнопка %s нажата
+action_creation_write_result = В поле "%s" записано "%s"
+action_creation_no_doctype = Ошибка при создании документа: не указан тип создаваемого документа
+action_creation_doctype_not_found = Ошибка при создании документа: не найден тип создаваемого документа: %s
+action_creation_author_field_is_empty = Действие Создание (%s) не может быть выполнено, т.к. поле "%s" с автором создаваемого документа пустое
+action_creation_author_is_not_suid = Ошибка в действии Создание: идентификатор (UID=%s) не является идентфиикатором структуры и не может быть использован в качестве автора создаваемого документа
+action_creation_no_author = Действие Создание не может быть выполнено, т.к. в поле (UID=%s) с автором создаваемого документа нет пользовательских идентификаторов
+action_creation_success = Создан документ <a href="%s">%s</a>
+action_creation_saved_pressed = Нажата кнопка Сохранить
+action_creation_doc_created = Документ создан
+action_email_no_address_field = Не выбрано поле с адресом
+action_email_no_address = Нет адреса для отправки почты
+action_email_send = Письмо "%s" для %s добавлено в очередь
+action_export_f_no_result_field = Не указано поле для сохранения файла с результатом экспорта
+action_export_f_file_saved_to_field = Экспортированный файл записан в поле "%s"
+action_export_f_no_csv_columns = Не настроены столбцы для экспорта в CSV
+action_export_f_no_documents_export = Нет документов для экспорта
+action_export_f_no_template_field = Не выбрано поле с файлом шаблона
+action_export_f_load_xlsx_template = Ошибка при загрузке XLSX-файла шаблона: %s
+action_export_f_save_file = Ошибка при сохранении пути к экспортированному файлу в поле %s: %s
+action_http_request_no_address = Не указан адрес сервера
+action_http_request_success = Результаты запроса записаны в поле %s
+action_http_request_error = Ошибка при выполнении запроса: %s
+action_http_request_post_json = Запрос на сервер по адресу %s с передачей JSON %s
+action_http_response = От сервера получен ответ: %s
+action_import_f_file_not_loaded = Не загружен импортируемый файл
+action_import_f_file_not_found = Не найден файл для импорта
+action_import_f_data_not_found = Не найдены данные для импорта
+action_import_f_doctype_not_selected = Не выбран тип импортируемых документов
+action_import_f_file_not_available = Нет доступного для импорта файла
+action_import_f_file_xlsx_not_loaded = Ошибка при загрузке XLSX-файла для импорта: %s
+action_import_f_file_csv_not_loaded = Ошибка при загрузке CSV-файла для импорта: %s
+action_import_f_xlsx_has_not_sheet = В импортируемом XLSX-файле нет ни одного листа
+action_import_f_wrong_file_type = Для импорта можно использовать файлы XLSX или CSV
+action_import_f_success = Импортировано %d док.: %s
+action_import_f_success_0 = Импортировано 0 документов
+action_message_printed = Сообщение выведено
+action_move_route_not_found = Не найдена точка маршрута для перемещения
+action_move_move_document = Перемещение <a href="%s">документа</a> на точку "%s"
+action_move_complete = Перемещение завершено
+action_move_to_route = Перемещение на точку %s
+action_move_document_not_found = Не найден документ для перемещения
+action_notification_deleted = Удалены уведомления
+action_notification_no_recipient = Нет сотрудников для уведомления
+action_notification_no_recipient_fuid = Не указано поле с сотрудниками для уведомления
+action_notification_no_document = Нет документов для уведомления
+action_notification_no_document_fuid = Не указано поле с документами для уведомления
+action_notification_sent = Отправлено уведомление "%s" в адрес: %s
+action_notification_sent_more = Отправлено уведомление "%s" в адрес: %s и еще %d сотр.
+action_record_no_target_documents = Не найдены документя для записи в действии Запись (UID=%s, документы из поля UID=%s)
+action_record_target_field_uid_not_found = Поле с идентификатором целевого поля (UID=%s) пустое
+action_redirect_success = Перенаправление по адресу %s
+action_remove_doc_field_is_empty = Поле (%s) с удаляемым документом пусто
+action_remove_success = Удалено документов: %d
+action_remove_no_docs = Не найдены документы для удаления
+action_report_no_fields = Не создано ни одно поле для формирования отчета
+action_report_no_group = Отчет не может быть сформирован, т.к. для типа документа не указано поле для связи с группой
+action_report_no_data = Не хватает данных для формирования отчета
+action_report_no_result_field = Не указано поле для выгрузки отчета
+action_report_file_saved_to_field = Отчет записан в поле "%s"
+action_report_report_field_not_found = Не найдено поле отчета для расшифровки его значения
+action_report_no_drilldown_data = Не настроены поля документов для отображения расшифровки. Обратитесь к администратору системы
+action_report_no_doc_table = Ошибка при формировании списка документов
+action_report_no_field_link = Не найдена связь поля "%s" с типом документа группировки
+action_report_total = ИТОГО
+action_selection_no_documents = Нет документов для выборки в поле (UID=%s)
+action_selection_no_doctypes = Нет типа документов для выборки в поле
+action_selection_no_doctype = Не указан тип документа для выборки
+action_selection_selected_docs = Выбрано документов: %d
+action_selection_save_field_value = Запись в поле %s значения %s
+action_timer_name_too_long = Название (идентификатор) таймера не должно превышать 150 символов
+action_timer_document_not_found = Не указан документ для выполнения таймера
+action_timer_start_time_field_not_found = Не указано поле со временем запуска таймера
+action_timer_no_start_time = Поле со временем запуска таймера пустое
+action_timer_start_time_is_wrong = Ошибка при парсинге времени запуска таймера: %s
+action_timer_start = Установлен таймер "%s" на %s
+action_timer_stop = Остановлен таймер "%s"
+action_timer_stop_all = Остановлены все таймеры документа
+action_timer_success_save_field_value = В поле "%s" %s записано значение "%s"
+action_timer_documents = <a href='%s'>документа</a>
+action_timer_document_upper = <a href='%s'>Документ</a>
+action_timer_document_moves_to = %s перемещен на точку %s

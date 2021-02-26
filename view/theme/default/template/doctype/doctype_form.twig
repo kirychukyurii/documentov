@@ -1,0 +1,1905 @@
+{{ header }}
+
+<div id="block_loading">
+  <nobr>{{ text_loading }}</nobr>
+</div>
+<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-doctype" class="form-horizontal">
+  <input name="active_tab" type="hidden">
+  <div id="content">
+    <div class="page-header">
+      <div class="container-fluid">
+        <div class="pull-right">
+          <a href="{{ create_document }}" target="_blank" data-toggle="tooltip" title="{{ button_create_document }}" class="btn btn-default">
+            <i class="fa fa-file-o"></i>
+          </a>
+          <a href="{{ create_document }}&debug=1" id="btn_debug_new_doc" target="_blank" data-toggle="tooltip" title="{{ button_create_document_debug }}" class="btn btn-default">
+            <i class="fa fa-file-text-o"></i>
+          </a>
+          {% if export_doctype %}
+            <a href="{{ export_doctype }}" target="_blank" data-toggle="tooltip" title="{{ button_export_doctype }}" class="btn btn-default">
+              <i class="fa fa-archive"></i>
+            </a>
+          {% endif %}
+          <button type="submit" form="form-doctype" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-success">
+            <i class="fa fa-save"></i>
+          </button>
+          <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+            <i class="fa fa-reply"></i>
+          </a>
+        </div>
+        <h1>{{ heading_title }}</h1>
+      </div>
+    </div>
+    <div class="container-fluid">
+      {% if error_warning %}
+        <div class="alert alert-danger alert-dismissible">
+          <i class="fa fa-exclamation-circle"></i>
+          {{ error_warning }}
+          <button class="close" data-dismiss="alert" type="button">&times;</button>
+        </div>
+      {% endif %}
+      {% if draft_message %}
+        <div class="alert alert-info alert-dismissible">
+          <i class="fa fa-exclamation-circle"></i>
+          {{ draft_message }}
+          <button class="close" data-dismiss="alert" type="button">&times;</button>
+        </div>
+      {% endif %}
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <ul class="nav nav-tabs" id="general_tabs">
+            <li class="active">
+              <a data-toggle="tab" href="#tab-general">{{ tab_general }}</a>
+            </li>
+            <li>
+              <a data-toggle="tab" href="#tab-field">{{ tab_field }}</a>
+            </li>
+            <li>
+              <a data-toggle="tab" href="#tab-template">{{ tab_template }}</a>
+            </li>
+            <li>
+              <a data-toggle="tab" href="#tab-route">{{ tab_route }}</a>
+            </li>
+            <li>
+              <a data-toggle="tab" href="#tab-delegate">{{ tab_delegate }}</a>
+            </li>
+            <li>
+              <a data-toggle="tab" href="#tab-setting">{{ tab_setting }}</a>
+            </li>
+
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade in active" id="tab-general">
+              <ul class="nav nav-tabs" id="language">
+                {% for language in languages %}
+                  <li>
+                    <a data-toggle="tab" href="#language{{ language.language_id }}"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/>
+                      {{ language.name }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+              <div class="tab-content">
+                {% for language in languages %}
+                  <div class="tab-pane fade" id="language{{ language.language_id }}">
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label" for="input-name{{ language.language_id }}">{{ entry_name }}</label>
+                      <div class="col-sm-10">
+                        <input type="text" name="doctype_description[{{ language.language_id }}][name]" value="{{ doctype_description[language.language_id] ? doctype_description[language.language_id].name }}" placeholder="{{ entry_name }}" id="input-name{{ language.language_id }}" {% if loop.index0 == 0%} autofocus {% endif %} class="form-control save_on_change"/>
+                        {% if error_name[language.language_id] %}
+                          <div class="text-danger">
+                            {{ error_name[language.language_id] }}
+                          </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label" for="input-short_description{{ language.language_id }}">
+                        <span data-toggle="tooltip" title="{{ help_short_description }}">{{ entry_short_description }}</span>
+                      </label>
+                      <div class="col-sm-10">
+                        <textarea name="doctype_description[{{ language.language_id }}][short_description]" placeholder="{{ entry_description }}" id="input-short_description{{ language.language_id }}" class="form-control save_on_change">{{ doctype_description[language.language_id] ? doctype_description[language.language_id].short_description }}</textarea>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label" for="input-title_field_name{{ language.language_id }}">
+                        <span data-toggle="tooltip" title="{{ help_document_title }}">{{ entry_title_field }}</span>
+                      </label>
+                      <div class="col-sm-10">
+                        <input type="text" name="title_field_name" id="input-title_field_name{{ language.language_id }}" placeholder="{{entry_title_filed}}" class="form-control " value="{{title_field_name[language.language_id]}}">
+                        <input type="hidden" name="doctype_description[{{ language.language_id }}][title_field_uid]" id="input-title_field_uid_{{ language.language_id }}" value="{{doctype_description[language.language_id].title_field_uid}}" class="save_on_change">                      
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="tab-pane fade" id="tab-field">
+              <div class="form-group">
+                <label class="col-sm-3 control-label" for="input-field_log">
+                  <span data-toggle="tooltip" title="{{ help_field_log }}">{{ entry_field_log }}</span>
+                </label>
+                <div class="col-sm-9">
+                  <input type="text" name="field_log" value="{{ field_log }}" placeholder="{{ entry_field }}" id="input-field_log" class="form-control save_on_change"/>
+                  <input type="hidden" name="field_log_uid" value="{{ field_log_uid }}" class="save_on_change"/>
+                </div>
+              </div>
+
+
+              <div class="">
+                <input class="form-control" id="doctype_fields_filter" placeholder="{{ text_search }}" type="text">
+                <table class="table table-striped table-bordered table-hover shadow2" id="doctype_fields">
+                  <thead>
+                    <tr>
+                      <th class="text-left">{{ column_field_name }}</th>
+                      <th class="text-left">{{ column_field_type }}</th>
+                      <th>{{ column_field_attributes }}</th>
+                      <th class="text-left" style="width: 150px;"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    {% for field in fields %}
+                      <tr id="field-row{{ field.field_uid }}" {% if field.draft==2 or field.draft==12 %} class="remove_element" {% endif %} {% if field.draft==1 %} class="new_element" {% endif %}>
+                        <td class="text-left pointer" onclick="editField('{{ field.field_uid }}',0);">{{ field.name }}</td>
+                        <td class="text-left pointer" onclick="editField('{{ field.field_uid }}',0);">{{ field.type_title }}</td>
+                        <td class="text-left pointer" onclick="editField('{{ field.field_uid }}',0);">{{ field.params_description }}
+                          {% if field.attributes %}
+                            {% for attr in field.attributes %}
+                              <span class="badge" title="{{ attr.text }}"><i class="fa fa-{{ attr.pic }}"></i></span>
+                            {% endfor %}
+                          {% endif %}
+                        </td>
+                        <td class="text-right" id="field-row-button{{ field.field_uid }}">
+                          {% if field.draft == 2 or field.draft==12 %}
+                            <button type="button" onclick="undoRemoveField('{{ field.field_uid }}',0);" data-toggle="tooltip" title="{{ button_undo }}" class="btn btn-default">
+                              <i class="fa fa-undo"></i>
+                            </button>
+                          {% else %}
+                            <button type="button" class="btn btn-default" onclick="up(this, 'move_field&field_uid={{ field.field_uid }}');" data-toggle="tooltip" title="{{ button_up }}">
+                              <i class="fa fa-arrow-up"></i>
+                            </button>
+                            <button type="button" class="btn btn-default" onclick="down(this, 'move_field&field_uid={{ field.field_uid }}');" data-toggle="tooltip" title="{{ button_down }}">
+                              <i class="fa fa-arrow-down"></i>
+                            </button>
+                            {% if field.system == 0 %}
+                              <button type="button" class="btn btn-default" onclick="removeField('{{ field.field_uid }}',0);" data-toggle="tooltip" title="{{ button_remove }}">
+                                <i class="fa fa-minus-circle"></i>
+                              </button>
+                            {% endif %}
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+
+                  </tbody>
+
+                  <tfoot></tfoot>
+                </table>
+
+                <span class="btn btn-success" onclick="addField(0);" data-toggle="tooltip" title="{{ button_add_field }}">
+                  <i class="fa fa-plus">
+                    {{ button_add_field }}</i>
+                </span>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="tab-template">
+              {% for template_type, templates in templates %}
+                <h3>{{ template_name[template_type] }}</h3>
+                <ul class="nav nav-tabs" id="ul-templates_{{ template_type }}">
+                  {% for templ_index,templ_name in templates %}
+                    <li class="{% if loop.index0 == 0 %}active {% endif %}dropdown" data-index="{{ templ_index }}">
+                      <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ templ_name }}
+                        <span class="caret"></span>
+                      </a>
+                      <ul class="dropdown-menu template_language{{ template_type }}">
+                        {% for language in languages %}
+                          <li>
+                            <a data-toggle="tab" href="#template_language-{{ template_type }}-{{ templ_index }}-{{ language.language_id }}"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/>
+                              {{ language.name }}</a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </li>
+                  {% endfor %}
+                  <li id="li-template_{{ template_type }}_additional_add_form">
+                    <a data-target="#template_{{ template_type }}_additional_add_form" data-toggle="modal" href="#template_{{ template_type }}_additional_add_form">
+                      <i class="fa fa-plus-circle"></i>
+                    </a>
+                  </li>
+                </ul>
+                <div class="tab-content" id="tab-content_templates_{{ template_type }}">
+                  {% for index,tmplts in templates %}
+                    {% for language in languages %}
+                      <div class="tab-pane fade" id="template_language-{{ template_type }}-{{ index }}-{{ language.language_id }}">
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label">
+                            {{ text_template }}<br>
+                            <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/>
+                            {% if index %}
+                              <hr>
+                              <div class="text-muted">
+                                {{ text_template_condition }}
+                                {{ doctype_template[template_type][index]['params']['condition_field_name'] }}
+                                {{ attribute(_context,'text_condition_' ~  doctype_template[template_type][index]['params']['condition_comparison']) }}
+                                {{ doctype_template[template_type][index]['params']['condition_value_name'] }}<br><br>
+                                <button class="btn btn-default" onclick="editAdditionalTemplate('{{ template_type }}', {{ index }}, 'window');return false;">{{ button_change}}</button>
+                              </div>
+                            {% endif %}
+
+                          </label>
+                          <div class="col-sm-10">
+                            <textarea name="doctype_template[{{ template_type }}][{{ index }}][{{ language.language_id }}]" placeholder="{{ text_template }}" data-toggle="summernote_s" data-lang="{{ language.code }}" class="form-control save_on_change">
+                              {{ doctype_template[template_type][index][language.language_id] }}
+                            </textarea>
+                            <input class="save_on_change hidden" name="doctype_template_conditions[{{ template_type }}][{{ index }}][{{ language.language_id }}]" value='{{ doctype_template_conditions[template_type][index][language.language_id] }}'>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  {% endfor %}
+                  <div class="modal fade" id="template_{{ template_type }}_additional_add_form">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button class="close" data-dismiss="modal" type="button">&times;</button>
+                          <h4 class="modal-title">{{ text_add_additional_template }}</h4>
+                        </div>
+                        <div class="modal-body">
+                          <div class="form-group">
+                            <label class="col-sm-4 control-label" for="input-add_template_name">{{ entry_additional_template_name }}:</label>
+                            <div class="col-sm-8">
+                              <input class="form-control" id="input-add_additional_template_{{ template_type }}_name" name="add_additional_template_{{ template_type }}_name" type="text">
+                              <input name="add_additional_template_{{ template_type }}_index" type="hidden" value="">
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-sm-4 control-label">{{ entry_additional_template_condition }}:</label>
+                            <div class="col-sm-8">
+                              <div>
+                                <input type="text" name="add_additional_template_{{ template_type }}_field_name" class="form-control" placeholder="{{ entry_field }}">
+                                <input name="add_additional_template_{{ template_type }}_field_uid" type="hidden">
+                              </div>
+                              <div>
+                                <select class="form-control" name="add_additional_template_{{ template_type }}_comparison">
+                                  <option value="equal">{{text_condition_equal}}</option>
+                                  <option value="notequal">{{text_condition_notequal}}</option>
+                                  <option value="more">{{text_condition_more}}</option>
+                                  <option value="moreequal">{{text_condition_moreequal}}</option>
+                                  <option value="less">{{text_condition_less}}</option>
+                                  <option value="lessequal">{{text_condition_lessequal}}</option>
+                                  <option value="contains">{{text_condition_contains}}</option>
+                                  <option value="notcontains">{{text_condition_notcontains}}</option>
+                                </select>
+                              </div>
+                              <div>
+                                <input type="text" name="add_additional_template_{{ template_type }}_value_name" class="form-control" placeholder="{{ entry_field_condition }}">
+                                <input name="add_additional_template_{{ template_type }}_value_uid" type="hidden">
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button class="btn btn-default" id="button-add_additional_template_{{ template_type }}" type="button">{{ button_add }}</button>
+                          <button class="btn btn-default" id="button-edit_additional_template_{{ template_type }}" type="button">{{ button_save }}</button>
+                          <button class="btn btn-warning" id="button-delete_additional_template_{{ template_type }}" type="button">{{ button_remove }}</button>
+                          <button class="btn btn-default" data-dismiss="modal" type="button">{{ button_close }}</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+              {% for template_type,dt_templates in doctype_template %}
+                {% for index,tmplts in dt_templates %}
+                  {% for name,value in tmplts %}
+                    {% if index > 0 and name == 'params' %}
+                      <input type="hidden" name="params[doctype_template][{{ template_type }}][{{ index }}][template_name]" value="{{ value.template_name }}" class="save_on_change">
+                      <input type="hidden" name="params[doctype_template][{{ template_type }}][{{ index }}][condition_field_uid]" value="{{ value.condition_field_uid }}" class="save_on_change">
+                      <input type="hidden" name="params[doctype_template][{{ template_type }}][{{ index }}][condition_field_name]" value="{{ value.condition_field_name }}" class="save_on_change">
+                      <input type="hidden" name="params[doctype_template][{{ template_type }}][{{ index }}][condition_comparison]" value="{{ value.condition_comparison }}" class="save_on_change">
+                      <input type="hidden" name="params[doctype_template][{{ template_type }}][{{ index }}][condition_value_uid]" value="{{ value.condition_value_uid }}" class="save_on_change">
+                      <input type="hidden" name="params[doctype_template][{{ template_type }}][{{ index }}][condition_value_name]" value="{{ value.condition_value_name }}" class="save_on_change">
+                    {% endif %}
+                  {% endfor %}
+                {% endfor %}
+              {% endfor %}
+            </div>
+            <div class="tab-pane fade" id="tab-route">
+              <div class="row">
+                <div class="col-sm-2" style="padding: 5px;">
+                  <ul class="nav nav-pills nav-stacked" id="route">
+                    {% for route in routes %}
+                      <li id="route_name{{ route.route_uid }}" title="{{ route.description }}" class="background1">
+                        <a data-toggle="tab" href="#tab_route{{ route.route_uid }}">
+                          {% if route.draft == 0 %}
+                            <span class="btn btn-success btn-xs" onclick="editRoute('{{ route.route_uid }}');" data-toggle="tooltip" title="{{ button_edit_route }}">
+                              <i class="fa fa-pencil"></i>
+                            </span>
+                            {{ route.name }}
+                          {% elseif route.draft == 1 or route.draft == 3 %}
+                            <span class="btn btn-success btn-xs new_element" onclick="editRoute('{{ route.route_uid }}');" data-toggle="tooltip" title="{{ button_edit_route }}">
+                              <i class="fa fa-pencil"></i>
+                            </span>
+                            {{ route.name }}
+                          {% else %}
+                            <span class="btn btn-default btn-xs remove_element" onclick="undoRemoveRoute('{{ route.route_uid }}');" data-toggle="tooltip" title="{{ button_undo }}">
+                              <i class="fa fa-undo"></i>
+                            </span>
+                            {{ route.name }}
+                          {% endif %}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                  <span class="btn btn-default btn-sm" style="margin-left: 15px;margin-top:5px;" onclick="addRoute();" data-toggle="tooltip" title="{{ button_add_route }}">
+                    <i class="fa fa-plus"></i>
+                    <span class="hidden-sm hidden-xs">{{ route_add_route }}</span>
+                  </span>
+                </div>
+                <div class="col-sm-10" style="padding-left: 5px; padding-right: 5px;">
+                  <div class="tab-content" id="route_content">
+                    {% for route in routes %}
+                      <div class="tab-pane fade" id="tab_route{{ route.route_uid }}">
+                        {% if route.draft == 2 %}
+                          <div class="well">{{ text_on_remove_route }}</div>
+                        {% else %}
+                          <!-- таблица точки маршрута -->
+                          <div class="row">
+                            <div class="col-md-7">
+                              <strong>{% set cont = contextes|first %}{{ cont.name }}
+                                {{ column_route_execute }}</strong>
+                              <ul class="nav nav-tabs">
+                                {% if loop.first %}
+                                  {% for context, description in context0 %}
+                                    <li>
+                                      <a data-toggle="tab" href="#tab_route{{ route.route_uid }}-{{ context }}" title="{{ description.name }}">
+                                        <i class="fa fa-{{ description.icon }}"></i>
+                                      </a>
+                                    </li>
+                                  {% endfor %}
+                                {% endif %}
+                                {% for context, description in contextes %}
+                                  <li {% if loop.index0 == 0 %} class="active" {% endif %}>
+                                    <a data-toggle="tab" href="#tab_route{{ route.route_uid }}-{{ context }}" title="{{ description.name }}">
+                                      <i class="fa fa-{{ description.icon }}"></i>
+                                    </a>
+                                  </li>
+                                {% endfor %}
+                              </ul>
+                              <div class="tab-content">
+                                {% for context, actions in route.actions %}
+                                  <div class="tab-pane fade {% if loop.index0 == loop.length - count_contextes %} in active{% endif %}" id="tab_route{{ route.route_uid }}-{{ context }}">
+                                    <div class="panel panel-default">
+                                      <div class="panel-heading hidden-xs">
+                                        <div class="text-info">
+                                          {% if contextes[context].description is not empty %}
+                                            <small>{{ contextes[context].description }}
+                                              {{ route.name }}
+                                            </small>
+                                          {% else %}
+                                            <small>
+                                              {{ context0[context].description }}
+                                            </small>
+                                          {% endif %}:
+                                        </div>
+                                      </div>
+                                      <div
+                                        class="panel-body" style="padding:3px;">
+                                        {# таблица действий контекста перехода на точку #}
+                                        <table class="table table-hover shadow2" id="table_route_{{ context }}_action{{ route.route_uid }}">
+                                          <tbody>
+                                            {% for action in actions %}
+                                              <tr id="route_{{ context }}_action-row{{ action.route_action_uid }}" {% if action.draft==2 or action.status == 0 %} class="remove_element" {% endif %} {% if action.draft==1 or action.draft==3 %} class="new_element" {% endif %}>
+                                                <td class="text-left pointer" onclick="editRouteAction('{{action.route_action_uid}}');">
+                                                  <span id="route_{{ context }}_action-action{{ action.route_action_uid }}" class="{% if action.draft == 2 or action.draft == 12 or action.status == 0 %}remove_element{% endif %} {% if action.draft==1 or action.draft==3 %}new_element{% endif %}" data-toggle="tooltip" title="{{route_edit_action}}">
+                                                    {{ action.name }}</span>
+                                                </td>
+                                                <td class="text-left pointer" onclick="editRouteAction('{{action.route_action_uid}}');">
+                                                  {{ action.description }}
+                                                </td>
+                                                <td class="text-right" id="route_{{ context }}_action-button{{ action.route_action_uid }}" style="width: 80px;">
+                                                  {% if action.draft == 2 or action.draft == 12 %}
+                                                    <button class="btn btn-default btn-sm" type="button" onclick="undoRemoveRouteAction('{{ action.route_action_uid }}','{{ context }}');" data-toggle="tooltip" title="{{ button_undo }}">
+                                                      <i class="fa fa-undo"></i>
+                                                    </button>
+                                                  {% else %}
+                                                    <button class="btn btn-default btn-xs" type="button" onclick="up(this, 'move_action&action_id={{ action.route_action_uid }}');" data-toggle="tooltip" title="{{ button_off }}">
+                                                      <i class="fa fa-arrow-up"></i>
+                                                    </button>
+                                                    <button class="btn btn-default btn-xs" type="button" onclick="disableRouteAction('{{ action.route_action_uid }}', '{{ context }}');" data-toggle="tooltip" title="{{ button_disable_enable }}">
+                                                      <i class="fa fa-power-off"></i>
+                                                    </button>
+                                                    <button class="btn btn-default btn-xs" type="button" onclick="down(this, 'move_action&action_id={{ action.route_action_uid }}');" data-toggle="tooltip" title="{{ button_down }}">
+                                                      <i class="fa fa-arrow-down"></i>
+                                                    </button>
+
+                                                    <button class="btn btn-default btn-xs" type="button" onclick="removeRouteAction('{{ action.route_action_uid }}','{{ context }}');" data-toggle="tooltip" title="{{ button_remove }}">
+                                                      <i class="fa fa-minus-circle"></i>
+                                                    </button>
+                                                  {% endif %}
+                                                </td>
+                                              </tr>
+                                            {% endfor %}
+                                          </tbody>
+                                        </table>
+                                        <!-- конец таблицы -->
+                                        <button type="button" class="btn btn-success btn-sm" onclick="addRouteAction('{{ route.route_uid }}', '{{ context }}');" data-toggle="tooltip" title="{{ route_add_action }}">
+                                          <i class="fa fa-plus-circle">
+                                            <span class="hidden-sm hidden-xs">{{ route_add_action }}</span>
+                                          </i>
+                                        </button>
+                                        <button type="button" class="btn btn-success btn-sm" onclick="copyRouteAction('{{ route.route_uid }}', '{{ context }}');" data-toggle="tooltip" title="{{ route_copy_action }}">
+                                          <i class="fa fa-copy">
+                                            <span class="hidden-sm hidden-xs">{{ route_copy_action }}</span>
+                                          </i>
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                {% endfor %}
+
+                              </div>
+                            </div>
+                            <div class="col-md-5">
+                              <strong>{{ column_route_delegate }}</strong>
+                              <div class="panel panel-default">
+                                <div class="panel-heading hidden-xs">
+                                  <div class="text-info">
+                                    <small>{{ text_route_delegate }}
+                                      {{ route.name }}</small>:
+                                  </div>
+                                </div>
+                                <div class="panel-body" style="padding:3px;">
+                                  <div class="">
+                                    <table class="table table-hover shadow2" id="table_route_button{{ route.route_uid }}">
+                                      <tbody>
+                                        {% for button in route.buttons %} 
+                                          <tr id="route_button-row{{ button.route_button_uid }}" {% if button.draft==2 %} class="remove_element" {% endif %} {% if button.draft==1 or button.draft==3 %} class="new_element" {% endif %}>
+                                            <td class="text-left pointer" onclick="editRouteButton('{{button.route_button_uid}}');">
+                                              <fieldset style="border: 1px solid #ddd; padding: 2px;">
+                                                {% if button.button_group %}
+                                                  <div id='button_group_{{button.button_group.button_group_uid}}' style='margin-bottom: 3px'>
+                                                    <span class="label label-default2">{% if button.button_group.descriptions[language_id].name %}{{ button.button_group.descriptions[language_id].name}}{% else %}...{% endif %}</span>
+                                                  </div>
+                                                {%endif %}
+
+                                                <span class="{% if button.draft==2 %}remove_element{% endif %} {% if button.draft==1 or button.draft==3 %}new_element{% endif %}" id="route_button-button{{ button.route_button_uid }}" data-toggle="tooltip" title="{{route_edit_button}}" style="{% if button.color is not empty %}color:#{{ button.color }};{% endif %}{% if button.background is not empty %}background-color:#{{ button.background }};{% endif %}{% if button.picture %}padding:3px 6px 3px 3px;{% endif %}">
+                                                  {% if button.picture25 %}<img src="{{ button.picture25 }}">
+                                                  {% endif %}
+                                                  {{ button.name }}
+                                                </span>
+                                              </fieldset>
+                                            </td>
+                                            <td class="text-left pointer" onclick="editRouteButton('{{ button.route_button_uid }}');">
+                                              {% for field in button.fields %}
+                                                {{ field.name }}
+                                              {% endfor %}
+                                            </td>
+                                            <td class="text-right" id="remove_route_button{{ button.route_button_uid }}" style="width: 120px;">
+                                              {% if button.draft == 2 %}
+                                                <button type="button" class="btn btn-default btn-sm" onclick="undoRemoveRouteButton('{{ button.route_button_uid }}');" data-toggle="tooltip" title="{{ button_undo }}">
+                                                  <i class="fa fa-undo"></i>
+                                                </button>
+                                              {% else %}
+                                                <button type="button" class="btn btn-default btn-sm" onclick="up(this, 'move_button&button_uid={{ button.route_button_uid }}');" data-toggle="tooltip" title="{{ button_up }}">
+                                                  <i class="fa fa-arrow-up"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-sm" onclick="down(this, 'move_button&button_uid={{ button.route_button_uid }}');" data-toggle="tooltip" title="{{ button_down }}">
+                                                  <i class="fa fa-arrow-down"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-sm" onclick="removeRouteButton('{{ button.route_button_uid }}');" data-toggle="tooltip" title="{{ button_remove }}">
+                                                  <i class="fa fa-minus-circle"></i>
+                                                </button>
+                                              {% endif %}
+                                            </td>
+                                          </tr>
+                                        {% endfor %}
+                                      </tbody>
+                                    </table>
+                                    <button type="button" class="btn btn-info btn-sm" onclick="addRouteButton('{{ route.route_uid }}');" data-toggle="tooltip" title="{{ route_add_button }}">
+                                      <i class="fa fa-plus-circle">
+                                        <span class="hidden-sm hidden-xs">
+                                          {{ route_add_button }}</span>
+                                      </i>
+                                    </button>
+                                    <button type="button" class="btn btn-info btn-sm" onclick="copyRouteButton('{{ route.route_uid }}');" data-toggle="tooltip" title="{{ route_copy_button }}">
+                                      <i class="fa fa-copy">
+                                        <span class="hidden-sm hidden-xs">
+                                          {{ route_copy_button }}</span>
+                                      </i>
+                                    </button>
+
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                          </div>
+                          <!-- конец таблицы точки маршрута -->
+                        {% endif %}
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="tab-pane fade" id="tab-delegate">
+              <div class="form-group">
+                <div class="col-sm-10">
+                  <span class="btn btn-success" id="button-add_delegate" data-toggle="tooltip" title="{{ button_add_delegate }}">
+                    <i class="fa fa-plus"></i>
+                  </span>
+                </div>
+              </div>
+              <div>
+                <table class="table table-striped table-bordered table-hover shadow2" id="table-doctype_access">
+                  <thead>
+                    <tr>
+                      <th class="text-left">{{ column_delegate_subject }}</th>
+                      <th class="text-left">{{ column_delegate_author }}</th>
+                      <th style="width: 48px;"></th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  {{ text_delegate_create }}
+                </div>
+                <div class="col-sm-9">
+                  <select class="form-control save_on_change" name="delegate_create">
+                    <option value="0" {% if delegate_create != 1%} selected="selected" {% endif %}>{{ text_delegate_create_admins }}</option>
+                    <option value="1" {% if delegate_create == 1%} selected="selected" {% endif %}>{{ text_delegate_create_users }}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="tab-setting">
+              <div class="form-group">
+                <div class="col-sm-10">
+                  <span class="btn btn-success" onclick="addField(1);" data-toggle="tooltip" title="{{ button_add_field }}">
+                    <i class="fa fa-plus"></i>
+                  </span>
+                </div>
+              </div>
+              <div>
+                <input class="form-control" id="doctype_setting_fields_filter" placeholder="{{ text_search }}" type="text">
+                <table class="table table-striped table-bordered table-hover shadow2" id="doctype_setting_fields">
+                  <thead>
+                    <tr>
+                      <th class="text-left">{{ column_field_name }}</th>
+                      <th class="text-left">{{ column_field_type }}</th>
+                      <th class="text-left">{{ column_field_attributes }}</th>
+                      <th class="text-left">{{ column_field_value }}</th>
+                      <th style="width: 190px;"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    {% for field in setting_fields %}
+                      <tr id="field-row{{ field.field_uid }}" {% if field.draft==2 or field.draft==12%} class="remove_element" {% endif %} {% if field.draft==1 or field.draft==3 %} class="new_element" {% endif %}>
+                        <td class="text-left pointer" onclick="editField('{{ field.field_uid }}',1);">{{ field.name }}</td>
+                        <td class="text-left pointer" onclick="editField('{{ field.field_uid }}',1);">{{ field.type_title }}</td>
+                        <td class="text-left pointer" onclick="editField('{{ field.field_uid }}',1);">
+                          {% if field.attributes %}
+                          {% for attr in field.attributes %}
+                          <span class="badge" title="{{ attr.text }}">
+                            <i class="fa fa-{{ attr.pic }}"></i>
+                          </span>
+                          {% endfor %}
+                          {% endif %}
+                        </td>
+                        </td>
+                        <td class="text-left" id="setting_field_value{{ field.field_uid }}">{{ field.value }}</td>
+                        <td class="text-right" id="field-row-button{{ field.field_uid }}">
+                          {% if field.draft == 0 %}
+                            <span class="btn btn-default" onclick="editValueField('{{ field.field_uid }}',1);" data-toggle="tooltip" title="{{ button_edit_value_field }}">
+                              <i class="fa fa-edit"></i>
+                            </span>
+                          {% endif %}
+                          <span class="btn btn-default" onclick="up(this, 'move_field&field_uid={{ field.field_uid }}');" data-toggle="tooltip" title="{{ button_up }}">
+                            <i class="fa fa-arrow-up"></i>
+                          </span>
+                          <span class="btn btn-default" onclick="down(this, 'move_field&field_uid={{ field.field_uid }}');" data-toggle="tooltip" title="{{ button_down }}">
+                            <i class="fa fa-arrow-down"></i>
+                          </span>
+                          {% if field.draft == 2 or field.draft==12%}
+                            <button type="button" onclick="undoRemoveField('{{ field.field_uid }}',1);" data-toggle="tooltip" title="{{ button_undo }}" class="btn btn-default">
+                              <i class="fa fa-undo"></i>
+                            </button>
+                          {% else %}
+                            <button type="button" onclick="removeField('{{ field.field_uid }}',1);" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-default">
+                              <i class="fa fa-minus-circle"></i>
+                            </button>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+
+    <script>
+      loadSummernote();
+      var language_code = '{{ code }}'.split('-')[0];
+      var doctype = {
+        doctype_uid: '{{ doctype_uid }}',
+        delegate: {}, /* delegate[row_id]] = {
+                              author_name: '',
+                              author_uid: '',
+                              subject: [subject_uid:subject_name],
+                              draft: [0..3]
+                          };*/
+        showModal: function (access_id) {
+          $('#modal-delegate').remove();
+          html = '<div id="modal-delegate" class="modal fade">';
+          html += '  <div class="modal-dialog modal-lg">';
+          html += '    <div class="modal-content">';
+          html += '       <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' + '               <h4 class="modal-title">{{ text_title_delegate }}</h4>' + '       </div>' + '       <div class="modal-body">' + '           <div class="alert alert-danger alert-dismissible"  style="display:none;">' + '               <i class="fa fa-exclamation-circle"></i> ' + '               <span id="modal-delegate_error"></span>' + '               <button type="button" class="close" data-dismiss="alert">&times;</button>' + '           </div>' + '           <div class="form-horizontal" id="form-doctype_access">' + '               <div class="form-group">' + '                   <label class="col-sm-3 control-label" for="input-delegate_subject_name"><span data-toggle="tooltip" title="{{ help_delegate_subject }}">{{ entry_delegate_subject }}</span></label>' + '                   <div class="col-sm-9">' + '                       <label class="radio-inline"><input type="radio" name="delegate_subject_type" checked="checked" value="0">{{ text_type_sf_s }}</label>' + '                       <label class="radio-inline"><input type="radio" name="delegate_subject_type" value="1">{{ text_type_sf_sf }}</label>' + '                       <input type="text" name="delegate_subject_title" value="" placeholder="{{ entry_delegate_subject }}" id="input-delegate_subject_name" class="form-control" />' + '                       <div id="block-delegate_subject" class="well well-sm" style="height: auto; overflow: auto;">' + '                   </div>' + '               </div>' + '           </div>' + '           <div class="form-group">' + '               <label class="col-sm-3 control-label" for="input-delegate_author_name"><span data-toggle="tooltip" title="{{ help_delegate_author }}">{{ entry_delegate_author }}</span></label>' + '               <div class="col-sm-9">' + '                   <input type="text" name="delegate_author_name" id="input-delegate_author_name"  class="form-control" placeholder="{{ entry_delegate_author }}"/>' + '                   <input type="hidden" name="delegate_author_uid" id="input-delegate_author_uid"/>' + '               </div>' + '           </div>' + '       </div>' + '   </div>' + '   <div class="modal-footer">' + '       <div class="row">' + '           <div class="col-md-3 col-sm-6">' + '               <button type="button" class="btn btn-default btn-block" id="button-save_delegate" data-loading-text="{{ text_loading }}">{{ button_save }}</button>' + '           </div>' + '       <div class="col-md-3 col-sm-6">' + '           <div style="margin-top: 15px;" class="visible-xs"></div>' + '               <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>' + '           </div>' + '       </div>' + '   </div>';
+          html += '   </div>';
+          html += '  </div>';
+          html += '</div>';
+
+          $('body').append(html);
+          if (access_id) { // это редактирование существующей записи, инициализируем значения
+            $('input[name=\'delegate_author_name\']').val(doctype.delegate[access_id].author_name);
+            $('input[name=\'delegate_author_uid\']').val(doctype.delegate[access_id].author_uid);
+            for (subject_uid in doctype.delegate[access_id].subject) {
+              html = '<div id="delegate_subject' + subject_uid + '"><i class="fa fa-minus-circle"></i> ' + doctype.delegate[access_id].subject[subject_uid] + '   <input type="hidden" name="delegate_subject_uid[]" value="' + subject_uid + '" />' + '   <input type="hidden" name="delegate_subject_name[]" value="' + doctype.delegate[access_id].subject[subject_uid] + '" />' + '</div>';
+              $('#block-delegate_subject').append(html);
+            }
+
+          } else {
+            access_id = 0;
+          }
+          $('#modal-delegate').modal('show');
+          $('#modal-delegate').draggable({handle: '.modal-header'});
+
+          $('input[name=\'delegate_subject_title\']').autocomplete({
+            'source': function (request, response) {
+              var url;
+              if ($('input[name=\'delegate_subject_type\']:checked').val() === "1") { // показываем настроечные поля
+                url = 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid=0&setting=1';
+              } else { // выбор из структуры
+                url = 'index.php?route=doctype/doctype/autocomplete_document&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ structure_uid }}' + '&field_uid={{ structure_name_uid }}';
+              }
+              $.ajax({
+                url: url,
+                dataType: 'json',
+                cache: false,
+                success: function (json) {
+                  json.unshift({document_uid: '', name: '{{ text_none }}'});
+                  response($.map(json, function (item) {
+                    return {
+                      label: item['name'],
+                      value: item['document_uid'] || item['field_uid']
+                    }
+                  }));
+                }
+              });
+            },
+            'select': function (item) {
+              if (item['value']) {
+                $('input[name=\'delegate_subject_title\']').val('');
+                $('#delegate_subject' + item['value']).remove();
+                $('#block-delegate_subject').append('<div id="delegate_subject' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="delegate_subject_uid[]" value="' + item['value'] + '" /><input type="hidden" name="delegate_subject_name[]" value="' + item['label'] + '" /></div>');
+              }
+            }
+          });
+
+          $('#block-delegate_subject').delegate('.fa-minus-circle', 'click', function () {
+            $(this).parent().remove();
+          });
+
+          $('input[name=\'delegate_author_name\']').autocomplete({
+            'source': function (request, response) {
+              $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_document&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ structure_uid }}' + '&field_uid={{ structure_name_uid }}',
+                dataType: 'json',
+                success: function (json) {
+                  json.unshift({document_uid: 0, name: '{{ text_none }}'});
+                  response($.map(json, function (item) {
+                    return {label: item['name'], value: item['document_uid']}
+                  }));
+                }
+              });
+            },
+            'select': function (item) {
+              if (item['value']) {
+                $('input[name=\'delegate_author_name\']').val(item['label']);
+                $('input[name=\'delegate_author_uid\']').val(item['value']);
+              } else {
+                $('input[name=\'delegate_author_name\']').val("");
+                $('input[name=\'delegate_author_uid\']').val("0");
+              }
+            }
+          });
+
+          $('#button-save_delegate').on('click', function () {
+            draft = 1
+            if (!access_id) {
+              // новая запись, вычисляем ID
+              Object.keys(doctype.delegate).forEach(function(item) {
+                if (item > access_id) {
+                  access_id = item
+                }
+              });
+              draft = 3
+              access_id++
+            }
+            let subjects = []
+            for (i = 0; i < $('input[name^="delegate_subject_uid"]').length; i++) {
+              const key = $('input[name^="delegate_subject_uid"]')[i].value
+              const val = $('input[name^="delegate_subject_name"]')[i].value
+              subjects[key]=val
+            }
+            doctype.delegate[access_id] = {
+              author_name: $('#input-delegate_author_name').val(),
+              author_uid: $('#input-delegate_author_uid').val(),
+              subject: subjects,
+              draft: draft
+            }
+            doctype.saveDelegate(access_id)
+             $('#modal-delegate').modal('hide');
+          });
+
+        },
+        saveDelegate: function (access_id) {
+          let row_delegate = {};
+          let html = html_row = '';
+          if (access_id) {
+            row_delegate[access_id] = this.delegate[access_id];
+          } else {
+            row_delegate = this.delegate;
+          }
+          $('[id^=\'delegate-row\'] td').off('click');
+          if (Object.keys(row_delegate).length) {            
+            for (row_id in row_delegate) {
+              let subject_names = [];
+              let subject_ids = [];
+              for (subject in row_delegate[row_id].subject) {
+                subject_names.push(row_delegate[row_id].subject[subject]);
+                subject_ids.push(`<input type="hidden" name="accesses[${row_id}][subject_uids][]" value="${subject}" class="save_on_change"/>`);
+              }
+              html = '  <td class="text-left pointer">' + subject_names.join(', ') + '</td>' + '  <td class="text-left pointer">' + row_delegate[row_id].author_name + '</td>' + '  <td  id="tr-delegate_row_button' + row_id + '" class="text-right">' + '    <button type="button" id="button-delete_delegate' + row_id + '" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-default"><i class="fa fa-';
+              if (row_delegate[row_id].draft == 2) {
+                html += 'undo';
+              } else {
+                html += 'minus-circle';
+              }
+              html += '"></i></button>';
+
+              html += `<input type="hidden" name="accesses[${row_id}][author_uid]" value="${row_delegate[row_id]['author_uid']}" class="save_on_change"/>`;
+              html += `<input type="hidden" name="accesses[${row_id}][draft]" value="${row_delegate[row_id]['draft']}" class="save_on_change"/>`;
+              html += subject_ids.join('');
+
+              html += '  </td>';
+
+              if ($('tr').is('#delegate-row' + row_id)) { // строка уже существует, заменяем ее
+                $('#delegate-row' + row_id).html(html);
+                $('#delegate-row' + row_id).addClass('new_element');
+              } else { // добавляем новую строку
+                html_row = '<tr id="delegate-row' + row_id + '" data-row_id="' + row_id + '"';
+                if (row_delegate[row_id].draft == 2) {
+                  html_row += ' class="remove_element"';
+                } else if (row_delegate[row_id].draft) {
+                  html_row += ' class="new_element"';
+                }
+
+                html_row += '>' + html + '</tr>';
+                $('#table-doctype_access tbody').append(html_row);
+              }
+            }
+
+            $('[id^=\'delegate-row\'] td').on('click', function (e) {
+              if (! e.currentTarget.childElementCount) {
+                doctype.showModal($(this).parent().data('row_id'));
+              }
+            });
+
+            $('[id^=\'button-delete_delegate\']').off('click');
+            $('[id^=\'button-delete_delegate\']').on('click', function () {
+              let button = this;  
+              let row_id = $(button).parent().parent().data('row_id');
+              let draft = 2
+              
+              
+              if (doctype.delegate[row_id].draft && $(button).parent().parent().hasClass('remove_element')) { // восстановление
+                draft = 1
+                $(button).parent().parent().addClass('new_element')
+              } else { //удаление
+
+              }
+              $('input[name="accesses\['+row_id+'\]\[draft\]"]').val(draft)
+              $(button).parent().parent().toggleClass('remove_element')
+              autosave()
+              return
+              
+              let method = 'remove_delegate';
+              
+              
+              if ($(button).parent().parent().hasClass('remove_element')) {
+                method = 'undo_remove_delegate';
+              }
+              $.ajax({
+                url: 'index.php?route=doctype/doctype/' + method + '&doctype_uid={{ doctype_uid }}&access_id=' + row_id,
+                type: 'get',
+                dataType: 'json',
+                success: function (json) {
+                  if (json['success']) {
+                    if ($(button).parent().parent().hasClass('remove_element')) {
+                      $(button).parent().parent().removeClass('remove_element');
+                      $(button).html('<i class="fa fa-minus-circle"></i>');
+                      if (doctype.delegate[row_id].draft) {
+                        $(button).parent().parent().addClass('new_element');
+                      }
+
+                    } else {
+                      $(button).parent().parent().addClass('remove_element');
+                      $(button).html('<i class="fa fa-undo"></i>');
+                    }
+                    $('.tooltip').hide();
+                  } else if (json['error']) {
+                    alert(json['error']);
+                  }
+                }
+              });
+
+            });
+          }
+          if (access_id) {
+            autosave()
+          }
+        }
+      };
+
+
+      $('#button-add_delegate').on('click', function () {
+        doctype.showModal();
+      });
+
+      {% if delegates %}
+        {% for access_id, delegate in delegates %};
+          doctype.delegate[{{ access_id }}] = {
+            author_name: '{{ delegate.author_name | e() }}',
+            author_uid: '{{ delegate.author_uid }}',
+            subject: [],
+            draft: {{ delegate.draft }}
+          };
+          {% for subj in delegate.subject %};
+            doctype.delegate[{{ access_id }}].subject['{{ subj.subject_uid }}'] = '{{ subj.subject_name|escape("html") }}';
+          {% endfor %}
+        {% endfor %};
+        doctype.saveDelegate();
+      {% endif %}
+
+
+      {% for template_type, template_lang in templates %}
+        $('#button-add_additional_template_{{ template_type }}').on('click', function () {
+          addAdditionalTemplate('{{ template_type }}');
+        });
+        $('#button-edit_additional_template_{{ template_type }}').on('click', function () {
+          editAdditionalTemplate('{{ template_type }}', 0, 'save');
+        });
+        $('#button-delete_additional_template_{{ template_type }}').on('click', function () {
+          editAdditionalTemplate('{{ template_type }}', 0, 'delete');
+        });
+
+        $('input[name=\'add_additional_template_{{ template_type }}_field_name\']').autocomplete({
+          'source': function (request, response) {
+            $.ajax({
+              url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+              dataType: 'json',
+              cache: false,
+              success: function (json) {
+                json.unshift({field_uid: 0, name: '{{ text_none }}'});
+                response($.map(json, function (item) {
+                  return {label: item['name'], value: item['field_uid']}
+                }));
+              }
+            });
+          },
+          'select': function (item) {
+            if (item['value']) {
+              $('input[name=\'add_additional_template_{{ template_type }}_field_uid\']').val(item['value']);
+              $('input[name=\'add_additional_template_{{ template_type }}_field_name\']').val(item['label']);
+
+            } else {
+              $('input[name=\'add_additional_template_{{ template_type }}_field_uid\']').val(0);
+              $('input[name=\'add_additional_template_{{ template_type }}_field_name\']').val("");
+            }
+          }
+
+        });
+
+        $('input[name=\'add_additional_template_{{ template_type }}_value_name\']').autocomplete({
+          'source': function (request, response) {
+            $.ajax({
+              url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+              dataType: 'json',
+              cache: false,
+              success: function (json) {
+                json.unshift({field_uid: 0, name: '{{ text_none }}'});
+                response($.map(json, function (item) {
+                  return {label: item['name'], value: item['field_uid']}
+                }));
+              }
+            });
+          },
+          'select': function (item) {
+            if (item['value']) {
+              $('input[name=\'add_additional_template_{{ template_type }}_value_uid\']').val(item['value']);
+              $('input[name=\'add_additional_template_{{ template_type }}_value_name\']').val(item['label']);
+
+            } else {
+              $('input[name=\'add_additional_template_{{ template_type }}_value_uid\']').val(0);
+              $('input[name=\'add_additional_template_{{ template_type }}_value_name\']').val("");
+            }
+          }
+        });
+
+        $('#template_{{ template_type }}_additional_add_form').on('show.bs.modal', function (e) {
+          if ($('input[name=\'add_additional_template_{{ template_type }}_index\']').val() == '') {
+            if ($('#ul-templates_{{ template_type }}').children().length > 2) { // добавляем выбор местоположения шаблона
+              $('#select-template_{{ template_type }}_place').remove();
+              var select = '<div id="select-template_{{ template_type }}_place" class="form-group"><label class="col-sm-4 control-label">{{ entry_additional_template_place }}:</label><div class="col-sm-8"><select name="add_additional_template_{{ template_type }}_place" class="form-control"><option value="0">{{ text_in_the_end }}</option>';
+              $.each($('#ul-templates_{{ template_type }}').children(), function () {
+                if ($(this).attr('data-index') !== undefined && Number($(this).attr('data-index')) > 0) {
+                  select += '<option value="' + $(this).attr('data-index') + '">{{ text_before }} ' + $(this).children('a').text() + '</option>';
+                }
+              });
+              select += '</select></div></div>';
+              $('#template_{{ template_type }}_additional_add_form .modal-body').append(select);
+            }
+            $('#button-edit_additional_template_{{ template_type }}').hide();
+            $('#button-delete_additional_template_{{ template_type }}').hide();
+            $('#button-add_additional_template_{{ template_type }}').show();
+
+          } else {
+            $('#button-edit_additional_template_{{ template_type }}').show();
+            $('#button-delete_additional_template_{{ template_type }}').show();
+            $('#button-add_additional_template_{{ template_type }}').hide();
+          }
+        });
+
+        $('#template_{{ template_type }}_additional_add_form').on('hide.bs.modal', function (e) {
+          $('input[name=\'add_additional_template_{{ template_type }}_name\']').val('');
+          $('input[name=\'add_additional_template_{{ template_type }}_field_name\']').val('');
+          $('input[name=\'add_additional_template_{{ template_type }}_field_uid\']').val('');
+          $('input[name=\'add_additional_template_{{ template_type }}_value_name\']').val('');
+          $('input[name=\'add_additional_template_{{ template_type }}_value_uid\']').val('');
+          $('select[name=\'add_additional_template_{{ template_type }}_comparison\']').val('');
+          $('input[name=\'add_additional_template_{{ template_type }}_index\']').val('');
+          $('#select-template_{{ template_type }}_place').remove();
+        });{% endfor %}
+        {% for language in languages %}
+        $('#input-title_field_name{{ language.language_id }}').autocomplete({
+          'source': function (request, response) {
+            $.ajax({
+              url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+              dataType: 'json',
+              cache: false,
+              success: function (json) {
+                json.unshift({field_uid: 0, name: '{{ text_none }}'});
+                response($.map(json, function (item) {
+                  return {label: item['name'], value: item['field_uid']}
+                }));
+              }
+            });
+          },
+          'select': function (item) {
+            if (item['value']) {
+              $('#input-title_field_uid_{{ language.language_id }}').val(item['value']);
+              $('#input-title_field_name{{ language.language_id }}').val(item['label']);
+
+            } else {
+              $('#input-title_field_uid_{{ language.language_id }}').val(0);
+              $('#input-title_field_name{{ language.language_id }}').val("");
+            }
+            autosave()
+          }
+
+        });
+      {% endfor %};
+
+      var comparison_titles = {};
+
+      comparison_titles['equal'] = '{{ text_condition_equal }}'
+      comparison_titles['notequal'] = '{{ text_condition_notequal }}'
+      comparison_titles['moreequal'] = '{{ text_condition_moreequal }}'
+      comparison_titles['less'] = '{{ text_condition_less }}'
+      comparison_titles['lessequal'] = '{{ text_condition_lessequal }}'
+      comparison_titles['contains'] = '{{ text_condition_contains }}'
+      comparison_titles['notcontains'] = '{{ text_condition_notcontains }}'
+
+      function editAdditionalTemplate(template_type, index, mode) {
+        if (mode === 'window') {
+          $('input[name=\'add_additional_template_' + template_type + '_name\']').val($('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[template_name\]\']').val());
+          $('input[name=\'add_additional_template_' + template_type + '_field_name\']').val($('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_field_name\]\']').val());
+          $('input[name=\'add_additional_template_' + template_type + '_field_uid\']').val($('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_field_uid\]\']').val());
+          $('input[name=\'add_additional_template_' + template_type + '_value_name\']').val($('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_value_name\]\']').val());
+          $('input[name=\'add_additional_template_' + template_type + '_value_uid\']').val($('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_value_uid\]\']').val());
+          $('select[name=\'add_additional_template_' + template_type + '_comparison\']').val($('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_comparison\]\']').val());
+          $('input[name=\'add_additional_template_' + template_type + '_index\']').val(index);
+
+          $('#template_' + template_type + '_additional_add_form').modal('show');
+          $('#template_' + template_type + '_additional_add_form').draggable({handle: '.modal-header'});
+        } else if (mode == 'save') {
+          if ($('#input-add_additional_template_' + template_type + '_name').val() && $('input[name=\'add_additional_template_' + template_type + '_field_uid\']').val() && $('select[name=\'add_additional_template_' + template_type + '_comparison\']').val()) {
+            index = $('input[name=\'add_additional_template_' + template_type + '_index\']').val();
+            $('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[template_name\]\']').val($('input[name=\'add_additional_template_' + template_type + '_name\']').val());
+            $('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_field_uid\]\']').val($('input[name=\'add_additional_template_' + template_type + '_field_uid\']').val());
+            $('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_field_name\]\']').val($('input[name=\'add_additional_template_' + template_type + '_field_name\']').val());
+            $('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_value_uid\]\']').val($('input[name=\'add_additional_template_' + template_type + '_value_uid\']').val());
+            $('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_value_name\]\']').val($('input[name=\'add_additional_template_' + template_type + '_value_name\']').val());
+            $('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_comparison\]\']').val($('select[name=\'add_additional_template_' + template_type + '_comparison\']').val());
+            $('#ul-templates_' + template_type + ' li[data-index=\'' + index + '\'] a').html($('input[name=\'add_additional_template_' + template_type + '_name\']').val());
+            $('#template_' + template_type + '_additional_add_form').modal('hide');
+            autosave_data['field_log'] += '_';
+            autosave();
+          } else {
+            alert('{{ text_alert_add_template }}');
+          }
+        } else {
+            confirm('{{ text_deleting_additional_template }}', function(){
+              index = $('input[name=\'add_additional_template_' + template_type + '_index\']').val();
+              $('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[template_name\]\']').remove();
+              $('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_field_uid\]\']').remove();
+              $('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_field_name\]\']').remove();
+              $('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_value_uid\]\']').remove();
+              $('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_value_name\]\']').remove();
+              $('input[name=\'params\[doctype_template\]\[' + template_type + '\]\[' + index + '\]\[condition_comparison\]\']').remove();
+              $('#ul-templates_' + template_type + ' li[data-index=\'' + index + '\']').remove();{% for language in languages %}$('#template_language-' + template_type + '-' + index + '-' + {{ language.language_id }}).remove();{% endfor %}$('#template_' + template_type + '_additional_add_form').modal('hide');
+              $('.template_language' + template_type + ' a:first').tab('show');
+              autosave_data = [];
+              autosave();
+            });
+        }
+      }
+
+      function addAdditionalTemplate(template_type) {
+        if ($('#input-add_additional_template_' + template_type + '_name').val() && $('input[name=\'add_additional_template_' + template_type + '_field_uid\']').val() && $('select[name=\'add_additional_template_' + template_type + '_comparison\']').val()) {
+          if (Number($('select[name=\'add_additional_template_' + template_type + '_place\']').val())) { // добавление перед ...
+            var index = Number($('select[name=\'add_additional_template_' + template_type + '_place\']').val());
+            $.each($('#ul-templates_' + template_type).children(), function () {
+              var indx = Number($(this).attr('data-index'));
+              if (indx >= index) {
+                $(this).attr('data-index', ++ indx);
+                $.each($(this).children('ul').children().children(), function () {
+                  var href = $(this).attr('href');
+                  array_href = href.split('-');
+                  if (array_href[1] == template_type && Number(array_href[2]) >= index) {
+                    array_href[2] = Number(array_href[2]) + 1;
+                    $(this).attr('href', array_href.join('-'));
+                  }
+                });
+              }
+
+            });
+            $.each($('#tab-template').children('[type=\'hidden\']'), function () {
+              var name = $(this).attr('name');
+              var array_name = name.split('][');
+              if (array_name[1] == template_type && Number(array_name[2]) >= index) {
+                array_name[2] = Number(array_name[2]) + 1;
+                $(this).attr('name', array_name.join(']['));
+              }
+            });
+            $.each($('#tab-content_templates_' + template_type).children(), function () {
+              var id = $(this).attr('id');
+              var array_id = id.split('-');
+              if (array_id[1] == template_type && array_id[2] >= index) {
+                array_id[2] = Number(array_id[2]) + 1;
+                $(this).attr('id', array_id.join('-'));
+                var textarea = $(this).children().children('div').children('textarea');
+                var textarea_name = $(textarea).attr('name');
+                var array_textarea_name = textarea_name.split('][');
+                if (Number(array_textarea_name[1]) >= index) {
+                  array_textarea_name[1] = Number(array_textarea_name[1]) + 1;
+                  $(textarea).attr('name', array_textarea_name.join(']['));
+                }
+              }
+            });
+            index--;
+          } else {
+            var index = 0;
+            $.each($('#ul-templates_' + template_type).children(), function () {
+              var indx = Number($(this).attr('data-index'));
+              if (indx > index) {
+                index = indx;
+              }
+            });
+          }
+
+          html = '<li class="dropdown" data-index=' + ++ index + '><a class="dropdown-toggle" data-toggle="dropdown" href="#">' + $('#input-add_additional_template_' + template_type + '_name').val() + ' <span class="caret"></span></a>' + '<ul class="dropdown-menu template_language' + template_type + '">';{% for language in languages %}html += '<li><a href="#template_language-' + template_type + '-' + index + '-{{ language.language_id }}" data-toggle="tab"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>';{% endfor %}html += '</ul></li>';
+          if (Number($('select[name=\'add_additional_template_' + template_type + '_place\']').val())) {
+            $('li[data-index=\'' + (
+              index + 1
+            ) + '\']').before(html);
+          } else {
+            $('#li-template_' + template_type + '_additional_add_form').before(html);
+          }
+
+          $('#tab-template').append('<input type="hidden" name="params[doctype_template][' + template_type + '][' + index + '][template_name]" value=\'' + $('input[name=\'add_additional_template_' + template_type + '_name\']').val() + '\' class="save_on_change">');
+          $('#tab-template').append('<input type="hidden" name="params[doctype_template][' + template_type + '][' + index + '][condition_field_uid]" value=\'' + $('input[name=\'add_additional_template_' + template_type + '_field_uid\']').val() + '\' class="save_on_change">');
+          $('#tab-template').append('<input type="hidden" name="params[doctype_template][' + template_type + '][' + index + '][condition_field_name]" value=\'' + $('input[name=\'add_additional_template_' + template_type + '_field_name\']').val() + '\' class="save_on_change">');
+          $('#tab-template').append('<input type="hidden" name="params[doctype_template][' + template_type + '][' + index + '][condition_comparison]" value=\'' + $('select[name=\'add_additional_template_' + template_type + '_comparison\']').val() + '\' class="save_on_change">');
+          $('#tab-template').append('<input type="hidden" name="params[doctype_template][' + template_type + '][' + index + '][condition_value_uid]" value=\'' + $('input[name=\'add_additional_template_' + template_type + '_value_uid\']').val() + '\' class="save_on_change">');
+          $('#tab-template').append('<input type="hidden" name="params[doctype_template][' + template_type + '][' + index + '][condition_value_name]" value=\'' + $('input[name=\'add_additional_template_' + template_type + '_value_name\']').val() + '\' class="save_on_change">');
+          {% for language in languages %}
+            html = '<div class="tab-pane fade" id="template_language-' + template_type + '-' + index + '-{{ language.language_id }}"><div class="form-group">' + '<label class="col-sm-2 control-label">{{ text_template }}<br>' + '<img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /><hr>' + '<div class="text-muted">{{ text_template_condition }} ' + $('input[name=\'add_additional_template_' + template_type + '_field_name\']').val() + ' ' + comparison_titles[$('select[name=\'add_additional_template_' + template_type + '_comparison\']').val()] + ' ' + $('input[name=\'add_additional_template_' + template_type + '_value_name\']').val() + '<br><br>' + '<button class="btn btn-default" onclick="editAdditionalTemplate(\'' + template_type + '\', ' + index + ', \'window\');return false;">{{ button_change }}</button></div>' + '</label>' + '<div class="col-sm-10">' + '<textarea name="doctype_template[' + template_type + '][' + index + '][{{ language.language_id }}]" placeholder="{{ text_template }}" data-toggle="summernote_s" data-lang="{{ language.code }}" class="form-control save_on_change">' + '</textarea><input name="doctype_template_conditions[' + template_type + '][' + index + '][{{ language.language_id }}]" class="save_on_change hidden"></div></div></div>';
+            $('#tab-content_templates_' + template_type).append(html);
+            init_summernote_s($('textarea[name=\'doctype_template\[' + template_type + '\]\[' + index + '\]\[{{ language.language_id }}\]\']'));
+          {% endfor %}
+          $('#template_' + template_type + '_additional_add_form').modal('hide');
+          autosave();
+        } else {
+          alert('{{ text_alert_add_template }}');
+        }
+      };
+
+      $('input[name=\'field_log\']').autocomplete({
+        'source': function (request, response) {
+          $.ajax({
+            url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}&work_progress_log=1',
+            dataType: 'json',
+            cache: false,
+            success: function (json) {
+              json.unshift({field_uid: 0, name: '{{ text_none }}'});
+              response($.map(json, function (item) {
+                return {label: item['name'], value: item['field_uid']}
+              }));
+            }
+          });
+        },
+        'select': function (item) {
+          if (item['value']) {
+            $('input[name=\'field_log_uid\']').val(item['value']);
+            $('input[name=\'field_log\']').val(item['label']);
+            $('#btn_debug_new_doc').show();
+
+          } else {
+            $('input[name=\'field_log_uid\']').val("0");
+            $('input[name=\'field_log\']').val("");
+            $('#btn_debug_new_doc').hide();
+
+          }
+          autosave();
+        }
+      });
+
+if ($('input[name=\'field_log_uid\']').val()=="0" || !$('input[name=\'field_log_uid\']').val()) {
+  $('#btn_debug_new_doc').hide();
+} else {
+  $('#btn_debug_new_doc').show();
+}
+      function addField(setting) {
+        $('#modal-afield').remove();
+
+        html = '<div id="modal-afield" class="modal fade">';
+        html += '  <div class="modal-dialog modal-lg">';
+        html += '    <div class="modal-content">';
+        html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+
+        $('body').append(html);
+
+        $('#modal-afield').modal('show');
+        $('#modal-afield').draggable({handle: '.modal-header'});
+
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/window_field&doctype_uid=' + getURLVar('doctype_uid') + '&setting=' + setting,
+          type: 'get',
+          cache: false,
+          dataType: 'html',
+          success: function (data) {
+            $('#modal-afield .modal-load-mask').remove();
+            $('#modal-afield .modal-content').prepend(data);
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            $('#modal-afield .modal-load-mask .fa').remove();
+            $('#modal-afield .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}!</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+          }
+        });
+      }
+
+      function editField(field_uid, setting) {
+        if ($('#field-row' + field_uid).hasClass('remove_element')) {
+          alert('{{ text_field_not_editable }}');
+          exit;
+        }
+        if (typeof setting == undefined) {
+          setting = 0;
+        }
+        $('#modal-afield').remove();
+
+        html = '<div id="modal-afield" class="modal fade">';
+        html += '  <div class="modal-dialog modal-lg">';
+        html += '    <div class="modal-content">';
+        html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+
+        $('body').append(html);
+
+        $('#modal-afield').modal('show');
+        $('#modal-afield').draggable({handle: '.modal-header'});
+
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/edit_field&field_uid=' + field_uid + '&setting=' + setting,
+          type: 'get',
+          cache: false,
+          dataType: 'html',
+          success: function (data) {
+            $('#modal-afield .modal-load-mask').remove();
+            $('#modal-afield .modal-content').prepend(data);
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            $('#modal-afield .modal-load-mask .fa').remove();
+            $('#modal-afield .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+          }
+        });
+      }
+
+      function editValueField(field_uid, setting) {
+        $('#modal-afield').remove();
+
+        html = '<div id="modal-afield" class="modal fade">';
+        html += '  <div class="modal-dialog modal-lg">';
+        html += '    <div class="modal-content">';
+        html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+
+        $('body').append(html);
+
+        $('#modal-afield').modal('show');
+        $('#modal-afield').draggable({handle: '.modal-header'});
+
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/edit_field_value&field_uid=' + field_uid + '&setting=' + setting,
+          type: 'get',
+          cache: false,
+          dataType: 'html',
+          success: function (data) {
+            $('#modal-afield .modal-load-mask').remove();
+            $('#modal-afield .modal-content').prepend(data);
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            $('#modal-afield .modal-load-mask .fa').remove();
+            $('#modal-afield .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+          }
+        });
+      }
+
+      function removeField(field_uid, setting) {
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/remove_field&&field_uid=' + field_uid + '&setting=' + setting,
+          dataType: 'json',
+          cache: false,
+          success: function (data) {
+            $('#field-row' + field_uid).addClass('remove_element');
+            html = '<button type="button" onclick="undoRemoveField(\'' + field_uid + '\',' + setting + ');" data-toggle="tooltip" title="{{ button_undo }}" class="btn btn-default"><i class="fa fa-undo"></i></button>';
+            $('#field-row-button' + field_uid).html(html);
+            $('.tooltip').hide();
+          }
+        });
+        $('.tooltip').hide();
+      };
+
+      function undoRemoveField(field_uid, setting) {
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/undo_remove_field&field_uid=' + field_uid + '&setting=' + setting,
+          dataType: 'json',
+          cache: false,
+          success: function (data) {
+            $('#field-row' + field_uid).removeClass('remove_element');
+            html = '';
+            if (setting === 1 && !$('#field-row' + field_uid).hasClass('new_element')) {
+              html += '<span class="btn btn-default" onclick="editValueField(\'' + field_uid + '\',' + setting + ');" data-toggle="tooltip" title="{{ button_edit_value_field }}"><i class="fa fa-edit"></i></span> ';
+            }
+            html += '<span class="btn btn-default" onclick="up(this, \'move_field&field_uid=' + field_uid + '\');" data-toggle="tooltip" title="{{ button_up }}"><i class="fa fa-arrow-up"></i></span> ';
+            html += '<span class="btn btn-default" onclick="down(this, \'move_field&field_uid=' + field_uid + '\');" data-toggle="tooltip" title="{{ button_down }}"><i class="fa fa-arrow-down"></i></span> ';
+            html += '<button type="button" onclick="removeField(\'' + field_uid + '\',' + setting + ');" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-default"><i class="fa fa-minus-circle"></i></button>';
+            $('#field-row-button' + field_uid).html(html);
+          }
+        });
+        $('.tooltip').hide();
+      };
+
+      function up(element, url) {
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/' + url + '&direction=up',
+          dataType: 'json',
+          cache: false,
+          success: function (json) {
+            if (json['success']) {
+              var row = $(element).parents("tr:first");
+              var row2 = row.prev();
+              row.insertBefore(row2);
+              row.addClass('new_element');
+              row2.addClass('new_element');
+              row.find(".btncolor").addClass('new_element');
+              row2.find(".btncolor").addClass('new_element');
+            }
+          }
+        });
+        $('.tooltip').hide();
+      };
+
+      function down(element, url) {
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/' + url + '&direction=down',
+          dataType: 'json',
+          cache: false,
+          success: function (json) {
+            if (json['success']) {
+              var row = $(element).parents("tr:first");
+              var row2 = row.next();
+              row.insertAfter(row2);
+              row.addClass('new_element');
+              row2.addClass('new_element');
+              row.find(".btncolor").addClass('new_element');
+              row2.find(".btncolor").addClass('new_element');
+
+            }
+          }
+        });
+        $('.tooltip').hide();
+      };
+
+
+      function removeRouteButton(route_button_uid) {
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/remove_route_button&route_button_uid=' + route_button_uid,
+          dateType: 'json',
+          cache: false,
+          success: function (data) {
+            $('#route_button-row' + route_button_uid).addClass('remove_element');
+            $('#route_button-button' + route_button_uid).addClass('remove_element');
+            html = '<button type="button" class="btn btn-default btn-sm" onclick="undoRemoveRouteButton(\'' + route_button_uid + '\');" data-toggle="tooltip" title="{{ button_undo }}"><i class="fa fa-undo"></i></button>';
+            $('#remove_route_button' + route_button_uid).html(html);
+          }
+        });
+        $('.tooltip').hide();
+      };
+
+      function undoRemoveRouteButton(route_button_uid) {
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/undo_remove_route_button&route_button_uid=' + route_button_uid,
+          dateType: 'json',
+          cache: false,
+          success: function (data) {
+            $('#route_button-row' + route_button_uid).removeClass('remove_element');
+            $('#route_button-button' + route_button_uid).removeClass('remove_element');
+            $('#route_button-button' + route_button_uid).removeClass('remove_element');
+            html = '<button type="button" class="btn btn-default btn-sm" onclick="up(this, \'move_button&button_uid=' + route_button_uid + '\');" data-toggle="tooltip" title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ' + '<button type="button" class="btn btn-default btn-sm" onclick="down(this, \'move_button&button_uid=' + route_button_uid + '\');" data-toggle="tooltip" title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ' + '<button type="button" class="btn btn-default btn-sm" onclick="removeRouteButton(\'' + route_button_uid + '\');" data-toggle="tooltip" title="{{ button_remove }}"><i class="fa fa-minus-circle"></i></button>';
+            $('#remove_route_button' + route_button_uid).html(html);
+          }
+        });
+        $('.tooltip').hide();
+      };
+
+      function removeRouteAction(route_action_uid, context) {
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/remove_route_action&route_action_uid=' + route_action_uid,
+          dateType: 'json',
+          cache: false,
+          success: function () {
+            $('#route_' + context + '_action-row' + route_action_uid).addClass('remove_element');
+            $('#route_' + context + '_action-action' + route_action_uid).addClass('remove_element');
+            html = '<button class="btn btn-default btn-sm" type="button" onclick="undoRemoveRouteAction(\'' + route_action_uid + '\',\'' + context + '\');" data-toggle="tooltip" title="{{ button_undo }}"><i class="fa fa-undo"></i></button>';
+            $('#route_' + context + '_action-button' + route_action_uid).html(html);
+          }
+        });
+        $('.tooltip').hide();
+      }
+
+      function disableRouteAction(route_action_uid, context) {
+        $el = $('#route_' + context + '_action-row' + route_action_uid);
+        let status = 0;
+        if ($el.hasClass('remove_element')) {
+          status = 1; // уже отключенный, включаем
+        }
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/disable_route_action&route_action_uid=' + route_action_uid + '&status=' + status,
+          dateType: 'json',
+          cache: false,
+          success: function (json) {
+            if (json['success']) {
+              $('#route_' + context + '_action-row' + route_action_uid).toggleClass('remove_element');
+            }
+          }
+        });
+        $('.tooltip').hide();
+      }
+
+      function undoRemoveRouteAction(route_action_uid, context) {
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/undo_remove_route_action&route_action_uid=' + route_action_uid,
+          dateType: 'json',
+          cache: false,
+          success: function () {
+            $('#route_' + context + '_action-row' + route_action_uid).removeClass('remove_element');
+            $('#route_' + context + '_action-action' + route_action_uid).removeClass('remove_element');
+            html = '<button class="btn btn-default btn-xs" type="button" onclick="up(this, \'move_action&action_id=' + route_action_uid + '\');" data-toggle="tooltip" title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ';
+            html += '<button class="btn btn-default btn-xs" type="button" onclick="disableRouteAction(\'' + route_action_uid + '\',\'' + context + '\');" data-toggle="tooltip" title="{{ button_remove }}"><i class="fa fa-power-off"></i></button>';
+            html += '<button class="btn btn-default btn-xs" type="button" onclick="down(this, \'move_action&action_id=' + route_action_uid + '\');" data-toggle="tooltip" title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ';
+            html += '<button class="btn btn-default btn-xs" type="button" onclick="removeRouteAction(\'' + route_action_uid + '\',\'' + context + '\');" data-toggle="tooltip" title="{{ button_remove }}"><i class="fa fa-minus-circle"></i></button>';
+            $('#route_' + context + '_action-button' + route_action_uid).html(html);
+          }
+        });
+        $('.tooltip').hide();
+      }
+
+      function addRouteButton(route_uid) {
+        $('#modal-abutton').remove();
+        $('#modal-aaction').remove();
+
+        html = '<div id="modal-abutton" class="modal fade">';
+        html += '  <div class="modal-dialog modal-lg">';
+        html += '    <div class="modal-content">';
+        html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+
+        $('body').append(html);
+
+        $('#modal-abutton').modal('show');
+        $('#modal-abutton').draggable({handle: '.modal-header'});
+
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/add_route_button&doctype_uid=' + getURLVar('doctype_uid') + '&route_uid=' + route_uid,
+          type: 'get',
+          cache: false,
+          dataType: 'html',
+          success: function (data) {
+            $('#modal-abutton .modal-load-mask').remove();
+            $('#modal-abutton .modal-content').prepend(data);
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            $('#modal-abutton .modal-load-mask .fa').remove();
+            $('#modal-abutton .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}!</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+          }
+        });
+      }
+
+      function addRouteAction(route_uid, context) {
+        $('#modal-aaction').remove();
+        $('#modal-abutton').remove();
+
+        html = '<div id="modal-aaction" class="modal fade">';
+        html += '  <div class="modal-dialog modal-lg">';
+        html += '    <div class="modal-content">';
+        html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+
+        $('body').append(html);
+
+        $('#modal-aaction').modal('show');
+        $('#modal-aaction').draggable({handle: '.modal-header'});
+
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/add_route_action&doctype_uid=' + getURLVar('doctype_uid') + '&route_uid=' + route_uid + '&context=' + context,
+          type: 'get',
+          cache: false,
+          dataType: 'html',
+          success: function (data) {
+            $('#modal-aaction .modal-load-mask').remove();
+            $('#modal-aaction .modal-content').prepend(data);
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            $('#modal-aaction .modal-load-mask .fa').remove();
+            $('#modal-aaction .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}!</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+          }
+        });
+      }
+
+      function copyRouteAction(route_uid, context) {
+        $('#modal-copy_action').remove();
+        html = '<div id="modal-copy_action" class="modal fade">';
+        html += '  <div class="modal-dialog modal-lg">';
+        html += '    <div class="modal-content">';
+        html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+
+        $('body').append(html);
+
+        $('#modal-copy_action').modal('show');
+        $('#modal-copy_action').draggable({handle: '.modal-header'});
+
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/copy_route_action&doctype_uid=' + getURLVar('doctype_uid') + '&route_uid=' + route_uid + '&context=' + context,
+          type: 'get',
+          cache: false,
+          dataType: 'html',
+          success: function (data) {
+            $('#modal-copy_action .modal-load-mask').remove();
+            $('#modal-copy_action .modal-content').prepend(data);
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            $('#modal-copy_action .modal-load-mask .fa').remove();
+            $('#modal-copy_action .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}!</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+          }
+        });
+      }
+
+      function copyRouteButton(route_uid) {
+        $('#modal-copy_button').remove();
+        html = '<div id="modal-copy_button" class="modal fade">';
+        html += '  <div class="modal-dialog modal-lg">';
+        html += '    <div class="modal-content">';
+        html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+
+        $('body').append(html);
+
+        $('#modal-copy_button').modal('show');
+        $('#modal-copy_button').draggable({handle: '.modal-header'});
+
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/copy_route_button&doctype_uid=' + getURLVar('doctype_uid') + '&route_uid=' + route_uid,
+          type: 'get',
+          cache: false,
+          dataType: 'html',
+          success: function (data) {
+            $('#modal-copy_button .modal-load-mask').remove();
+            $('#modal-copy_button .modal-content').prepend(data);
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            $('#modal-copy_button .modal-load-mask .fa').remove();
+            $('#modal-copy_button .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}!</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+          }
+        });
+      }
+
+      function editRouteButton(route_button_uid) {
+        $('#modal-abutton').remove();
+        $('#modal-aaction').remove();
+
+        html = '<div id="modal-abutton" class="modal fade">';
+        html += '  <div class="modal-dialog modal-lg">';
+        html += '    <div class="modal-content">';
+        html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+
+        $('body').append(html);
+
+        $('#modal-abutton').modal('show');
+        $('#modal-abutton').draggable({handle: '.modal-header'});
+
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/edit_route_button&doctype_uid=' + getURLVar('doctype_uid') + '&route_button_uid=' + route_button_uid,
+          type: 'get',
+          cache: false,
+          dataType: 'html',
+          success: function (data) {
+            $('#modal-abutton .modal-load-mask').remove();
+            $('#modal-abutton .modal-content').prepend(data);
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            $('#modal-abutton .modal-load-mask .fa').remove();
+            $('#modal-abutton .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}!</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+          }
+        });
+      }
+
+      function addRoute() {
+        $('#modal-aroute').remove();
+
+        html = '<div id="modal-aroute" class="modal fade">';
+        html += '  <div class="modal-dialog modal-lg">';
+        html += '    <div class="modal-content">';
+        html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+
+        $('body').append(html);
+
+        $('#modal-aroute').modal('show');
+        $('#modal-aroute').draggable({handle: '.modal-header'});
+
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/add_route&doctype_uid=' + getURLVar('doctype_uid'),
+          type: 'get',
+          cache: false,
+          dataType: 'html',
+          success: function (data) {
+            $('#modal-aroute .modal-load-mask').remove();
+            $('#modal-aroute .modal-content').prepend(data);
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            $('#modal-aroute .modal-load-mask .fa').remove();
+            $('#modal-aroute .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}!</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+          }
+        });
+      }
+
+      function editRoute(route_uid) {
+        $('#modal-aroute').remove();
+
+        html = '<div id="modal-aroute" class="modal fade">';
+        html += '  <div class="modal-dialog modal-lg">';
+        html += '    <div class="modal-content">';
+        html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+
+        $('body').append(html);
+
+        $('#modal-aroute').modal('show');
+        $('#modal-aroute').draggable({handle: '.modal-header'});
+
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/edit_route&doctype_uid=' + getURLVar('doctype_uid') + '&route_uid=' + route_uid,
+          type: 'get',
+          cache: false,
+          dataType: 'html',
+          success: function (data) {
+            $('#modal-aroute .modal-load-mask').remove();
+            $('#modal-aroute .modal-content').prepend(data);
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            $('#modal-aroute .modal-load-mask .fa').remove();
+            $('#modal-aroute .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}!</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+          }
+        });
+
+      }
+
+      function editRouteAction(route_action_uid) {
+        $('#modal-aaction').remove();
+        $('#modal-abutton').remove();
+
+        html = '<div id="modal-aaction" class="modal fade">';
+        html += '  <div class="modal-dialog modal-lg">';
+        html += '    <div class="modal-content">';
+        html += '      <div class="modal-load-mask"><div><div><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div></div></div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+
+        $('body').append(html);
+
+        $('#modal-aaction').modal('show');
+        $('#modal-aaction').draggable({handle: '.modal-header'});
+
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/edit_route_action&doctype_uid=' + getURLVar('doctype_uid') + '&route_action_uid=' + route_action_uid,
+          type: 'get',
+          cache: false,
+          dataType: 'html',
+          success: function (data) {
+            $('#modal-aaction .modal-load-mask').remove();
+            $('#modal-aaction .modal-content').prepend(data);
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            $('#modal-aaction .modal-load-mask .fa').remove();
+            $('#modal-aaction .modal-load-mask > div > div').prepend('<p>{{ text_error_connection }}!</p><button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i> close</button>');
+          }
+        });
+      }
+
+      function undoRemoveRoute(route_uid) {
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/undo_remove_route&route_uid=' + route_uid + '&doctype_uid={{ doctype_uid }}',
+          cache: false,
+          success: function (json) {
+            html = '<a href="#tab_route' + json['route_uid'] + '" data-toggle="tab"><span class="btn btn-success btn-xs" onclick="editRoute(\'' + json['route_uid'] + '\');" data-toggle="tooltip" title="{{ button_edit_route }}"><i class="fa fa-pencil"></i></span> ' + json['name'] + ' </a>';
+            html2 = '<div class=""><table id="route' + json['route_uid'] + '" class="table table-bordered"><thead><tr><td class="text-left">{% set cont = contextes|first %}{{ cont.name }}</td><td class="text-left">{{ column_route_delegate }}</td></tr></thead><tbody>' + '<tr><td class="text-left" style="vertical-align: text-top"><ul class="nav nav-tabs">';
+            html3 = '';
+            var contextes = [];{% for context, value in contextes %}contextes['{{ context }}'] = ['name', 'description'];
+              contextes['{{ context }}']['name'] = '{{ value.name }}';
+              contextes['{{ context }}']['description'] = '{{ value.description }}';{% endfor %}var active = 0;
+            $.each(json['actions'], function (context, actions) {
+              html2 += '<li';
+              if (active++ < 1) {
+                html2 += ' class="active"';
+
+              }
+              html2 += '><a href="#tab_route' + json['route_uid'] + '-' + context + '" data-toggle="tab">' + contextes[context]['name'] + '</a></li>';
+              html3 += '<div id="tab_route' + json['route_uid'] + '-' + context + '" class="tab-pane fade';
+              if (active++ < 2) {
+                html3 += ' in active';
+              }
+              html3 += '"><div class="text-info">' + contextes[context]['description'] + ' ' + json['name'] + ':</div><table id="table_route_' + context + '_action' + json['route_uid'] + '" class="table table-hover shadow2  table-condensed"><tbody>';
+              $.each(actions, function () {
+                html3 += '<tr id="route_' + context + '_action-row' + this.route_action_uid + '"';
+                if (this.draft == 2 || this.draft == 12) {
+                  html3 += ' class="remove_element"';
+                } else if (this.draft == 1 || this.draft == 3) {
+                  html3 += ' class="new_element"';
+                }
+                html3 += '><td class="text-left"><span id="route_' + context + '_action-action' + this.route_action_uid + '" class="';
+                if (this.draft == 2 || this.draft == 12) {
+                  html3 += ' remove_element';
+                } else if (this.draft == 1 || this.draft == 3) {
+                  html3 += ' new_element';
+                }
+                html3 += '" onclick="editRouteAction(' + this.route_action_uid + ');" data-toggle="tooltip" title="{{ route_edit_action }} ' + this.name + '</span></td><td class="text-left">';
+
+                html3 += this.description + '</td><td class="text-right" id="route_' + context + '_action-button' + this.route_action_uid + '">';
+                if (this.draft == 2 || this.draft == 12) {
+                  html3 += '<button type="button" onclick="undoRemoveRouteAction(\'' + this.route_action_uid + '\',\'' + context + '\');" data-toggle="tooltip" title="{{ button_undo }}" class="btn btn-default"><i class="fa fa-undo"></i></button>';
+                } else {
+                  html3 += '<button type="button" onclick="removeRouteAction(\'' + this.route_action_uid + '\',\'' + context + '\');" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-default"><i class="fa fa-minus-circle"></i></button>';
+                }
+                html3 += '</td></tr>';
+              });
+              html3 += '</tbody></table><span class="btn btn-success" onclick="addRouteAction(\'' + json['route_uid'] + '\', \'' + context + '\');" data-toggle="tooltip" title="{{ route_add_action }}"><i class="fa fa-plus-circle"> {{ route_add_action }}</i></span> <span class="btn btn-success" onclick="copyRouteAction(\'' + json['route_uid'] + '\', \'' + context + '\');" data-toggle="tooltip" title="{{ route_copy_action }}"><i class="fa fa-copy"> {{ route_copy_action }}</i></span></div>';
+            });
+            html2 += '</ul><div class="tab-content">';
+            html3 += '</div></td>' + '<td class="text-left"><div class="text-info">{{ text_route_delegate }} ' + json['name'] + ':<span class="btn btn-default" onclick="addRouteButton(\'' + json['route_uid'] + '\');" data-toggle="tooltip" title="{{ route_add_button }}"><i class="fa fa-plus-circle"></i></span></div>' + '<div class=""><table id="table_route_button' + json['route_uid'] + '" class="table table-hover shadow2"><tbody>';
+            $.each(json['buttons'], function () {
+              html3 += '<tr id="route_button-row' + this.route_button_uid + '"';
+              if (this.draft == 2) {
+                html3 += ' class="remove_element"';
+              } else if (this.draft == 1 || this.draft == 3) {
+                html3 += ' class="new_element"';
+              }
+              html3 += '><td class="text-left">' + '<span class="btn btn-default';
+              if (this.draft == 2) {
+                html3 += ' remove_element';
+              } else if (this.draft == 1 || this.draft == 3) {
+                html3 += ' new_element';
+              }
+              html3 += '" onclick="editRouteButton(\'' + this.route_button_uid + '\');" id="route_button-button' + this.route_button_uid + '" data-toggle="tooltip" title="{{ route_edit_button }} <img src="' + this.picture25 + '"> ' + this.name + '</span></td>' + '<td class="text-left">';
+              $.each(this.fields, function () {
+                html3 += this.name;
+              });
+              html3 += '</td><td class="text-right" id="remove_route_button' + this.route_button_uid + '">';
+              if (this.draft == 2) {
+                html3 += '<button type="button" onclick="undoRemoveRouteButton(\'' + this.route_button_uid + '\');" data-toggle="tooltip" title="{{ button_undo }}" class="btn btn-default"><i class="fa fa-undo"></i></button>';
+              } else {
+                html3 += '<button type="button" onclick="removeRouteButton(\'' + this.route_button_uid + '\');" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-default"><i class="fa fa-minus-circle"></i></button>';
+              }
+              html3 += '</td></tr>';
+            });
+            html3 += '</tbody></table></div></td></tr></tbody></table></div>';
+            html2 += html3;
+            $('#route_name' + route_uid).html(html);
+            $('#tab_route' + route_uid).html(html2);
+          }
+        })
+      }
+
+      $(document).ready(function () {
+        $('body').append($('#modal-abutton'));
+
+        var url = window.location.href;
+        var params = url.split("#");
+
+        if (typeof params[1] !== 'undefined') {
+          $('.nav-tabs a[href="#' + params[1] + '"]').tab('show');
+        }
+        $("#doctype_fields_filter").on("keyup", function () {
+          var value = $(this).val().toLowerCase();
+          $("#doctype_fields tbody tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+          });
+        });
+        $("#doctype_setting_fields_filter").on("keyup", function () {
+          var value = $(this).val().toLowerCase();
+          $("#doctype_setting_fields tbody tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+          });
+        });
+
+
+      });
+
+      $(".save_on_change").change(function () {
+        autosave();
+      });
+
+      var autosave_data = [];
+      init_autosave();
+
+      function init_autosave() {
+        $.each($('.save_on_change'), function () {
+          name = $(this).attr('name').replace(/\[/g, '');
+          name = name.replace(/\]/g, '');
+          autosave_data[name] = $.trim($(this).val());
+        });
+      }
+
+      function autosave() {
+        $.each($('.save_on_change'), function () {
+          name = $(this).attr('name').replace(/\[/g, '');
+          name = name.replace(/\]/g, '');
+          if (autosave_data[name] !== $.trim($(this).val())) {
+            $.ajax({url: 'index.php?route=doctype/doctype/save_doctype&doctype_uid={{ doctype_uid }}', type: 'post', cache: false, data: $('.save_on_change'), dataType: 'html'});
+            init_autosave();
+            return false;
+          }
+        });
+      }
+
+      $('#tab-template').on({
+        "shown.bs.dropdown": function () {
+          $('.input-select_field').focus(); // фокус на поле автокомплита редактора
+        }
+      });
+      $('#tab-template a').on('shown.bs.tab', function (event) {
+        $(window).trigger('scroll'); // после переключ. вкладок саммернот не показывает текст
+      });
+
+      let summernoteLang = {};
+      summernoteLang['{{ code }}'.split('-')[0]] = JSON.parse('{{ text_editor | json_encode() | e("js") }}');
+      $.extend($.summernote.lang, summernoteLang);
+
+      $('[data-toggle=\'summernote_s\']').each(function () {
+        init_summernote_s(this);
+      });
+      $('#language a:first').tab('show');
+      {% for template_type, template_lang in templates %}
+        $('.template_language{{ template_type }} a:first').tab('show');
+      {% endfor %}
+      $('#template_language a:first').tab('show');
+      $('#route a:first').tab('show');
+
+
+      $('#modal-abutton').on('hidden.bs.modal', function (e) {
+        $(this).find('.alert').remove();
+      });
+
+      window.onbeforeunload = function (e) {
+        $('#block_loading').show();
+      };
+
+      $('#general_tabs a').on('shown.bs.tab', function (event) {
+        var tab = $(this).attr('href');
+        $('input[name=\'active_tab\']').val(tab);
+        var url = window.location.href;
+        var params = url.split("#");
+        history.pushState(null, null, params[0] + tab);
+        switch (tab) {
+          case '#tab-field':
+            //$('#doctype_fields_filter').focus(); 
+            break;
+          case '#tab-setting':
+            //$('#doctype_setting_fields_filter').focus();
+            break;
+        }
+      });
+
+      // выводим название контекста
+
+      $('#route_content').on('shown.bs.tab', function (e) {
+        $(e.target).parent().parent().prev().html(e.target.title);
+      });
+
+      $(document).on("submit", "form", function (e) { // переключаем summernote в визуальный режим из режима исходного кода, чтобы сохранить возможные внесенные изменения
+        summernotes = $('[data-toggle="summernote_s"]');
+        $.each(summernotes, function () {
+          if ($(this).summernote('codeview.isActivated')) {
+            $(this).summernote('codeview.deactivate');
+          }
+        })
+        autosave();
+      })
+    </script>
+    {{ footer }}

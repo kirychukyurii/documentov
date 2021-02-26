@@ -1,0 +1,544 @@
+<div class="modal-header">
+  <div class="pull-right">
+    <button type="button" class="btn btn-default" id="modal-button-add" onclick="saveRouteButton('{% if button_uid is empty %}add{% else %}edit{% endif %}');" data-loading-text="{{ text_loading }}">
+      <i class="fa fa-save"></i>
+    </button>
+    <button class="btn btn-default" data-dismiss="modal" type="button">
+      <i class="fa fa-reply"></i>
+    </button>
+  </div>
+  <div class="pull-left">
+    <h4 class="modal-title text-left">
+      {% if button_uid is empty %}
+        {{ text_title_button_add }}
+      {% else %}
+        {{ text_title_button_edit }}
+      {% endif %}
+    </h4>
+  </div>
+</div>
+<div class="modal-body" id="form_button">
+  <div class="form-horizontal">
+    <ul class="nav nav-tabs">
+      <li class="active">
+        <a data-toggle="tab" href="#button_tab_general">{{ tab_general }}</a>
+      </li>
+      <li>
+        <a data-toggle="tab" href="#button_tab_action">{{ tab_action }}</a>
+      </li>
+      <li>
+        <a data-toggle="tab" href="#button_tab_additional">{{ tab_additional }}</a>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane fade in active" id="button_tab_general">
+        <div class="form-group">
+          <div class="col-sm-6">
+            <ul class="nav nav-tabs" id="route_button_language">
+              {% for language in languages %}
+                <li>
+                  <a data-toggle="tab" href="#route_button_language{{ language.language_id }}"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/>
+                    {{ language.name }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+            <div class="tab-content form-group">
+              {% for language in languages %}
+                <div class="tab-pane fade" id="route_button_language{{ language.language_id }}">
+
+                  <label class="control-label" for="input-route_button_name{{ language.language_id }}">{{ entry_route_button_name }}</label>
+                  <input type="text" name="route_button_descriptions[{{ language.language_id }}][name]" id="input-route_button_name{{ language.language_id }}" value="{{descriptions[language.language_id].name}}" class="form-control" placeholder="{{ entry_route_button_name }}"/>
+
+
+                  <label class="control-label" for="input-route_button_description{{ language.language_id }}">{{ entry_route_button_description }}</label>
+                  <input type="text" name="route_button_descriptions[{{ language.language_id }}][description]" value="{{descriptions[language.language_id].description}}" id="input-route_button_description{{ language.language_id }}" class="form-control" placeholder="{{ entry_route_button_description }}"/>
+                </div>
+                <input type="hidden" name="btn_group_descriptions[{{language.language_id}}][name]" value="{{button_group_descriptions[language.language_id].name}}" id="input-btn_group_name{{ language.language_id }}" class="form-control" placeholder="{{ entry_button_group }}"/>
+              {% endfor %}
+              <label class="control-label" for="select-btn_group_uid">
+                <span data-toggle="tooltip" title="{{ help_route_button_group }}">{{ entry_route_button_group }}</span>
+              </label>
+              <div class="input-group">
+                <select class="form-control" id="select-btn_group_uid" name="btn_group_uid"></select>
+
+                <div class="input-group-btn">
+                  <button class="btn btn-default" onclick="edit_button_group('edit')" {%if btn_group_uid == '0' or btn_group_uid =='' %} style="display:none" {%endif%} id="edit_button_group_btn">
+                    <i class="fa fa-edit"></i>
+                  </button>
+                  <button class="btn btn-default" id="add_button_group_btn" onclick="edit_button_group('add')">
+                    <i class="fa fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+              <input name="btn_group_picture" type="hidden"/>
+              <input name="btn_group_hide_name" type="hidden"/>
+              <input name="btn_group_color" type="hidden"/>
+              <input name="btn_group_background" type="hidden"/>
+            </div>
+
+          </div>
+          <div class="col-sm-6">
+
+            <label class="control-label">
+              <span data-toggle="tooltip" title="{{ help_button_description }}">{{ text_button_description }}</span>
+            </label>
+            <textarea class="form-control ta_b-description" name="route_button_description">{{ description }}</textarea>
+
+
+            <label class="control-label" for="input-route_button_field">
+              <span data-toggle="tooltip" title="{{ help_route_button_field }}">{{ entry_route_button_field }}</span>
+            </label>
+            <div>
+              {% import "default/template/macros/fields.twig" as mfields %}
+              {{ mfields.show(fields, doctype_uid, 'route_button_field' ~ field.field_uid, text_macros_field) }}
+            </div>
+
+          </div>
+        </div>
+        <div class="form-group">
+
+          <div class="col-sm-6">
+            <label class="control-label" for="input-move_route">
+              <span data-toggle="tooltip" title="{{ help_action_move_route }}">{{ entry_action_move_route }}</span>
+            </label>
+            <input type="text" name="action_move_route" id="input-action_move_route" value="{{ action_move_route }}" placeholder="{{ entry_route }}" class="form-control">
+            <input type="hidden" name="action_move_route_uid" value="{{ action_move_route_uid }}" id='input-action_move_route_uid'>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="button_tab_additional">
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="input-route_button_picture">{{ entry_route_button_picture }}</label>
+          <div class="col-sm-9">
+            <a class="img-thumbnail" data-toggle="image" href="" id="thumb-image"><img src="{{ thumb }}" alt="" title="" data-placeholder="{{ placeholder }}"></a>
+            <input type="hidden" name="route_button_picture" value="{{ picture }}" id="input-button_picture">
+            <select class="form-control" id="select-hide_button_name" name="hide_button_name">
+              <option value="0">{{ text_show_button_name }}</option>
+              <option value="1000" {% if hide_button_name == 1000 %} selected="selected" {% endif %}>{{ text_hide_button_name }}
+                1 000
+                {{ text_hide_menu_px }}</option>
+              <option value="900" {% if hide_button_name == 900 %} selected="selected" {% endif %}>{{ text_hide_button_name }}
+                900
+                {{ text_hide_menu_px }}</option>
+              <option value="800" {% if hide_button_name == 800 %} selected="selected" {% endif %}>{{ text_hide_button_name }}
+                800
+                {{ text_hide_menu_px }}</option>
+              <option value="700" {% if hide_button_name == 700 %} selected="selected" {% endif %}>{{ text_hide_button_name }}
+                700
+                {{ text_hide_menu_px }}</option>
+              <option value="600" {% if hide_button_name == 600 %} selected="selected" {% endif %}>{{ text_hide_button_name }}
+                600
+                {{ text_hide_menu_px }}</option>
+              <option value="500" {% if hide_button_name == 500 %} selected="selected" {% endif %}>{{ text_hide_button_name }}
+                500
+                {{ text_hide_menu_px }}</option>
+              <option value="400" {% if hide_button_name == 400 %} selected="selected" {% endif %}>{{ text_hide_button_name }}
+                400
+                {{ text_hide_menu_px }}</option>
+            </select>
+
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="input-route_button_color">{{ entry_route_button_color }}</label>
+          <div class="col-sm-9">
+            <div class="col-sm-6 text-left">
+              <input name="route_button_color" type="text" value="{{ color }}" class="color-picker form-control" {% if color is not empty %} style="color: #{{ color }}" {% endif %} id="input-route_button_color"/>
+            </div>
+            <div class="col-sm-6 text-left">
+              <input name="route_button_background" type="text" value="{{ background }}" class="color-picker form-control" {% if background is not empty %} style="background-color: #{{ background }}" {% endif %} id="input-route_button_background"/>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label">
+            <span data-toggle="tooltip" title="{{ help_action_log }}">{{ entry_action_log }}</span>
+          </label>
+          <div class="col-sm-9">
+            {% if action_log == 1 %}
+              <label class="radio-inline"><input checked="checked" name="action_log" type="radio" value="1"/>
+                {{ text_yes }}</label>
+              <label class="radio-inline"><input name="action_log" type="radio" value="0"/>
+                {{ text_no }}</label>
+            {% else %}
+              <label class="radio-inline"><input name="action_log" type="radio" value="1"/>
+                {{ text_yes }}</label>
+              <label class="radio-inline"><input checked="checked" name="action_log" type="radio" value="0"/>
+                {{ text_no }}</label>
+            {% endif %}
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="select-show_after_execute">
+            <span data-toggle="tooltip" title="{{ help_show_after_button }}">{{ entry_show_after_button }}</span>
+          </label>
+          <div class="col-sm-9">
+            <select class="form-control" id="select-show_after_execute" name="show_after_execute">
+              <option value="0">{{ text_document }}</option>
+              <option value="1" {% if show_after_execute %} selected="selected" {% endif %}>{{ text_folder }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label">{{ entry_button_uid }}</label>
+          <div class="col-sm-9 radio-inline">
+            {{ button_uid }}
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="button_tab_action">
+        <div class="form-group">
+          <label class="col-sm-3 control-label">{{ entry_action }}</label>
+          <div class="col-sm-9">
+            <select class="form-control" id="input-route_button_action" name="route_button_action">
+              <option value="0">{{ text_select }}</option>
+              {% for action in actions %}
+                {% if action_name is not empty and action_name == action.name %}
+                  <option value='{{ action.name }}' selected="selected">{{ action.title }}</option>
+                {% else %}
+                  <option value='{{ action.name }}'>{{ action.title }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div id="form_route_button_action">
+          {{ action_form }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <div class="row">
+    <div class="col-md-3 col-sm-6">
+      <button type="button" class="btn btn-default btn-block" id="modal-button-add" onclick="saveRouteButton('{% if button_uid is empty %}add{% else %}edit{% endif %}');" data-loading-text="{{ text_loading }}">{{ button_save }}</button>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="visible-xs" style="margin-top: 15px;"></div>
+      <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+  var language_ids = [];
+  var button_groups = {};
+  var button_lang = '{{language_id}}';
+  button_groups['0'] = {
+    'names': {}
+  };
+  {% for language in languages %}
+    button_groups['0'].names[{{language.language_id}}] = '{{ text_none }}';
+    language_ids.push({{language.language_id}});
+  {% endfor %}
+  {% for button_group in button_groups %}
+    button_groups['{{button_group.button_group_uid}}'] = {
+      'names': {}
+    };
+    {% for language in languages %}
+      button_groups['{{button_group.button_group_uid}}'].names['{{language.language_id}}'] = '{{button_group.descriptions[language.language_id].name}}';
+    {% endfor %}
+  {% endfor %}
+  $('#route_button_language').on('shown.bs.tab', function (e) {
+    let current_group_uid = $('#select-btn_group_uid').val();
+    if (current_group_uid === null || current_group_uid === '') {
+      current_group_uid = '{{btn_group_uid}}';
+    }
+    if (current_group_uid === '') {
+      current_group_uid = '0';
+    }
+    let active_tab_href = ($(e.target).attr('href'));
+    button_lang = active_tab_href.substr("#route_button_language".length);
+    refreshButtonGroupList(button_lang, current_group_uid);
+  });
+
+  function refreshButtonGroupList(language_id, current_group_uid) {
+    let html = '';
+    for (let key in button_groups) {
+      if (key == '1' || button_groups[key].changed) {
+        html += '<option style="color: red" value="' + key + '">' + (button_groups[key].new_names[language_id] || '...') + '</option>';
+      } else {
+        html += '<option style="color: black" value="' + key + '">' + (button_groups[key].names[language_id] || '...') + '</option>';
+      }
+
+    }
+    $('#select-btn_group_uid').html(html);
+    $('#select-btn_group_uid').val(current_group_uid);
+  }
+
+
+  $('#input-button_picture').on('change', function () {
+    visible_list_showing_button_name();
+  });
+
+
+  visible_list_showing_button_name();
+
+  function edit_button_group(param) {
+
+    $('#modal-ibutton_group').remove();
+    let html = '';
+    html = '<div id="modal-ibutton_group" class="modal fade">';
+    html += '  <div class="modal-dialog modal-lg">';
+    html += '    <div class="modal-content">';
+    // html += 'test modal';
+    html += '    </div>';
+    html += '  </div>';
+    html += '</div>';
+    $('body').append(html);
+    $('#modal-ibutton_group').modal('show');
+    $('#modal-ibutton_group').draggable({handle: '.modal-header'});
+    let button_group_uid = '1';
+    if (param == 'edit') {
+      button_group_uid = $('select[name=\'btn_group_uid\']').val();
+    }
+    let url = 'index.php?route=doctype/button_group/edit_button_group&route_uid={{ route_uid }}&button_group_uid=' + button_group_uid;
+    if (button_groups[button_group_uid] && button_groups[button_group_uid].changed) {
+      url += '&changed';
+    }
+    $.ajax({
+      url: url,
+      type: 'post',
+      cache: false,
+      data: $('#form_button input[type=\'hidden\'][name^=\'btn_group_\']'),
+      dataType: 'html',
+      beforeSend: function () { // $('#modal-button-add').button('loading');
+      },
+      success: function (data) {
+        $('#modal-ibutton_group .modal-load-mask').remove();
+        $('#modal-ibutton_group .modal-content').prepend(data);
+
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        console.log('editAction ajax error');
+        $('#modal-ibutton_group .modal-load-mask .fa').remove();
+        $('#modal-ibutton_group .modal-content').prepend(xhr.responseText);
+      }
+    });
+
+  }
+
+
+  function visible_list_showing_button_name() {
+    if ($('#input-button_picture').val()) {
+      $('#select-hide_button_name').show();
+    } else {
+      $('#select-hide_button_name').hide();
+    }
+  }
+
+  $('#input-route_button_color, #input-route_button_background').ColorPicker({
+    onSubmit: function (hsb, hex, rgb, el) {
+      $(el).val(hex);
+      if ($(el).attr('id') === 'input-route_button_color') {
+        $(el).css('color', '#' + hex);
+      } else {
+        $(el).css('backgroundColor', '#' + hex);
+      }
+      $(el).ColorPickerHide();
+    },
+    onBeforeShow: function () {
+      $(this).ColorPickerSetColor(this.value);
+    }
+  }).bind('keyup', function () {
+    $(this).ColorPickerSetColor(this.value);
+    if ($(this).attr('id') === 'input-route_button_color') {
+      $(this).css('color', '#' + this.value);
+    } else {
+      $(this).css('backgroundColor', '#' + this.value);
+    }
+  });
+
+  function saveRouteButton(mode) {
+    $.ajax({
+      url: 'index.php?route=doctype/doctype/save_route_button&route_uid={{ route_uid }}&button_uid={{ button_uid}}',
+      type: 'post',
+      cache: false,
+      data: $('#form_button input[type=\'text\'],#form_button input[type=\'number\'], #form_button input[type=\'hidden\'], #form_button input[type=\'radio\']:checked, #form_button input[type=\'checkbox\']:checked, #form_button select, #form_button textarea, #form_button select'),
+      dataType: 'json',
+      beforeSend: function () {
+        $('#modal-button-add').button('loading');
+      },
+      success: function (json) {
+        let html = '<td class="text-left pointer" onclick="editRouteButton(\'' + json['route_button_uid'] + '\');">';
+        html += '<fieldset style="border: 1px solid #ddd; padding: 2px;">';
+        if (json['button_group_uid']) {
+          html += '<div id="button_group_' + json['button_group_uid'] + '" style="margin-bottom: 3px">';
+          html += '<span class="label label-default2">' + json['button_group_name'] + '</span>';
+          html += '</div>';
+        }
+        html += '   <span class="new_element" data-toggle="tooltip" title="{{ route_edit_button }}" style="';
+        if (json['color'] !== '') {
+          html += 'color:#' + json['color'] + ';';
+        }
+        if (json['background'] !== '') {
+          html += 'background-color:#' + json['background'] + ';';
+        }
+        if (json['picture25']) {
+          html += 'padding:3px 6px 3px 3px;';
+        }
+
+        html += '">';
+        if (json['picture25']) {
+          html += '<img src="' + json['picture25'] + '">';
+        }
+        html += json['name'] + '</span>';
+        html += '</fieldset></td>';
+        html += '<td class = "text-left pointer" onclick = "editRouteButton(\'' + json['route_button_uid'] + '\');" > ' + json['fields'] + '</td>';
+        html += '<td class = "text-right">';
+        html += '<button type = "button" class = "btn btn-default btn-sm" onclick = "up(this, \'move_button&button_uid=' + json['route_button_uid'] + '\');" data-toggle = "tooltip" title = "{{ button_up }}"><i class="fa fa-arrow-up"></i></button>';
+        html += '<button type = "button" class = "btn btn-default btn-sm" onclick = "down(this, \'move_button&button_uid=' + json['route_button_uid'] + '\');" data-toggle = "tooltip" title = "{{ button_down }}"><i class="fa fa-arrow-down"></i></button>';
+        html += '<button type = "button" class = "btn btn-default btn-sm" onclick = "removeRouteButton(\'' + json['route_button_uid'] + '\');" data-toggle = "tooltip" title = "{{ button_remove }}"><i class="fa fa-minus-circle"></i></button>';
+        html += '</td>';{% if button_uid is empty %}html = '<tr class="new_element" id="route_button-row' + json['route_button_uid'] + '">' + html + '</tr>';
+          $('#table_route_button{{ route_uid}} tbody ').append(html);
+        {% else  %}
+          $('#route_button-row' + json['route_button_uid']).html(html);
+          $('#route_button-row' + json['route_button_uid']).addClass('new_element');{% endif %}$('#modal-abutton').modal('hide');
+      }
+    });
+  };
+
+  for (let i = 0; i < language_ids.length; i++) {
+    let language_id = language_ids[i];
+    $('#form_button input[name=\'btn_group_descriptions[' + language_id + '][name]\']').autocomplete({
+      'source': function (request, response) {
+
+        if (request === '{{ text_currentdoc }}') 
+          request = '';
+        
+
+
+        var regexp = new RegExp('{{ text_by_link_in_field }}');
+        request = request.replace(regexp, '').trim().replace(/\"/g, '');
+        $.ajax({ // url: 'index.php?route=doctype/button_group/autocomplete_button_group&filter_name=' + encodeURIComponent(request) + '&route_uid={{ route_uid }}',
+          url: 'index.php?route=doctype/button_group/autocomplete_button_group&filter_name=' + request + '&route_uid={{ route_uid }}',
+          dataType: 'json',
+          cache: false,
+          success: function (json) {
+            let empty_descriptions = {};
+            for (i = 0; i < language_ids.length; i++) {
+              empty_descriptions[language_ids[i]] = {
+                'name': '{{ text_none }}'
+              };
+            }
+            json.unshift({button_group_uid: 0, descriptions: empty_descriptions});
+
+            response($.map(json, function (item) {
+              var result = {
+                value: item['button_group_uid'],
+                label: item['descriptions'][language_id]['name'],
+                descriptions: item['descriptions']
+              };
+              return result;
+            }));
+          } // end success
+        }); // end ajax
+      }, // end source
+      'select': function (item) {
+        if (item['value']) {
+          $('#form_button input[name=\'btn_group_uid\']').val(item['value']);
+          // $('#form_button input[name=\'btn_group_descriptions[{{language.language_id}}][name]\']')
+          for (i = 0; i < language_ids.length; i++) {
+            $('#form_button input[name=\'btn_group_descriptions[' + language_ids[i] + '][name]\']').val(item.descriptions[language_ids[i]].name);
+          }
+        } else {
+          $('#form_button input[name=\'btn_group_uid\']').val('');
+          for (i = 0; i < language_ids.length; i++) {
+            $('#form_button input[name=\'btn_group_descriptions[' + language_ids[i] + '][name]\']').val();
+          }
+        }
+      }
+    });
+  }
+  $('select[name=\'btn_group_uid\']').on('change', function () {
+    if (this.value == '0') {
+      $('#edit_button_group_btn').css('display', 'none');
+    } else {
+      $('#edit_button_group_btn').css('display', 'inline-block');
+    }
+    if (this.value == '1') {
+      $('#select-btn_group_uid').css('color', 'red');
+      $('#add_button_group_btn').css('display', 'none');
+    } else {
+      $('#select-btn_group_uid').css('color', 'black');
+      $('#add_button_group_btn').css('display', 'inline-block');
+    }
+
+    if (button_groups[this.value] && ! button_groups[this.value].changed) {
+      for (let i = 0; i < language_ids.length; i++) {
+        let language_id = language_ids[i];
+        let el = $('#form_button input[name=\'btn_group_descriptions[' + language_id + '][name]\']');
+        el.val('');
+
+      }
+      $('#form_button input[name=\'btn_group_color\']').val('');
+      $('#form_button input[name=\'btn_group_background\']').val('');
+      $('#form_button input[name=\'btn_group_hide_name\']').val('');
+      $('#form_button input[name=\'btn_group_picture\']').val('');
+    }
+  });
+
+
+  $('select[name=\'route_button_action\']').on('change', function () { /*if ($('select[name=\'route_button_action\']').val() === '0') {
+                         $('#form_action_general').css('display', 'none');
+                         }*/
+    $('#form_route_button_action').html('');
+    $.ajax({
+      url: 'index.php?route=doctype/doctype/get_form_action&action=' + encodeURIComponent(this.value) + '&doctype_uid={{ doctype_uid }}&route_uid={{ route_uid }}',
+      dataType: 'json',
+      cache: false,
+      success: function (html) {
+        $('#form_route_button_action').html('<hr>' + html);
+        // $('#form_action_general').css('display', 'block');
+      }
+    });
+  });
+
+  $('#route_button_language a:first').tab('show');
+
+  // после загрузки пиктограммы из-за второго модального окна теряется скролл, исправляем
+  $(document).on('hidden.bs.modal', function (event) {
+    if ($('.modal:visible').length) {
+      $('body').addClass('modal-open');
+    }
+  });
+
+  $('input[name=\'action_move_route\']').autocomplete({
+    'source': function (request, response) {
+      $.ajax({
+        url: 'index.php?route=doctype/doctype/autocomplete_route&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+        dataType: 'json',
+        success: function (json) {
+          json.unshift({route_uid: 0, name: '{{ text_none }}'});
+          response($.map(json, function (item) {
+            {% if route_uid is empty %}
+              {% set route_uid = '0' %}
+            {% endif %}
+            if (item['route_uid'] != '{{ route_uid }}') {
+              return {label: item['name'], value: item['route_uid']} // end returns
+            }
+          } // end function
+          ) // end map
+          ); // end response
+        } // end success
+      }); // end ajax
+    }, // end source
+
+    'select': function (item) {
+      if (item['value']) {
+        $('input[name=\'action_move_route\']').val(item['label']);
+        $('input[name=\'action_move_route_uid\']').val(item['value']);
+      } else {
+        $('input[name=\'action_move_route\']').val('');
+        $('input[name=\'action_move_route_uid\']').val('');
+      }
+    } // end select
+  });
+  // end autocomplete
+
+
+  // -->
+</script>

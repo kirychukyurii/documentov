@@ -1,0 +1,79 @@
+{{ header }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="button" id="button-save-field_datetime" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-default">
+          <i class="fa fa-save"></i>
+        </button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+          <i class="fa fa-reply"></i>
+        </a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+      <div class="alert alert-danger alert-dismissible">
+        <i class="fa fa-exclamation-circle"></i>
+        {{ error_warning }}
+        <button class="close" data-dismiss="alert" type="button">&times;</button>
+      </div>
+    {% endif %}
+    <div class="panel panel-default" id="form-field_datetime">
+
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-3 control-label" for="datetime-input-worktime_field_name">
+              <span data-toggle="tooltip" title="{{ help_worktime_field }}">{{ text_worktime_field }}</span>
+            </label>
+            <div class="col-sm-9">
+              <input name="config_datetime_worktime_field_uid" type="hidden" value="{{ worktime_field_uid }}" class="hidden">
+              <input id="datetime-input-worktime_field_name" type="text" value="{{ worktime_field_name }}" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label" for="datetime-input-holidays_field_name">
+              <span data-toggle="tooltip" title="{{ help_holidays_field }}">{{ text_holidays_field }}</span>
+            </label>
+            <div class="col-sm-9">
+              <input name="config_datetime_holidays_field_uid" type="hidden" value="{{ holidays_field_uid }}" class="hidden">
+              <input id="datetime-input-holidays_field_name" type="text" value="{{ holidays_field_name }}" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label" for="datetime-input-irregular_worktime_field_name">
+              <span data-toggle="tooltip" title="{{ help_irregular_worktime_field }}">{{ text_irregular_worktime_field }}</span>
+            </label>
+            <div class="col-sm-9">
+              <input name="config_datetime_irregular_worktime_field_uid" type="hidden" value="{{ irregular_worktime_field_uid }}" class="hidden">
+              <input id="datetime-input-irregular_worktime_field_name" type="text" value="{{ irregular_worktime_field_name }}" class="form-control">
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $('#button-save-field_datetime').on('click', function () {
+    $.ajax({
+      url: 'index.php?route=extension/field/datetime/setting',
+      type: 'post',
+      cache: false,
+      data: $('#form-field_datetime input[type=\'text\'], #form-field_datetime input[type=\'hidden\'], #form-field_datetime input[type=\'radio\']:checked, #form-field_datetime input[type=\'checkbox\']:checked, #form-field_datetime select, #form-field_datetime textarea, #form-field_datetime select'),
+      dataType: 'json',
+
+      success: function (json) {
+        window.location.href = "index.php?route=marketplace/extension&type=field";
+      }
+    });
+  });
+  $('#form-field_datetime input[type=\'text\']').autocomplete(Documentov.getAutocompleteField('0', 1));
+</script>
+{{ footer }}

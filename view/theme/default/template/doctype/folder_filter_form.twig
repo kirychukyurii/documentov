@@ -1,0 +1,206 @@
+<div class="modal-header">
+    <div class="pull-right">
+        <button type="button" class="btn btn-default" id="modal-button-add" onclick="saveFilter('{% if folder_filter_uid is empty %}add{% else %}edit{% endif %}');" data-loading-text="{{ text_loading }}"><i class="fa fa-save"></i></button>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-reply"></i></button>
+    </div>    
+    <div class="pull-left"><h4 class="modal-title text-left">{{ text_title_filter }}</h4></div>
+</div>
+<div class="modal-body" id="form_filter">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">{{ entry_filter_field }}</label>
+            <div class="col-sm-9">
+                <select name="filter_field_uid" id="input-filter_field" class="form-control">   
+                <option value ="0">{{ text_select }}</option>
+                {% for field in fields %}
+                    <option value = '{{ field.field_uid }}'{% if field.field_uid == field_uid %} selected="selected"{% endif %}>{{ field.name }}</option>
+                {% endfor %}   
+                </select>  
+            </div>
+        </div> 
+        <div class="form-group">
+            <label class="col-sm-3 control-label">{{ entry_filter_condition }}</label>
+            <div class="col-sm-9">
+                <select name="filter_condition_value" id="input-filter_condition" class="form-control">   
+                <option value ="0">{{ text_select }}</option>
+                {% for cond in conditions %}
+                    <option value = '{{ cond.value }}'{% if cond.value == condition %} selected="selecred"{% endif %}>{{ cond.title }}</option>
+                {% endfor %}   
+                </select>  
+            </div>
+        </div> 
+        <div class="form-group">
+            <label class="col-sm-3 control-label">{{ entry_filter_value }}</label>
+            <div class="col-sm-9">
+                <label class="radio-inline">
+                    <input type="radio" name="type_condition_value" {% if type_value != 'var' %}checked="checked"{% endif %} value="input">{{ entry_value_input }}
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="type_condition_value" {% if type_value == 'var' %}checked="checked"{% endif %} value="var">{{ entry_value_from_var }}
+                </label>                
+                <div id="field_widget">{{ field_widget }}</div>
+                <div id="block_var">
+                    <select name="field_value_var" id="input-field_value_var" class="form-control">
+                        {% for name,title in variables %}
+                        <option value="{{ name }}"{% if name == value %} selected="selecred"{% endif %}>{{ title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div> 
+        <div class="form-group">
+            <label class="col-sm-3 control-label">{{ entry_filter_action }}</label>
+            <div class="col-sm-9">
+                <select name="filter_action_value" id="input-filter_action" class="form-control">   
+                <option value ="0">{{ text_select }}</option>
+                {% for act in actions %}
+                    <option value = '{{ act.value }}'{% if act.value == action %} selected="selecred"{% endif %}>{{ act.title }}</option>
+                {% endfor %}   
+                </select>  
+                <div id="block_action_color" class="form-group">
+                    <div class="col-sm-6 text-left">
+                        <input id="action-color" name="filter_action_params[color]" type="text" value="{{ action_params.color }}" class="color-picker form-control" {% if action_params.color is not empty %}style="color: #{{ action_params.color }}"{% endif %}/>
+                    </div>                    
+                    <div class="col-sm-6 text-left">
+                        <input id="action-background" name="filter_action_params[background]" type="text" value="{{ action_params.background }}" class="color-picker form-control" {% if action_params.background is not empty %}style="background-color: #{{ action_params.background }}"{% endif %}/>
+                    </div>                    
+                </div>
+                <div id="block_action_font" class="form-group">
+                    <label class="checkbox-inline"><input type="checkbox" name="filter_action_params[font][bold]" value="1"{% if action_params.font.bold == 1%} checked="checked"{% endif %}> <span style="font-weight: bold;">{{ text_font_bold }}</span></label>
+                    <label class="checkbox-inline"><input type="checkbox" name="filter_action_params[font][italic]" value="1"{% if action_params.font.italic == 1%} checked="checked"{% endif %}> <span style="font-style: italic">{{ text_font_italic }}</span></label>
+                    <label class="checkbox-inline"><input type="checkbox" name="filter_action_params[font][linethrough]" value="1"{% if action_params.font.linethrough == 1%} checked="checked"{% endif %}> <span style="text-decoration: line-through;">{{ text_font_linethrough }}</span></label>
+                </div>
+            </div>
+                
+        </div> 
+    </div>            
+</div>   
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <button type="button" class="btn btn-default btn-block" id="modal-button-add" onclick="saveFilter('{% if folder_button_uid is empty %}add{% else %}edit{% endif %}');" data-loading-text="{{ text_loading }}">{{ button_save }}</button>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                    <div style="margin-top: 15px;" class="visible-xs"></div>
+                    <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+            </div>
+        </div>
+    </div>
+           
+           
+<script type="text/javascript">
+
+ function saveFilter() {
+        $.ajax({
+            url: 'index.php?route=doctype/folder/save_filter&folder_uid={{ folder_uid }}&filter_id={{ folder_filter_uid }}',
+            type: 'post',
+            data: $('#form_filter input[type=\'text\'], #form_filter input[type=\'number\'], #form_filter input[type=\'hidden\'], #form_filter input[type=\'radio\']:checked, #form_filter input[type=\'checkbox\']:checked, #form_filter select, #form_filter textarea'),
+            dataType: 'json',
+            beforeSend: function() {
+                    $('#modal-button-add').button('loading');
+            },            
+            success: function(json) {                
+                html = '<td class="text-left">' + json['field_name'] + '</td><td class="text-left">' + json['condition'] + '</td><td class="text-left">' + json['value'] + '</td><td class="text-left" ';
+                if (json['action'] === 'color') {
+                    html += 'style="background-color: #' + json['action_params']['background'] + '; color: #' + json['action_params']['color'] + ';"';
+                }
+                html += '>' + json['action_title'] + '</td><td class="text-right" id="filter-row-button' + json['folder_filter_uid'] + '"><span class="btn btn-success" onclick="editFilter(\'' + json['folder_filter_uid'] + '\');" data-toggle="tooltip" title="{{ button_edit_filter }}" data-original-title="{{ button_edit_filter }}"><i class="fa fa-pencil"></i></span> ';
+                html += '<button type="button" onclick="removeFilter(\'' + json['folder_filter_uid'] + '\');" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>';
+                {% if folder_filter_uid %}
+                    $('#filter-row{{ folder_filter_uid }}').html(html);
+                    $('#filter-row{{ folder_filter_uid }}').addClass('new_element');
+                {% else %}
+                    $('#folder_filters tbody').append('<tr id="filter-row' + json['filter.filter_id'] + '" class="new_element">' + html + '</tr>');
+                {% endif %}
+                $('#modal-afilter').modal('hide');
+            }
+        })
+    };
+
+
+
+
+$('select[name=\'filter_field_uid\']').on('change', function() {
+    $.ajax({
+	url: 'index.php?route=doctype/folder/get_field_widget&field_uid=' + this.value,
+	dataType: 'json',
+	success: function(html) {
+            $('#field_widget').html(html);
+            $('#block_var').hide();
+            $('#field_widget').show();
+            $('input[name=\'type_condition_value\'][type="radio"]').filter('[value=\'input\']').prop('checked',true);
+	}
+    });
+});
+
+if ($('#input-filter_field').val() > '0') {
+    $('#block_var').hide();
+    $('#field_widget').show();            
+}    
+
+if ($('#input-filter_action').val() !== 'style') {
+     $('#block_action_color').hide();
+} 
+if ($('#input-filter_action').val() !== 'font') {
+     $('#block_action_font').hide();
+} 
+
+$('#action-color, #action-background').ColorPicker({
+	onSubmit: function(hsb, hex, rgb, el) {
+		$(el).val(hex);
+                if ($(el).attr('id') === 'action-color') {
+                    $(el).css('color','#'+hex);
+                } else {
+                    $(el).css('backgroundColor','#'+hex);
+                }
+		$(el).ColorPickerHide();
+	},
+	onBeforeShow: function () {
+		$(this).ColorPickerSetColor(this.value);
+	}
+})
+.bind('keyup', function(){
+	$(this).ColorPickerSetColor(this.value);
+        if ($(this).attr('id') === 'action-color') {
+                    $(this).css('color','#'+this.value);
+                } else {
+                    $(this).css('backgroundColor','#'+this.value);
+                }
+});
+
+if ($('input[name=\'type_condition_value\']:checked').val() !== 'var') {
+     $('#block_var').hide(); 
+     $('#block_widget').show();
+} else {
+     $('#block_var').show();
+     $('#block_widget').hide();    
+}
+$('input[name=\'type_condition_value\']').on('change', function(){
+    if (this.value === 'var') {
+        $('#block_var').show();
+        $('#field_widget').hide();
+    } else {
+         if ($('#block_widget').html() === undefined) {
+             $('select[name=\'filter_field_uid\']').trigger('change');
+         }                   
+        $('#block_var').hide();
+        $('#field_widget').show();
+    }    
+});
+
+$('select[name=\'filter_action_value\']').on('change', function() {
+    if (this.value === 'style') {
+        $('#block_action_color').show();
+        $('#block_action_font').hide();
+    } else if (this.value === 'font') {
+        $('#block_action_font').show();
+        $('#block_action_color').hide();
+    }  else {
+        $('#block_action_color').hide();
+        $('#block_action_font').hide();
+    } 
+});
+
+
+
+//--></script>

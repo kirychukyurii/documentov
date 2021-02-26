@@ -1,0 +1,24 @@
+<div class="{{ BLOCK }} field-block">
+  <input type="hidden" name="{{ NAME }}" id="{{ ID }}" class={{ ID }} value="{{ field_value | striptags }}">
+  {% if filter_view %}
+    {#вывод в фильтры журнала, таблицу не выводим#}
+    {{ field_value }}
+  {% else %}
+    <table class='table table-bordered table-hover'>
+      <thead class="background1" id="table_head_{{field_uid}}">
+        <tr>
+          {% for column in inner_fields %}
+            <th class="{{ column.field_view_display }}">{{column.column_title[language_id]}}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody class="pre-scrollable" id="table_body_{{field_uid}}">
+        {% for row_view in table_view %}
+          <tr>
+            {{row_view}}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>

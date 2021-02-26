@@ -1,0 +1,8 @@
+[error]
+clone_marshal = Ошибка при клонировании объекта: %s Объект: %+v
+clone_unmarshall = Ошибка при клонировании объекта: %s Объект: %s
+json_encode_params = Ошибка при кодировании JSON параметров модуля (%T, UID=%s): %s
+json_decode_params = Ошибка при декодировании JSON параметров модуля (%T, UID=%s): %s, JSON=%s
+
+[info]
+service_started = Конфигурация запущена

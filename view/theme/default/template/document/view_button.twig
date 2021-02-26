@@ -1,0 +1,48 @@
+<div id="document_toolbar">
+
+  {% for button in buttons %}
+    {% if button.button_group %}
+      <div class='btn-group'>
+        <button type="button" id="button_group{{ button.button_group.button_group_uid }}" class="btn btn-default shadow2 dropdown-toggle" data-toggle="dropdown" style="{% if button.button_group.color is not empty %}color:#{{ button.button_group.color }};{% endif %}{% if button.button_group.background is not empty %}background-color:#{{ button.button_group.background }};{% endif %}{% if button.button_group.picture %}padding:3px 6px 3px 3px;{% endif %}">
+          {% if button.button_group.picture %}<img src="{{ button.button_group.picture }}">
+          {% endif %}
+          <span {% if button.button_group.hide_button_name and button.button_group.picture %} class="text-hide-{{ button.button_group.hide_button_name }}" {% endif %}>{{ button.button_group.name }}</span>&nbsp;&nbsp;<span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" style="min-width: 20px">
+          {% for inner_button in button.buttons %}
+            <li>
+              <a class="pointer" id="button{{ inner_button.button_uid }}" data-document_uid="{{ document_uid }}" data-button_uid="{{ inner_button.button_uid }}" data-button_type="document" style="{% if inner_button.color is not empty %}color:#{{ inner_button.color }};{% endif %}{% if inner_button.background is not empty %}background-color:#{{ inner_button.background }};{% endif %}{% if inner_button.picture %}padding:3px 6px 3px 3px;{% endif %}" onclick="navDocumentov.buttonAction(this);" data-toggle="tooltip" title="{{ inner_button.title }}" data-loading-text="{{ text_loading }}">
+                {% if inner_button.picture %}<img src="{{ inner_button.picture }}">
+                {% endif %}
+                <span {% if inner_button.hide_button_name and inner_button.picture %} class="text-hide-{{ inner_button.hide_button_name }}" {% endif %}>{{ inner_button.name }}</span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {%else%}
+      &nbsp;
+      <button class="btn btn-default shadow2 " id="button{{ button.button_uid }}" data-document_uid="{{ document_uid }}" data-button_uid="{{ button.button_uid }}" data-button_type="document" style="{% if button.color is not empty %}color:#{{ button.color }};{% endif %}{% if button.background is not empty %}background-color:#{{ button.background }};{% endif %}{% if button.picture %}padding:3px 6px 3px 3px;{% endif %}" onclick="navDocumentov.buttonAction(this);" data-toggle="tooltip" title="{{ button.title }}" data-loading-text="{{ text_loading }}">
+        {% if button.picture %}<img src="{{ button.picture }}">
+        {% endif %}
+        <span {% if button.hide_button_name and button.picture %} class="text-hide-{{ button.hide_button_name }}" {% endif %}>{{ button.name }}</span>
+      </button>&nbsp;
+      {%endif%}
+
+    {% endfor %}
+
+    <div id="block_loading">{{ text_loading }}</div>
+  </div>
+  <script type='text/javascript'>
+    if (typeof(navDocumentov) == "undefined") {
+      let navParams = {
+        language: {}
+      };
+      //
+      {% for text_index,text_value in text_navigator_documentov %};
+      navParams.language['{{ text_index }}'] = '{{ text_value }}';
+      {% endfor %};
+      var navDocumentov = new NavigatorDocumentov(navParams);
+    }
+    navDocumentov.dataReplaceBlocks = [];
+  </script>

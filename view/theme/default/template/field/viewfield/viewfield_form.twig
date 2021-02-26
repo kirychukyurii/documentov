@@ -1,0 +1,45 @@
+<div class="container-fluid">
+    <div class="form-group">
+        <label class="col-sm-3 control-label"><span data-toggle="tooltip" title="{{ help_field_type }}">{{ text_field_type }}</span></label>
+        <div class="col-sm-9">
+            <select name="field[viewfield_type]" class="form-control">   
+                <option value ="0">{{ text_select }}</option>
+                {% for field in fields %}
+                    <option value = '{{ field.name }}'{% if field.name == params.viewfield_type %} selected="selected"{% endif %}>{{ field.title }}</option>
+                {% endfor %}   
+            </select>  
+        </div>
+    </div> 
+    <div class="form-group">
+        <label class="col-sm-3 control-label"><span data-toggle="tooltip" title="{{ help_field_with_field_uid }}">{{ text_field_with_field_uid }}</span></label>
+        <div class="col-sm-9">
+            {% import "default/template/macros/field_in_field.twig" as fwfuid %}
+            {{ fwfuid.show(field_with_field_name, params.field_with_field_uid, doctype_uid, 'field_with_field', text_macros_field) }}        
+        </div>
+    </div> 
+    <div class="form-group">
+        <label class="col-sm-3 control-label"><span data-toggle="tooltip" title="{{ help_field_with_document_uid }}">{{ text_field_with_document_uid }}</span></label>
+        <div class="col-sm-9">
+            {% import "default/template/macros/field_in_field.twig" as fwduid %}
+            {{ fwduid.show(field_with_document_name, params.field_with_document_uid, doctype_uid, 'field_with_document', text_macros_field) }}        
+        </div>
+    </div> 
+</div>
+        
+<script>
+    //отключаем версионность
+    $('#input-history').attr('disabled','disabled');
+    $('#input-history').removeAttr('checked');
+    //отключаем обязательность
+    $('#input-required').val('');
+    $('#input-required').attr('disabled','disabled');
+    $('#input-required').removeAttr('checked');
+    //отключаем уникальность
+    $('#input-unique').val('');
+    $('#input-unique').attr('disabled','disabled');
+    $('#input-unique').removeAttr('checked');
+    //отключаем полнотекстовый поиск
+    $('#input-ft_index').val('');
+    $('#input-ft_index').attr('disabled','disabled');
+    $('#input-ft_index').removeAttr('checked'); 
+</script>

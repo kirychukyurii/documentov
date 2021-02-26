@@ -1,0 +1,9 @@
+{#    если установлена filter_form - нужна компактная форма, используется, к примеру, в фильтрах журналов #}
+{#    если установлена widget_name - это имя поля #}
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-mask"><span data-toggle="tooltip" title="{{ help_mask }}">{{ entry_mask }}</span></label>
+    <div class="col-sm-9">
+        <input type="text" name="field[mask]" id="input-mask" placeholder="{{ entry_mask }}" class="form-control"value="{{ params.mask }}"> <br>
+    </div>
+</div>

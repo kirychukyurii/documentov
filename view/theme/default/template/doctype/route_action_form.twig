@@ -1,0 +1,130 @@
+<div class="modal-header">
+    <div class="pull-right">
+        <button type="button" class="btn btn-default" id="modal-button-add" onclick="saveRouteAction('{% if action_id is empty %}add{% else %}edit{% endif %}');" data-loading-text="{{ text_loading }}">
+            <i class="fa fa-save"></i>
+        </button>
+        <button class="btn btn-default" data-dismiss="modal" type="button">
+            <i class="fa fa-reply"></i>
+        </button>
+    </div>
+    <div class="pull-left">
+        <h4 class="modal-title text-left">
+            {% if action_id is empty %}
+                {{ text_title_action_add }}
+            {% else %}
+                {{ text_title_action_edit }} 
+            {% endif %}
+        </h4>
+    </div>
+</div>
+
+<div class="modal-body" id="form_route_action">
+    <div class="form-horizontal">
+        <div class="form-group required">
+            <label class="col-sm-3 control-label">{{ entry_action }}</label>
+            <div class="col-sm-9">
+                <select class="form-control" id="input-route_action" name="route_action">
+                    <option value="0">{{ text_select }}</option>
+                    {% for action in actions %}
+                        {% if action_name is not empty and action_name == action.name %}
+                            <option value='{{ action.name }}' selected="selected">{{ action.title }}</option>
+                        {% else %}
+                            <option value='{{ action.name }}'>{{ action.title }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div id="form_action_general">
+            {{ action_general_form }}
+        </div>
+        <div id="form_action">
+            {{ action_form }}
+        </div>
+        <hr>
+        <div class="form-group" id="block-action_description">
+            <label class="col-sm-3 control-label">
+                <span data-toggle="tooltip" title="{{ help_description }}">{{ entry_description }}</span>
+            </label>
+            <div class="col-sm-9">
+                <input type="text" name="action_description" id="input-action_description" value="{{ action_description }}" class="form-control" placeholder="{{ entry_description }}">
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <button type="button" class="btn btn-default btn-block" id="modal-action-add" onclick="saveRouteAction('{% if action_id is empty %}add{% else %}edit{% endif %}');" data-loading-text="{{ text_loading }}">{{ button_save }}</button>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="visible-xs" style="margin-top: 15px;"></div>
+                <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+
+        if ($('#input-route_action').val() === '0') {
+            $('#form_action_general').css('display', 'none');
+            $('#block-action_status').css('display', 'none');
+        }
+
+        function saveRouteAction(mode) {
+            if ($('#input-route_action').val() == "0") {
+                alert('{{ entry_action }}');
+                return false;
+            }
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/save_route_action&route_uid={{ route_uid }}&context={{ context }}&action_id={{ action_id}}',
+                type: 'post',
+                cache: false,
+                data: $('#form_route_action input[type=\'text\'], #form_route_action input[type=\'number\'], #form_route_action input[type=\'hidden\'], #form_route_action input[type=\'password\'], #form_route_action input[type=\'radio\']:checked, #form_route_action input[type=\'checkbox\']:checked, #form_route_action select, #form_route_action textarea'),
+                dataType: 'json',
+                beforeSend: function () {
+                    $('#modal-action-add').button('loading');
+                },
+                success: function (json) {
+                    html = '<td class="text-left pointer" onclick="editRouteAction(\'' + json['route_action_uid'] + '\');">' + json['name'] + '</td>' + '<td class="text-left pointer" onclick="editRouteAction(\'' + json['route_action_uid'] + '\');">' + json['description'] + '</td>' + '<td class="text-right"  id="route_{{ context }}_action-button' + json['route_action_uid'] + '" style="width: 120px;">' + '<button class="btn btn-default btn-sm" type="button" onclick="up(this, \'move_action&action_id=' + json['route_action_uid'] + '\');" data-toggle="tooltip" title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ' + '<button class="btn btn-default btn-sm" type="button" onclick="down(this, \'move_action&action_id=' + json['route_action_uid'] + '\');" data-toggle="tooltip" title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ' + '<button type="button" onclick="removeRouteAction(\'' + json['route_action_uid'] + '\',\'{{ context }}\');" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-default btn-sm"><i class="fa fa-minus-circle"></i></button></td>';
+                    if (mode == 'add') {
+                        html = '<tr id="route_{{ context }}_action-row' + json['route_action_uid'] + '" class="new_element">' + html + '</tr>';
+                        $('#table_route_{{ context }}_action{{ route_uid }} tbody').append(html);
+                    } else {
+                        $('#route_{{ context }}_action-row' + json['route_action_uid']).html(html);
+                        $('#route_{{ context }}_action-row' + json['route_action_uid']).addClass('new_element');
+                    }
+                    if ($('#input-action_status').val() == '0') {
+                        $('#route_{{ context }}_action-row' + json['route_action_uid']).addClass('remove_element');
+                    } else {
+                        $('#route_{{ context }}_action-row' + json['route_action_uid']).removeClass('remove_element');
+                    }
+                    $('#modal-aaction').modal('hide');
+                }
+            })
+        };
+
+        $('select[name=\'route_action\']').on('change', function () {
+            if ($('select[name=\'route_action\']').val() === '0') {
+                $('#form_action_general').css('display', 'none');
+                $('#block-action_status').css('display', 'none');
+            }
+            $('#form_action').html('');
+            $('#modal-button-add').show(); // действия, н-р, Автонажатие, могут скрывать кнопки сохранения
+            $('#modal-action-add').show();
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/get_form_action&action=' + encodeURIComponent(this.value) + '&doctype_uid={{ doctype_uid }}&route_uid={{ route_uid }}&context={{ context }}',
+                dataType: 'json',
+                cache: false,
+                success: function (html) {
+                    $('#form_action').html('<hr>' + html);
+                    $('#form_action_general').css('display', 'block');
+                    $('#block-action_status').css('display', 'block');
+                }
+            });
+        });
+    </script>

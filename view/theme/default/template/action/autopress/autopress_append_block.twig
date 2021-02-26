@@ -1,0 +1,11 @@
+{% if params.autopress_button_uid %}
+
+    <script type="text/javascript">
+        // $('#document_form').hide();
+        // $('#document_toolbar').hide();
+        if ($('.btn').is('#button{{ params.autopress_button_uid }}')) {
+            $('.modal').modal('hide');
+            $('#button{{ params.autopress_button_uid }}').trigger('click');
+        }
+    </script>
+{% endif %}

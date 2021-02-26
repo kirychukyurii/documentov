@@ -1,0 +1,136 @@
+  
+    <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">{{ text_title_access }}</h4>
+    </div>
+
+    <div class="modal-body">
+        <div class='form-horizontal'>
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="input-access_subject_name"><span data-toggle="tooltip" title="{{ help_access_subject }}">{{ entry_access_subject }}</span></label>
+                <div class="col-sm-9">
+                    <input type="text" name="access_subject_name" id="input-access_subject_name"  class="form-control" placeholder="{{ entry_access_subject }}"/>
+                    <input type="hidden" name="access_subject_id" id="input-access_subject_id"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="input-access_author_name"><span data-toggle="tooltip" title="{{ help_access_author }}">{{ entry_access_author }}</span></label>
+                <div class="col-sm-9">
+                    <input type="text" name="access_author_name" id="input-access_author_name"  class="form-control" placeholder="{{ entry_access_author }}"/>
+                    <input type="hidden" name="access_author_uid" id="input-access_author_uid"/>
+                </div>
+            </div>
+  
+       
+        </div>    
+    </div>
+
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <button type="button" class="btn btn-default btn-block" id="modal-button-add" onclick="add();" data-loading-text="{{ text_loading }}">{{ button_add }}</button>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                    <div style="margin-top: 15px;" class="visible-xs"></div>
+                    <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+            </div>
+        </div>
+    </div>
+           
+           
+<script type="text/javascript">
+
+$('input[name=\'access_subject_name\']').autocomplete({
+	'source': function(request, response) {
+		$.ajax({
+			url: 'index.php?route=doctype/doctype/autocomplete_document&doctype_uid=1&field_uid=4&filter_name=' +  encodeURIComponent(request),
+			dataType: 'json',
+			success: function(json) {                            
+                                json.unshift({
+                                    document_uid: 0,
+                                    name: '{{ text_none }}'
+                                });
+				response($.map(json, function(item) {
+                                    //если пользователь не выберет значение из списка, а введет его руками
+                                //    if(json.length == 2 && item['document_uid'] > 0) {
+                                //        $('input[name=\'access_subject_id]\']').val(item['document_uid']);
+                                //    }    
+                                    return {
+                                            label: item['name'],
+                                            value: item['document_uid']
+                                    }
+				}));
+			}
+		});
+	},
+	'select': function(item) {
+            if(item['value']) {
+                $('input[name=\'access_subject_name\']').val(item['label']);
+                $('input[name=\'access_subject_id\']').val(item['value']);
+            } else {            
+                $('input[name=\'access_subject_name\']').val("");
+                $('input[name=\'access_subject_id\']').val("0");
+            }
+         }   
+    }); 
+
+$('input[name=\'access_author_name\']').autocomplete({
+	'source': function(request, response) {
+		$.ajax({
+			url: 'index.php?route=doctype/doctype/autocomplete_document&doctype_uid=1&field_uid=4&filter_name=' +  encodeURIComponent(request),
+			dataType: 'json',
+			success: function(json) {                            
+                                json.unshift({
+                                    document_uid: 0,
+                                    name: '{{ text_none }}'
+                                });
+				response($.map(json, function(item) {
+                                    //если пользователь не выберет значение из списка, а введет его руками
+                                //    if(json.length == 2 && item['document_uid'] > 0) {
+                                //        $('input[name=\'access_author_uid]\']').val(item['document_uid']);
+                                //    }    
+                                    return {
+                                            label: item['name'],
+                                            value: item['document_uid']
+                                    }
+				}));
+			}
+		});
+	},
+	'select': function(item) {
+            if(item['value']) {
+                $('input[name=\'access_author_name\']').val(item['label']);
+                $('input[name=\'access_author_uid\']').val(item['value']);
+            } else {            
+                $('input[name=\'access_author_name\']').val("");
+                $('input[name=\'access_author_uid\']').val("0");
+            }
+         }   
+    }); 
+
+ function add() {
+        $.ajax({
+            url: 'index.php?route=doctype/doctype/add_access&doctype_uid={{ doctype_uid }}',
+            type: 'post',
+            data: $('input[name=\'access_subject_id\'], input[name=\'access_author_uid\']'),
+            dataType: 'json',
+            beforeSend: function() {
+                    $('#modal-button-add').button('loading');
+            },            
+            success: function(json) {
+                //json = {"doctype_field_uid":28,"name":"string f1","field_type":"string","field_type_title":"\u0421\u0442\u0440\u043e\u043a\u043e\u0432\u043e\u0435 \u043f\u043e\u043b\u0435","params_description":"\u041c\u0430\u0441\u043a\u0430 \u0432\u0432\u043e\u0434\u0430: 9999-99; \u0417\u043d\u0430\u0447\u0435\u043d\u0438\u0435 \u043f\u043e \u0443\u043c\u043e\u043b\u0447\u0430\u043d\u0438\u044e: 2123-55"}
+                html = '<tr id="field-row' + json['doctype_field_uid'] + '" class="new_element">' +
+                        '<td class="text-left"><input type="hidden" name="fields[]" value="' + json['doctype_field_uid'] + '">' + json['field_name'] + '</td>' +
+                        '<td class="text-left">' + json['field_type_title'] + '</td>' +
+                        '<td class="text-left">' + json['params_description'] + '</td>' +
+                        '<td class="text-left">' + json['sort'] + '</td>' +
+                        '<td  id="field-row-button' + json['doctype_field_uid'] + '" class="text-right"><span class="btn btn-success" onclick="editField(' + json['doctype_field_uid'] + ');" data-toggle="tooltip" title="{{ button_edit_field }}" data-original-title="{{ button_edit_field }}"><i class="fa fa-pencil"></i></span> <button type="button" onclick="removeField(\'' + json['doctype_field_uid']+ '\').remove();" data-toggle="tooltip" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>' +
+                        '</tr>';
+                $('#doctype_fields tbody').append(html);
+                $('#modal-afield').modal('hide');
+            }
+        })
+    };
+
+
+</script>

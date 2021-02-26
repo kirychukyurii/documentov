@@ -1,0 +1,38 @@
+.FieldViewdoc-panel .panel-heading {
+  display: flex;
+  flex-grow: 1;
+}
+.FieldViewdoc-panel .panel-heading div {
+  flex-grow: 1;
+  align-self: center;
+}
+
+.FieldViewdoc-divdt {
+  background: #eee;
+}
+.FieldViewdoc-divdt_label {
+  padding: 3px 2px 0 0;
+}
+
+.FieldViewdoc-panel_heading {
+  padding: 4px 4px 4px 8px; 
+  margin-bottom: 0px;
+}
+.FieldViewdoc-panel_heading .control-label {
+  padding: 0;
+}
+.FieldViewdoc-panel {
+  margin-bottom: 0px;
+}
+.FieldViewdoc-divdt_value {
+  padding-left: 2px;
+}
+.FieldViewdoc-block_manage_template {
+  float: right;
+  padding-top: 2px;
+}
+.FieldViewdoc-block_content_template {
+  padding-top: 4px;
+}
+
+

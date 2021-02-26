@@ -1,0 +1,139 @@
+{# клон макроса field_in_action; этот макрос добавляет в название поля с идентифик
+аторов документа uid, а не id + позволяет выбрать геттер #}
+{% macro show(value_name, value_id, type, doctype_uid, name, text, method, method_params) %}
+{% set unique = random() %}    
+{#      value_name название выбранного поля, 
+        value_id - идентификатор выбранного поля, 
+        type - тип поля (простое 0, настроечное 1),
+        doctype_uid - тип документа, 
+        text - текстовки, method - выбранный геттер, 
+        method_params - одномерный массив параметров сеттера, например, [[char_count][value]] = x 
+            ЕСЛИ METHOD_PARAMS == FALSE, ТО ПАРАМЕТРЫ МЕТОДА НЕ ПОКАЗЫВАЮТСЯ
+#}
+
+    <label class="radio-inline"><input type="radio" name="{{ name }}_type" id="input-{{ name }}_type1" {% if not type %}checked="checked"{% endif %} value="0">{{ text['simple'] }}</label>
+    <label class="radio-inline"><input type="radio" name="{{ name }}_type" id="input-{{ name }}_type2" {% if type %}checked="checked"{% endif %} value="1">{{ text['setting'] }}</label>
+    
+    <input type="text" name="{{ name }}_name" id="input-{{ name }}_name" value="{{ value_name }}" placeholder="{{ text.placeholder }}" class="form-control">
+    <input type="hidden" name="action[{{ name }}_uid]" value="{{ value_id }}">
+    
+    <select name="action[{{ name }}_method]" id="select-method_list_{{ unique }}" class="form-control">
+    </select>
+    
+    <div id="block-method_form_{{ unique }}">
+        
+    </div>
+    
+    <script type="text/javascript">       
+        //загрузка формы сеттера
+        $('#select-method_list_{{ unique }}').on('change', function () {
+            console.log('{{ method_params }}');
+            {% if method_params != false %}
+            $('#block-method_form_{{ unique }}').html('');
+            var method_params = {};
+            {% if method_params %}
+                {% for param_name,param_value in method_params %}
+                    method_params['method_params{{ param_name }}'] = '{{ param_value }}'; 
+                {% endfor %}
+            {% endif %}
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/get_field_method_form&method=' + encodeURIComponent(this.value) + '&field_uid=' + $('input[name=\'action[{{ name }}_uid]\']').val() + '&method_params_name_hierarchy=[{{ name }}_method_params]&doctype_uid={{ doctype_uid }}',
+                data: method_params, 
+                type: 'post',
+                dataType: 'json',
+                success: function (html) {
+                    if (html !== "") {
+                        $('#block-method_form_{{ unique }}').html(html);
+                    }
+                }
+            });
+            {% endif %}
+        });          
+        
+        $('input[name=\'action\[{{ name }}_uid\]\']').on('change', function(){
+            //изменено значение поля, загружаем список геттеров
+            if ($(this).val()) {
+                var selector = this;
+                $.ajax({
+                    url: 'index.php?route=doctype/doctype/get_field_methods&field_uid=' + $(this).val() + '&method_type=setter',
+                    dataType: 'json', cache:false, 
+                    success: function(json){
+                        if (json) {
+                            json.unshift({
+                                name: '',
+                                alias: '{{ text['default_method'] }}'
+                            });
+                        } else {
+                            json = [{'name': '', alias: '{{ text['default_method'] }}'}]
+                        }
+                        $('#select-method_list_{{ unique }}').html('');
+                        $.each(json, function(){
+                            $('#select-method_list_{{ unique }}').append($('<option>', {
+                                value: this.name,
+                                text: this.alias
+                            }));
+                        });
+                        $('#block-method_form_{{ unique }}').html('');
+                        var method = '{{ method }}';
+                        if ($(selector).val() == '{{ value_id }}' && method) {
+                            $('#select-method_list_{{ unique }}').val(method);
+                        }                        
+                        
+                        $('#select-method_list_{{ unique }}').trigger('change');
+                    }
+                });                   
+            } else {
+                $('#select-method_list_{{ unique }}').html('');
+                $('#select-method_list_{{ unique }}').append($('<option>', {
+                    value: '',
+                    text: '{{ text['default_method'] }}'
+                }));                
+                $('#block-method_form_{{ unique }}').html('');                
+            }
+        });
+
+        $('input[name=\'action[{{ name }}_uid]\']').trigger('change');
+        
+        $('input[name=\'{{ name }}_name\']').autocomplete({
+            'source': function(request, response) {
+                {% if doctype_uid %}
+                {# вызов макроса из доктайпа #}        
+                doctype_uid = '{{ doctype_uid }}';
+                {% else %}
+                {# вызов макроса из журнала #}    
+                doctype_uid = $('input[name=\'doctype_uid\']').val();
+                {% endif %}                
+                if($('input[name="{{ name }}_type"]:checked').val() === "1") {
+                    doctype_uid = '0';
+                }                 
+                $.ajax({
+                    url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid=' + doctype_uid + '&setting=' + $('input[name="{{ name }}_type"]:checked').val(),
+                    dataType: 'json', cache:false, 
+                    success: function(json) {
+                        json.unshift({
+                            field_uid: 0,
+                            name: '{{ text['none'] }}'
+                        });
+                        response($.map(json, function(item) {
+                            return {
+                                label: item['name'],
+                                value: item['field_uid']
+                            }
+                        }));                    
+                    } 
+                }); 
+            },  
+            'select': function(item) {
+                if(item['value']) {
+                    $('input[name=\'{{ name }}_name\']').val(item['label']);
+                    $('input[name=\'action[{{ name }}_uid]\']').val(item['value']).trigger('change');
+
+                } else {
+                    $('input[name=\'{{ name }}_name\']').val('');
+                    $('input[name=\'action[{{ name }}_uid]\']').val('').trigger('change');   
+                 }    
+            }
+        });                    
+        
+    </script>
+{% endmacro %}

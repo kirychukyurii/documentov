@@ -1,0 +1,24 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-list"><span data-toggle="tooltip" title="{{ help_type_hash }}">{{ entry_type_hash }}</span></label>
+    <div class="col-sm-9">
+          <select name="field[type_hash]" id="select-type_hash" class="form-control">
+            {% if params.type_hash == 2 %}
+            <option value="1">{{ text_1_hash }}</option>
+            <option value="2" selected="selected">{{ text_2_hash }}</option>
+            {% else %}
+            <option value="1" selected="selected">{{ text_1_hash }}</option>
+            <option value="2">{{ text_2_hash }}</option>
+            {% endif %}
+          </select>
+    </div>
+</div>
+          
+<script>
+    //отключаем версионность
+    $('#input-history').attr('disabled','disabled');
+    $('#input-history').removeAttr('checked');
+    //отключаем полнотекстовый поиск
+    $('#input-ft_index').val('');
+    $('#input-ft_index').attr('disabled','disabled');
+    $('#input-ft_index').removeAttr('checked');
+</script>          

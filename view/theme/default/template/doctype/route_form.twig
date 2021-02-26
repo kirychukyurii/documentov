@@ -1,0 +1,231 @@
+<div class="modal-header">
+  <div class="pull-right">
+    <button type="button" class="btn btn-default" id="modal-button-add" onclick="saveRoute('{% if route_uid is empty %}add{% else %}edit{% endif %}');" data-loading-text="{{ text_loading }}" data-loading-text="{{ text_loading }}">
+      <i class="fa fa-save"></i>
+    </button>
+    <button class="btn btn-default" data-dismiss="modal" type="button">
+      <i class="fa fa-reply"></i>
+    </button>
+  </div>
+  <div class="pull-left">
+    <h4 class="modal-title text-left">
+      {% if route_uid is empty %}
+        {{ text_title_route_add }}
+      {% else %}
+        {{ text_title_route_edit }}
+      {% endif %}
+    </h4>
+  </div>
+</div>
+
+
+<div class="modal-body" id="form_route">
+  <div class="form-horizontal">
+    {% if route_uid is empty %}
+      <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-route_place">
+          <span data-toggle="tooltip" title="{{ help_route_place }}">{{ entry_route_place }}</span>
+        </label>
+        <div class="col-sm-9">
+          <input type="text" name="route_place" id="input-route_place" class="form-control" placeholder="{{ entry_route }}">
+          <input name="route_place_id" type="hidden">
+        </div>
+      </div>
+    {% endif %}
+    <ul class="nav nav-tabs" id="route_language">
+      {% for language in languages %}
+        <li>
+          <a data-toggle="tab" href="#route_language{{ language.language_id }}"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/>
+            {{ language.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+    <div class="tab-content">
+      {% for language in languages %}
+        <div class="tab-pane fade" id="route_language{{ language.language_id }}">
+          <div class="form-group">
+            <label class="col-sm-3 control-label" for="input-route_name{{ language.language_id }}">{{ entry_route_name }}</label>
+            <div class="col-sm-9">
+              <input type="text" name="route_descriptions[{{ language.language_id }}][name]" id="input-route_name{{ language.language_id }}" value="{{descriptions[language.language_id].name}}" class="form-control" placeholder="{{ entry_route_name }}"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label" for="input-route_description{{ language.language_id }}">{{ entry_route_description }}</label>
+            <div class="col-sm-9">
+              <input type="text" name="route_descriptions[{{ language.language_id }}][description]" value="{{descriptions[language.language_id].description}}" id="input-route_description{{ language.language_id }}" class="form-control" placeholder="{{ entry_route_description }}"/>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      <div class="form-group">
+        <label class="col-sm-3 control-label">{{ text_route_uid }}</label>
+        <div class="col-sm-9">
+          {{ route_uid }}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <div class="row">
+      <div class="col-md-3 col-sm-3">
+        <button type="button" class="btn btn-default btn-block" id="modal-button-add" onclick="saveRoute('{% if route_uid is empty %}add{% else %}edit{% endif %}');" data-loading-text="{{ text_loading }}">{{ button_save }}</button>
+      </div>
+      <div class="col-md-3 col-sm-3">
+        <div class="visible-xs" style="margin-top: 15px;"></div>
+        <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+      </div>
+      <div class="col-md-3 col-sm-3"></div>
+      <div class="col-md-3 col-sm-3">
+        <button type="button" class="btn btn-danger btn-block" {% if has_docs %} disabled title="{{ text_route_no_delete }}" {% endif %} id="modal-button-remove" onclick="removeRoute();" data-loading-text="{{ text_loading }}">{{ button_remove }}</button>
+
+      </div>
+    </div>
+  </div>
+
+
+  <script type="text/javascript">
+
+    $('input[name=\'route_place\']').autocomplete({
+      'source': function (request, response) {
+        var filter_name = encodeURIComponent(request);
+        if (filter_name == '{{ text_none }}') {
+          filter_name = '';
+        }
+        $.ajax({
+          url: 'index.php?route=doctype/doctype/autocomplete_route&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+          dataType: 'json',
+          success: function (json) {
+            json.unshift({route_uid: 0, name: '{{ text_none }}'});
+            response($.map(json, function (item) {
+              return {label: item['name'], value: item['route_uid']}
+            }));
+          }
+        });
+      },
+
+      'select': function (item) {
+        if (item['value']) {
+          $('input[name=\'route_place\']').val(item['label']);
+          $('input[name=\'route_place_id\']').val(item['value']);
+        } else {
+          $('input[name=\'route_place\']').val('');
+          $('input[name=\'route_place_id\']').val('');
+        }
+      }
+    });
+
+    function saveRoute(mode) {
+      $.ajax({
+        url: 'index.php?route=doctype/doctype/save_route&route_uid={{ route_uid }}&doctype_uid={{ doctype_uid }}',
+        type: 'post',
+        data: $('#form_route input[type=\'text\'], #form_route input[type=\'hidden\'], #form_route input[type=\'radio\']:checked, #form_route input[type=\'checkbox\']:checked, #form_route select, #form_route textarea'),
+        dataType: 'json',
+        beforeSend: function () {
+          $('#modal-button-add').button('loading');
+        },
+        success: function (json) {
+          html = '<a href="#tab_route' + json['route_uid'] + '" data-toggle="tab"><span class="btn btn-success btn-xs new_element" onclick="editRoute(\'' + json['route_uid'] + '\');" data-toggle="tooltip" title="{{ button_edit_route }}" data-original-title="{{ button_edit_route }}"><i class="fa fa-pencil"></i></span> ' + json['name'] + ' </a>';
+          if (mode == 'add') {
+            html = '<li id="route_name' + json['route_uid'] + '">' + html + '</li>';
+            html2 = '<div class="tab-pane fade" id="tab_route' + json['route_uid'] + '">' + '   <div class="row">' + '       <div class="col-md-7">' + '           <strong>{% set cont = contextes|first %}{{ cont.name }}</strong>' + '           <ul class="nav nav-tabs">';
+            html3 = '';
+            if (json['first']) { // добавлена нулевая точка
+              {% for context, description in context0 %}
+                html2 += '              <li>' + '                  <a href="#tab_route' + json['route_uid'] + '-{{ context }}" data-toggle="tab" title="{{ description.name }}">' + '                      <i class="fa fa-{{ description.icon }}"></i>' + '                  </a>' + '              </li>';
+                html3 += '<div class="tab-pane fade" id="tab_route' + json['route_uid'] + '-{{ context }}" >';
+                html3 += '  <div class="panel panel-default">';
+                html3 += '      <div class="panel-heading hidden-xs">';
+                html3 += '          <div class="text-info">';
+                html3 += '              <small>{{ description.description }} ' + json['name'] + '</small>:';
+                html3 += '          </div>';
+                html3 += '      </div>';
+                html3 += '      <div class="panel-body" style="padding:3px;">';
+                html3 += '        <table class="table table-hover shadow2" id="table_route_{{ context }}_action' + json['route_uid'] + '">';
+                html3 += '          <tbody></tbody>';
+                html3 += '        </table>';
+                html3 += '        <span class="btn btn-success btn-sm" onclick="addRouteAction(\'' + json['route_uid'] + '\', \'{{ context }}\');" data-toggle="tooltip" title="{{ route_add_action }}"><i class="fa fa-plus-circle"><span class="hidden-sm hidden-xs"> {{ route_add_action }}</span></i></span> ';
+                html3 += '        <span class="btn btn-success btn-sm" onclick="copyRouteAction(\'' + json['route_uid'] + '\', \'{{ context }}\');" data-toggle="tooltip" title="{{ route_copy_action }}"><i class="fa fa-copy"><span class="hidden-sm hidden-xs"> {{ route_copy_action }}</span></i></span>';
+                html3 += '      </div>';
+                html3 += '  </div>';
+                html3 += '</div>';
+                //
+              {% endfor %}
+              $('#route0_create').remove();
+            }
+            {% for context, description in contextes %}
+              html2 += '<li {% if loop.index0 == 0 %} class="active"{% endif %}>';
+              html2 += '  <a href="#tab_route' + json['route_uid'] + '-{{ context }}" data-toggle="tab" title="{{ description.name }}"><i class="fa fa-{{ description.icon }}"></i></a>';
+              html2 += '</li>';
+              html3 += '<div class="tab-pane fade {% if loop.index0 == 0 %} in active{% endif %}" id="tab_route' + json['route_uid'] + '-{{ context }}">';
+              html3 += '  <div class="panel panel-default">';
+              html3 += '    <div class="panel-heading hidden-xs">';
+              html3 += '      <div class="text-info">';
+              html3 += '        <small>{{ contextes[context].description }} ' + json['name'] + '</small>:';
+              html3 += '      </div>';
+              html3 += '    </div>';
+              html3 += '    <table class="table table-hover shadow2" id="table_route_{{ context }}_action' + json['route_uid'] + '">';
+              html3 += '      <tbody></tbody>';
+              html3 += '    </table>';
+              html3 += '    <button type="button" class="btn btn-success btn-sm" onclick="addRouteAction(\'' + json['route_uid'] + '\', \'{{ context }}\');" data-toggle="tooltip" title="{{ route_add_action }}"><i class="fa fa-plus-circle"><span class="hidden-sm hidden-xs"> {{ route_add_action }}</span></i></button>';
+              html3 += '    <button type="button" class="btn btn-success btn-sm" onclick="copyRouteAction(\'' + json['route_uid'] + '\', \'{{ context }}\');" data-toggle="tooltip" title="{{ route_copy_action }}"><i class="fa fa-copy"><span class="hidden-sm hidden-xs"> {{ route_copy_action }}</span></i></button>';
+              html3 += '  </div>';
+              html3 += '</div>';
+              //
+            {% endfor %}
+            html2 += '</ul><div class="tab-content">';
+            html2 += html3;
+            html2 += '</div></div>';
+            html2 += '<div class="col-md-5">';
+            html2 += '  <strong>{{ column_route_delegate }}</strong>';
+            html2 += '    <div class="panel panel-default">';
+            html2 += '      <div class="panel-heading hidden-xs">';
+            html2 += '        <div class="text-info">';
+            html2 += '          <small>{{ text_route_delegate }} ' + json['name'] + '</small>:';
+            html2 += '        </div>';
+            html2 += '      </div>';
+            html2 += '      <div class="panel-body" style="padding:3px;">';
+            html2 += '      <div class="">';
+            html2 += '        <table class="table table-hover shadow2" id="table_route_button' + json['route_uid'] + '">';
+            html2 += '          <tbody></tbody>';
+            html2 += '        </table>';
+            html2 += '        <button type="button" class="btn btn-info btn-sm" onclick="addRouteButton(\'' + json['route_uid'] + '\');" data-toggle="tooltip" title="{{ route_add_button }}"><i class="fa fa-plus-circle"><span class="hidden-sm hidden-xs"> {{ route_add_button }}</span></i></button> ';
+            html2 += '        <button type="button" class="btn btn-success btn-sm" onclick="copyRouteButton(\'' + json['route_uid'] + '\');" data-toggle="tooltip" title="{{ route_copy_button }}"><i class="fa fa-copy"> <span class="hidden-sm hidden-xs">{{ route_copy_button }}</span></i></button>';
+            html2 += '      </div>';
+            html2 += '    </div>';
+            html2 += '  </div>';
+            html2 += '</div>';
+            if ($('input[name=\'route_place_id\']').val()) {
+              $('#route_name' + $('input[name=\'route_place_id\']').val()).before(html);
+            } else {
+              $('#route').append(html);
+            }
+            $('#route_content').append(html2);
+
+
+          } else {
+            $('#route_name' + json['route_uid']).html(html);
+          }
+          $('#modal-aroute').modal('hide');
+        }
+      })
+    };
+
+    function removeRoute() {
+      $.ajax({
+        url: 'index.php?route=doctype/doctype/remove_route&route_uid={{ route_uid }}',
+        dataType: 'json',
+        success: function (json) {
+          html = '<a href="#tab_route{{ route_uid }}" data-toggle="tab"><span class="btn btn-default btn-xs remove_element" onclick="undoRemoveRoute(\'{{ route_uid }}\');" data-toggle="tooltip" title="{{ button_undo }}" data-original-title="{{ button_undo }}"><i class="fa fa-undo"></i></span> {{ descriptions[language_id].name|e }} </a>';
+          $('#route_name{{ route_uid }}').html(html);
+          html = '<div class="well">{{ text_on_remove_route }}</div>';
+          $('#tab_route{{ route_uid }}').html(html);
+        }
+      });
+      //    $('#route a:first').tab('show');
+      $('#modal-aroute').modal('hide');
+    }
+
+    $('#route_language a:first').tab('show');
+  </script>

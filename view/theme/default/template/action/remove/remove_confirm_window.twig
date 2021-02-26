@@ -1,0 +1,72 @@
+    <div class="modal-header">
+        <div><h4 class="modal-title text-left">{{ title_confirm }}</h4></div>
+    </div>
+    
+
+    <div class="modal-body" id="form_route">
+        <div id="remove_text">
+            <strong>{{ text_confirm }}</strong>
+        </div>    
+        <div id="remove_loading" class="container-fluid text-center">
+            <i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
+            <br>
+            <span>{{ text_loading_removing }}</span>
+        </div>        
+    </div>
+                  
+
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <button type="button" class="btn btn-default btn-block" id="button-modal_remove" onclick="save_dialog();" data-loading-text="{{ text_loading }}">{{ button_delete }}</button>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                    <div style="margin-top: 15px;" class="visible-xs"></div>
+                    <span class="btn btn-default btn-block" data-dismiss="modal" id="button-modal_cancel" >{{ button_cancel }}</button>
+            </div>
+
+
+        </div>
+    </div>
+           
+           
+<script>
+
+    $('#remove_loading').hide();
+    function save_dialog() {
+        if ($('#button-modal_remove').attr('disabled')) {
+            return false;
+        }        
+        $('#button-modal_remove').attr('disabled','disabled');
+        $('#button-modal_cancel').attr('disabled','disabled');
+        $('#remove_loading').fadeIn(300);
+        $('#remove_text').fadeOut(200);
+        $.ajax({
+            {% if document_uid %}
+            url: 'index.php?route=document/document/button&button_uid={{ button_uid }}&document_uid={{ document_uid }}&save=1',
+            {% else %}
+            url: 'index.php?route=document/folder/button&button_uid={{ button_uid }}&document_uids={{ document_uids }}&save=1',                
+            {% endif %}    
+            type: 'post',
+            dataType: 'json',
+            success: function(json) {    
+                $('#modal-action').modal('hide');    
+                if (json['error']) {
+                    alert(json['error']);
+                } else {
+                    navDocumentov.answerServer(json);
+                }
+                navDocumentov.ajaxError = 0;
+            },
+            error: function(xhr){
+                navDocumentov.errorAjax(xhr);                
+            },  
+            complete: function() {
+                if (!navDocumentov.errorNetwork(this) && !navDocumentov.ajaxError) {
+                    $('#modal-action').modal('hide');
+                }                             
+            }
+        });
+ };
+
+</script>

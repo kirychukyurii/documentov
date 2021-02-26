@@ -1,0 +1,88 @@
+<hr>
+{% if folder is empty %}
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-field_document_name"><span data-toggle="tooltip" title="{{ help_field_document }}">{{ entry_field_document }}</span></label>
+    <div class="col-sm-9">     
+        <input type="text" name="field_document_name" id="input-field_document_name" value="{% if action.field_document_uid %}{{ field_document_name }}{% else %}{{ text_currentdoc }}{% endif %}" placeholder="{{ entry_field_document }}" class="form-control" {% if field_document_setting %} style="font-style:italic" {% endif %}>
+        <input type="hidden" name="action[field_document_uid]" value="{{ action.field_document_uid }}" id='input-field_document_uid'>
+    </div>    
+</div>
+{% endif %}    
+{% if context is empty %}
+<ul class="nav nav-tabs" id="remove_template_language">
+{% for language in languages %}
+<li><a href="#remove_template_language{{ language.language_id }}" data-toggle="tab"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>
+{% endfor %}
+</ul>        
+<div class="tab-content">
+    {% for language in languages %}
+    <div class="tab-pane fade" id="remove_template_language{{ language.language_id }}">
+      <div class="form-group">    
+        <label class="col-sm-3 control-label" for="input-confirm"><span data-toggle="tooltip" title="{{ help_confirm }}">{{ entry_confirm }}</span></label>
+        <div class="col-sm-9">     
+            <input type="text" name="action[confirm][{{ language.language_id }}]" id="input-confirm" value="{{ action.confirm[language.language_id] }}" placeholder="{{ entry_confirm }}" class="form-control">
+        </div>    
+      </div>
+    </div>                  
+    {% endfor %} 
+</div>
+{% endif %}
+<script type="text/javascript">
+    $('#remove_template_language a:first').tab('show');
+    {% if folder is empty %}
+    $('input[name=\'field_document_name\']').autocomplete({
+        'source': function (request, response) {
+            if (request === '{{ text_currentdoc }}') request = '';
+            var regexp = new RegExp('{{ text_by_link_in_field }}');
+            request = request.replace(regexp, '').trim().replace(/\"/g, '');
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+                dataType: 'json',
+                cache: false,
+                success: function (json) {
+                    json.unshift({
+                        field_uid: 0,
+                        name: '{{ text_currentdoc }}'
+                    });
+                    response($.map(json, function (item) {
+                        var result = {
+                            value: item['field_uid'],
+                            label: item['name']
+                        };
+                        if (item['field_uid'] !== 0) {
+                            if (item['setting'] === "1") {
+                                result['setting'] = 1;
+                                result['label'] = '<span style="font-style:italic">{{ text_by_link_in_field }} "' + item['name'] + '"</span>';
+                            } else {
+                                result['label'] = '{{ text_by_link_in_field }} "' + item['name'] + '"';
+                            }
+                        }
+                        return result;
+                    }));
+                } //end success
+            }); //end ajax
+        }, //end source   
+        'select': function (item) {
+            var label = item['label'];
+            if (item['setting'] === 1) {
+                $('input[name=\'field_document_name\']').css("font-style", "italic");
+                label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+            } else {
+                $('input[name=\'field_document_name\']').css("font-style", "");
+            }
+            if ($('input[name=\'action[field_document_uid]\']').val() !== item['value']) {
+                $('input[name=\'field_document_name\']').val('');
+                $('input[name=\'action[field_document_uid]\']').val('');
+                //если выбран другой документ для перемещения, очищаем целевую точку
+                $('input[name=\'document_route_name\']').val('');
+                $('input[name=\'action[document_route_uid]\']').val('');
+            }
+            $('input[name=\'field_document_name\']').val(label);
+            $('input[name=\'action[field_document_uid]\']').val(item['value']); 
+        }
+    });
+    {% endif %}  
+</script>    
+        
+        
+        

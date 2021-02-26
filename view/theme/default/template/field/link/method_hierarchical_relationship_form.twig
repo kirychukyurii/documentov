@@ -1,0 +1,73 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="{{ method_params_prefix_hierarchy }}_parent_field_name_input-field">{{ entry_method_parent_field }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="{{method_params_prefix_hierarchy}}_parent_field_name" id="{{method_params_prefix_hierarchy}}_parent_field_name_input-field" value="{{ parent_field_name }}" placeholder="{{ method_data.info.text_select_field }}" class="form-control" {% if parent_field_setting %} style="font-style:italic" {% endif %}>
+        <input type="hidden" name="action{{method_params_name_hierarchy}}[parent_field_uid][value]" value="{{ method_params['parent_field_uid']['value'] }}" id="{{method_params_prefix_hierarchy}}_parent_field_uid_input-field">
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="{{ method_params_prefix_hierarchy }}_type_relationship_select">{{ entry_method_type_relationship }}</label>
+    <div class="col-sm-9">
+        <select name="action{{ method_params_name_hierarchy }}[type_relationship][value]" id="{{method_params_prefix_hierarchy}}_type_relationship-select" class="form-control">
+            <option value="ancestry" {% if method_params['type_relationship']['value'] == 'ancestry' %} selected="selected" {% endif %}>{{ entry_method_relationship_ancestry }}</option>
+            <option value="descendants" {% if method_params['type_relationship']['value'] == 'descendants' %} selected="selected" {% endif %}>{{ entry_method_relationship_descendants }}</option>
+            <option value="brothers" {% if method_params['type_relationship']['value'] == 'brothers' %} selected="selected" {% endif %}>{{ entry_method_relationship_brothers }}</option>
+        </select>
+    </div>
+
+    <script type="text/javascript">
+        $('#{{method_params_prefix_hierarchy}}_parent_field_name_input-field').autocomplete({
+            'source': function (request, response) {
+                if (request === '{{ method_data.info.text_select }}') 
+                    request = '';
+                
+
+
+                var regexp = new RegExp('{{ method_data.info.text_by_link_in_field }}');
+                request = request.replace(regexp, '').trim().replace(/\"/g, '');
+                $.ajax({
+                    url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+                    dataType: 'json',
+                    cache: false,
+                    success: function (json) {
+                        json.unshift({field_uid: 0, name: '{{ method_data.info.text_none }}'});
+                        response($.map(json, function (item) {
+                            var result = {
+                                value: item['field_uid'],
+                                label: item['name']
+                            };
+                            if (item['field_uid'] > 0) {
+                                if (item['setting'] === "1") {
+                                    result['setting'] = 1;
+                                    result['label'] = '<span style="font-style:italic">{{ method_data.info.text_by_link_in_field }} "' + item['name'] + '"</span>';
+                                } else {
+                                    result['label'] = '{{ method_data.info.text_by_link_in_field }} "' + item['name'] + '"';
+                                }
+                            }
+                            return result;
+                        }));
+                    } // end success
+                }); // end ajax
+            }, // end source
+            'select': function (item) {
+                if (item['value']) {
+                    var label = item['label'];
+                    if (item['setting'] === 1) {
+                        $('#{{method_params_prefix_hierarchy}}_parent_field_name_input-field').css("font-style", "italic");
+                        label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+                    } else {
+                        $('#{{method_params_prefix_hierarchy}}_parent_field_name_input-field').css("font-style", "");
+                    }
+                    if ($('#{{method_params_prefix_hierarchy}}_parent_field_uid_input-field').val() !== item['value']) {
+                        $('#{{method_params_prefix_hierarchy}}_parent_field_name_input-field').val('');
+                        $('#{{method_params_prefix_hierarchy}}_parent_field_uid_input-field').val('');
+                    }
+                    $('#{{method_params_prefix_hierarchy}}_parent_field_name_input-field').val(label);
+                    $('#{{method_params_prefix_hierarchy}}_parent_field_uid_input-field').val(item['value']);
+                } else {
+                    $('#{{method_params_prefix_hierarchy}}_parent_field_name_input-field').val('');
+                    $('#{{method_params_prefix_hierarchy}}_parent_field_uid_input-field').val('');
+                }
+            }
+        });
+    </script>

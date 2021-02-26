@@ -1,0 +1,330 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <form action="{{ action_form }}" method="post" enctype="multipart/form-data" id="form-item" class="form-horizontal">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-item" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-success"><i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+            <h1>{{ heading_title }}</h1>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-body">
+                    <div class="form-group">    
+                        <label class="col-sm-2 control-label" for="select-type"><span data-toggle="tooltip" title="{{ help_type }}">{{ entry_type}}</span></label>
+                        <div class="col-sm-10">  
+                            <select name="type" id="select-type" class="form-control">n
+                                {% if type == 'divider' %}                          
+                                    <option value="text">{{ text_type_text }}</option>
+                                    <option value="divider" selected="selected">{{ text_type_divider }}</option>
+                                {% else %}
+                                    <option value="text" selected="selected">{{ text_type_text }}</option>
+                                    <option value="divider">{{ text_type_divider }}</option>
+                                {% endif %}
+                            </select>        
+                        </div>    
+                    </div>  
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name{{ language.language_id }}"><span data-toggle="tooltip" title="{{ help_name }}">{{ entry_name }}</span></label>
+                        <div class="col-sm-10">
+                            <ul class="nav nav-tabs" id="language">
+                                {% for language in languages %}
+                                    <li><a href="#language{{ language.language_id }}" data-toggle="tab"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>
+                                        {% endfor %}
+                            </ul>   
+                            <div class="tab-content">
+                                {% for language in languages %}
+                                    <div class="tab-pane" id="language{{ language.language_id }}">
+                                        <div class="input-group">
+                                            <input type="text" name="item_description[{{ language.language_id }}][name]" id="input-item_description_name{{ language.language_id }}" value="{{ item_description[language.language_id] ? item_description[language.language_id].name }}" placeholder="{{ entry_name }}" id="input-name{{ language.language_id }}" class="form-control" />
+                                            <div class="input-group-btn">
+                                                <div class="dropdown">
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ text_fields }} <span class="caret"></span></button>
+                                                        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                                          {% for field in structure_fields %}  
+                                                          <li><a onclick="$('#input-item_description_name{{ language.language_id }}').val($('#input-item_description_name{{ language.language_id }}').val() + ' ' + $(this).html());return false;" href="">{{ '{{ ' }}{{ field.name }}{{ ' }}' }}</a></li>
+                                                          {% endfor %}
+                                                        </ul>
+                                                  </div>                      
+                                            </div>                   
+                                        </div>                
+                                    </div>    
+                                {% endfor %}
+                            </div>    
+                        </div>
+                    </div>  
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-parent">{{ entry_parent }}</label>
+                        <div class="col-sm-10">
+                            <input type="text" 
+                                   name="parent_name" 
+                                   value=" {{ parent_description[language_id].name }}" 
+                                   placeholder="{{ entry_parent }}" 
+                                   id="input-parent" 
+                                   {% if parent_image %} style="background: url({{ parent_image }}) no-repeat center left;background-position-x:1%;padding-left:5%;'" {% endif %}
+                                   class="form-control" />
+                            <input type="hidden" name="parent_id" value="{{ parent_id }}" id="input-parent_id" />
+                            {% if error_parent %}
+                                <div class="text-danger">{{ error_parent }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">    
+                        <label class="col-sm-2 control-label" for="select-action"><span data-toggle="tooltip" title="{{ help_action }}">{{ entry_action}}</span></label>
+                        <div class="col-sm-10">     
+                            <select name="action" id="select-action" class="form-control">n
+                                {% if action == 'link' %}                          
+                                    <option value="folder">{{ text_action_folder }}</option>
+                                    <option value="link" selected="selected">{{ text_action_link }}</option>
+                                {% else %}
+                                    <option value="folder" selected="selected">{{ text_action_folder }}</option>
+                                    <option value="link">{{ text_action_link }}</option>
+                                {% endif %}
+                            </select>      
+                            <input type="text" name="action_value" value="{{ action_value }}" placeholder="{{ entry_action_value }}" id="input-action_value" class="form-control" />
+                            <input type="hidden" name="action_id" value="{{ action_id }}" />
+
+                        </div>    
+                    </div>    
+
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-item_structure"><span data-toggle="tooltip" title="{{ help_item_structure }}">{{ entry_item_structure }}</span></label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline"><input type="radio" name="item_structure_type" {% if not item_structure_type %}checked="checked"{% endif %} value="0">{{ text_type_sf_s }}</label>
+                            <label class="radio-inline"><input type="radio" name="item_structure_type" {% if item_structure_type %}checked="checked"{% endif %} value="1">{{ text_type_sf_sf }}</label>
+
+                            <input type="text" name="item_structure" value="" placeholder="{{ entry_item_structure }}" id="input-item_structure" class="form-control" />
+                            <div id="item_structure" class="well well-sm" style="height: auto; overflow: auto;"> 
+                                {% for structure in delegate %}
+                                    <div id="item_structure{{ structure.structure_uid }}">
+                                        <i class="fa fa-minus-circle"></i> {{ structure.name }}
+                                        <input type="hidden" name="item_structure[]" value="{{ structure.structure_uid }}" />
+                                    </div>  
+                                {% endfor %}
+                            </div>
+
+                        </div>
+                    </div>                        
+
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ entry_image }}</label>
+                        <div class="col-sm-10">
+                            <p><a href="" id="thumb-image" data-toggle="image" class="img-thumbnail"><img src="{{ thumb }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a>
+                            <input type="hidden" name="image" value="{{ image }}" id="input-image" /></p>
+                        
+                        <select name="hide_name" class="form-control" id="select-hide_name">
+                            <option value="0">{{ text_hide_menu_0 }}</option>
+                            <option value="1600" {% if hide_name == 1500 %}selected="selected"{% endif %}>{{ text_hide_menu }} 1 600 {{ text_hide_menu_px }}</option>
+                            <option value="1500" {% if hide_name == 1600 %}selected="selected"{% endif %}>{{ text_hide_menu }} 1 500 {{ text_hide_menu_px }}</option>
+                            <option value="1400" {% if hide_name == 1400 %}selected="selected"{% endif %}>{{ text_hide_menu }} 1 400 {{ text_hide_menu_px }}</option>
+                            <option value="1300" {% if hide_name == 1300 %}selected="selected"{% endif %}>{{ text_hide_menu }} 1 300 {{ text_hide_menu_px }}</option>
+                            <option value="1200" {% if hide_name == 1200 %}selected="selected"{% endif %}>{{ text_hide_menu }} 1 200 {{ text_hide_menu_px }}</option>
+                            <option value="1100" {% if hide_name == 1100 %}selected="selected"{% endif %}>{{ text_hide_menu }} 1 100 {{ text_hide_menu_px }}</option>
+                            <option value="1000" {% if hide_name == 1000 %}selected="selected"{% endif %}>{{ text_hide_menu }} 1 000 {{ text_hide_menu_px }}</option>
+                            <option value="900" {% if hide_name == 900 %}selected="selected"{% endif %}>{{ text_hide_menu }} 900 {{ text_hide_menu_px }}</option>
+                            <option value="800" {% if hide_name == 800 %}selected="selected"{% endif %}>{{ text_hide_menu }} 800 {{ text_hide_menu_px }}</option>
+                        </select>
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-sort-order">{{ entry_sort_order }}</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="sort_order" value="{{ sort_order }}" placeholder="{{ entry_sort_order }}" id="input-sort-order" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+                        <div class="col-sm-10">
+                            <select name="status" id="input-status" class="form-control">
+                                {% if status %}
+                                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                                    <option value="0">{{ text_disabled }}</option>
+                                {% else %}
+                                    <option value="1">{{ text_enabled }}</option>
+                                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+    </form>
+
+
+<script type="text/javascript">
+    
+    if ($('#input-image').val() && $('#input-parent_id').val() == '') {
+        $('#select-hide_name').show();
+    } else {
+        $('#select-hide_name').hide();
+    }
+
+    if ($('#select-type').val() === 'divider') {
+            $('#form-item input').attr('disabled', 'disabled');
+            $('#form-item select').attr('disabled', 'disabled');
+            $('#select-type').removeAttr('disabled');
+            $('#input-sort-order').removeAttr('disabled');
+            $('#input-status').removeAttr('disabled');
+            $('#input-parent').removeAttr('disabled');
+            $('#input-parent_id').removeAttr('disabled');
+            $('[name^=\'item_structure\']').removeAttr('disabled');
+    }
+
+    $('#thumb-image').click(function () {
+            if ($('#select-type').val() === 'divider') {
+                return false;
+            }
+           
+      });
+
+    $('#select-action').on('change', function () {
+        $('#input-action_value').val('');
+    });
+
+        $('#select-type').on('change', function () {
+            if (this.value === 'divider') {
+                $('#form-item input').attr('disabled', 'disabled');
+                $('#form-item select').attr('disabled', 'disabled');
+                $('#select-type').removeAttr('disabled');
+                $('#input-sort-order').removeAttr('disabled');
+                $('#input-status').removeAttr('disabled');
+                $('#input-parent').removeAttr('disabled');
+                $('[name^=\'item_structure\']').removeAttr('disabled');
+                $('#input-parent_id').removeAttr('disabled');
+            } else {
+                $('#form-item input').removeAttr('disabled');
+                $('#form-item select').removeAttr('disabled');
+            }
+      });
+
+
+        $('input[name=\'parent_name\']').autocomplete({
+            'source': function (request, response) {
+                if (request === '{{ text_none }}') {
+                    request = '';
+                }
+                $.ajax({
+                    url: 'index.php?route=menu/item/autocomplete&filter_name=' + encodeURIComponent(request),
+                    dataType: 'json',
+                    success: function (json) {
+                        json.unshift({
+                            value:   '',
+                            name: '{{ text_none }}'
+                        });
+
+                        response($.map(json, function (item) {
+                            let name = '';
+                            if (item['image']) {
+                                name = '<img src="' + item['image'] + '"> ';
+                            }
+                            return {
+                                label: name + item['name'],
+                                value: item['item_id']
+                            }
+                        }));
+                    }
+                });
+            },
+            'select': function (item) {
+              if (item['value']) {
+                $('input[name=\'parent_name\']').val(item['label']);
+                $('input[name=\'parent_id\']').val(item['value']);
+                if ($('#input-image').val() && $('#input-parent_id').val() == '') {
+                    $('#select-hide_name').show();
+                } else {
+                    $('#select-hide_name').hide();
+                }                
+              } else {
+                $('input[name=\'parent_name\']').val('');
+                $('input[name=\'parent_id\']').val('');
+
+              }
+ 
+            }
+        });
+        
+        $('input[name=\'action_value\']').autocomplete({
+            'source': function (request, response) {
+                if ($('#select-action').val() === 'folder') {
+                    $.ajax({
+                        url: 'index.php?route=doctype/folder/autocomplete&filter_name=' + encodeURIComponent(request),
+                        dataType: 'json',
+                        success: function (json) {
+                            response($.map(json, function (item) {
+                                return {
+                                    label: item['name'],
+                                    value: item['folder_uid']
+                                }
+                            }));
+                        }
+                    });
+                }
+            },
+            'select': function (item) {
+                $('input[name=\'action_value\']').val(item['label']);
+                $('input[name=\'action_id\']').val(item['value']);                       
+            }
+
+
+        });
+    $('input[name=\'item_structure\']').autocomplete({
+        'source': function(request, response) {
+            var url;
+            if ($('input[name=\'item_structure_type\']:checked').val() === "1") {
+                //показываем настроечные поля
+                url = 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' +  encodeURIComponent(request) + '&doctype_uid=0&setting=1';
+            } else {
+                //выбор из структуры
+                url = 'index.php?route=document/document/autocomplete&filter_name=' +  encodeURIComponent(request) + '&doctype_uid={{ structure_uid }}' + '&field_uid={{ structure_name_uid }}';
+            }
+            $.ajax({
+                url: url,
+                dataType: 'json',
+                cache: false,
+                success: function(json) {
+                    json.unshift({
+                        document_uid: '',
+                        name: '{{ text_none }}'
+                    });                            
+                    response($.map(json, function(item) {
+                            return {
+                                    label: item['name'],
+                                    value: item['document_uid'] || item['field_uid'] 
+                            }
+                    }));
+                }
+            });
+        },
+        'select': function(item) {
+            if (item['value']) {
+                $('input[name=\'item_structure\']').val('');
+
+                $('#item_structure' + item['value']).remove();
+
+                $('#item_structure').append('<div id="item_structure' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + 
+                        '<input type="hidden" name="item_structure[]" value="' + item['value'] + '" /></div>');
+            }
+        }    
+    });
+
+    $('#item_structure').delegate('.fa-minus-circle', 'click', function() {
+            $(this).parent().remove();
+    });
+    $('#language a:first').tab('show');
+</script>
+</div>
+{{ footer }}

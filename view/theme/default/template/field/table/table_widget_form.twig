@@ -1,0 +1,67 @@
+<div class="{{ BLOCK }}">
+
+  {% if filter_form %}
+    <input type="text" value="{{ field_value }}" name="{{ NAME }}" id="{{ ID }}" class="form-control">
+
+  {% else %}
+
+    <div id="table_widget_{{field_uid}}" style="border: 0px solid red">
+      <div class="container-fluid">
+        <div class="pull-right">
+          <button type="button" name="btn_add_row" data-toggle="tooltip" title="{{ button_add }}" class="btn btn-default">
+            <i class="fa fa-plus"></i>
+          </button>
+          <button type="button" name="btn_copy_rows" data-toggle="tooltip" title="{{ button_copy }}" class="btn btn-default" disabled="true">
+            <i class="fa fa-copy"></i>
+          </button>
+          <button type="button" name="btn_paste_rows" data-toggle="tooltip" title="{{ button_paste }}" class="btn btn-default" disabled="true">
+            <i class="fa fa-paste"></i>
+          </button>
+          <button type="button" name="btn_delete_rows" data-toggle="tooltip" title="{{ button_delete }}" class="btn btn-danger" onclick="" disabled="true">
+            <i class="fa fa-trash-o"></i>
+          </button>
+        </div>
+      </div>
+      <table class='table table-bordered table-hover'>
+        <thead class="background1" id="table_head_{{field_uid}}">
+          <tr>
+            <td class="text-center" style="width:40px">
+              <input onclick="" type="checkbox"/>
+            </td>
+            {% for column in inner_fields %}
+              <td class="{{ column.field_form_display }}">{{column.column_title[language_id]}}</td>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody class="pre-scrollable" id="table_body_{{field_uid}}">
+          {% for row_view in table_view %}
+            <tr class="pointer">
+              <td class="text-center">
+                <input onclick="" type="checkbox"/>
+              </td>
+              {{row_view}}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <input type="hidden" name="{{ NAME }}" id="{{ ID }}" class="{{ ID }}" value='{{ field_value }}'>
+    </div>
+    <script>
+      // var field_functions = [];
+      (function () {
+
+        var options = {
+          'document_uid': '{{ document_uid }}',
+          'field_uid': '{{ field_uid }}',
+          'language_id': '{{ language_id }}',
+          'element_id': '{{ ID }}'
+        };
+        if (!$.fn.simple_table_widget) {
+          addScript('view/javascript/field/table/tablewidgetplugin.js');
+        }
+        $('#table_widget_{{ field_uid }}').simple_table_widget(options);
+
+      })();
+    </script>
+  {% endif %}
+</div>

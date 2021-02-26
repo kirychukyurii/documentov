@@ -1,0 +1,169 @@
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#link-common">{{ tab_general }}</a></li>
+    <li><a data-toggle="tab" href="#link-data">{{ tab_data }}</a></li>
+</ul>
+
+<div class="tab-content" id="{{ MODULE_NAME }}-form">
+    <div id="link-common" class="tab-pane fade in active">
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="{{ MODULE_NAME}}-doctype_name"><span data-toggle="tooltip" title="{{ help_doctype }}">{{ text_linktype }}</span></label>
+            <div class="col-sm-9">
+                <input type="text" name="doctype_name" {% if params.doctype_uid is not empty %}disabled {% endif %}id="{{ MODULE_NAME}}-doctype_name" placeholder="{{ entry_doctype }}" class="form-control" value="{{ doctype_name }}"> <br>
+                <input type="hidden" name="field[doctype_uid]" id="{{ MODULE_NAME}}-doctype_uid" placeholder="{{ entry_doctype }}" class="form-control" value="{{ params.doctype_uid }}"> <br>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="{{ MODULE_NAME}}-doctype_field_name"><span data-toggle="tooltip" title="{{ help_field }}">{{ entry_field }}</span></label>
+            <div class="col-sm-9">
+                <input type="text" name="doctype_field_name" id="{{ MODULE_NAME}}-doctype_field_name" placeholder="{{ entry_field }}" class="form-control" value="{{ doctype_field_name }}"> <br>
+                <input type="hidden" name="field[doctype_field_uid]" id="{{ MODULE_NAME}}-doctype_field_uid" placeholder="{{ entry_field }}" class="form-control" value="{{ params.doctype_field_uid }}"> <br>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="{{ MODULE_NAME }}-select_list"><span data-toggle="tooltip" title="{{ help_widget_form }}">{{ entry_widget_form }}</span></label>
+            <div class="col-sm-9">
+                <select name="field[list]" id="{{ MODULE_NAME }}-select_list" class="form-control">
+                    {#0 - автокомплит
+                    1 - выпадающий
+                    2 - полный список#}
+                    {% if params.list == 1 %}                        
+                        <option value="0">{{ text_widget_form_autocomplete }}</option>
+                        <option value="1" selected="selected">{{ text_widget_form_select }}</option>
+                        <option value="2">{{ text_widget_form_list }}</option>
+                    {% elseif params.list == 2 %}
+                        <option value="0">{{ text_widget_form_autocomplete }}</option>
+                        <option value="1">{{ text_widget_form_select }}</option>
+                        <option value="2" selected="selected">{{ text_widget_form_list }}</option>
+                    {% else %}                        
+                        <option value="0" selected="selected">{{ text_widget_form_autocomplete }}</option>
+                        <option value="1">{{ text_widget_form_select }}</option>
+                        <option value="2">{{ text_widget_form_list }}</option>
+                    {% endif %}
+                </select>
+            </div>
+        </div>    
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="{{ MODULE_NAME }}-multi_select"><span data-toggle="tooltip" title="{{ help_multi_select }}">{{ entry_multi_select }}</span></label>
+            <div class="col-sm-9">
+                <select name="field[multi_select]" id="{{ MODULE_NAME }}-multi_select" class="form-control">
+                    {% if params.multi_select %}
+                        <option value="1" selected="selected">{{ text_yes }}</option>
+                        <option value="0">{{ text_no }}</option>
+                    {% else %}
+                        <option value="1">{{ text_yes }}</option>
+                        <option value="0" selected="selected">{{ text_no }}</option>
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="{{ MODULE_NAME }}-delimiter"><span data-toggle="tooltip" title="{{ help_delimiter }}">{{ entry_delimiter }}</span></label>
+            <div class="col-sm-9">
+                <input type="text" name="field[delimiter]" id="{{ MODULE_NAME }}-delimiter" placeholder="{{ entry_delimiter }}" value="{% if params.delimiter %}{{ params.delimiter }}{% else %}, {% endif %}" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="input-list"><span data-toggle="tooltip" title="{{ help_href }}">{{ entry_href }}</span></label>
+            <div class="col-sm-9">
+                <select name="field[href]" id="link-input-href" class="form-control">
+                    {% if params.href %}
+                        <option value="1" selected="selected">{{ text_yes }}</option>
+                        <option value="0">{{ text_no }}</option>
+                    {% else %}
+                        <option value="1">{{ text_yes }}</option>
+                        <option value="0" selected="selected">{{ text_no }}</option>          
+                    {% endif %}            
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="link-data" class="tab-pane fade">
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="link-select-disabled_actualize">
+                <span data-toggle="tooltip" title="{{ help_disabled_actualize }}">{{ entry_disabled_actualize }}</span>
+            </label>
+            <div class="col-sm-9">
+                <select name="field[disabled_actualize]" id="link-select-disabled_actualize" class="form-control">
+                    <option value="0"{% if params.disabled_actualize == "0" or params.disabled_actualize is empty %} selected="selected"{% endif %}>{{ text_enabled }}</option>
+                    <option value="1"{% if params.disabled_actualize == "1" %} selected="selected"{% endif %}>{{ text_disabled }}</option>
+                </select>
+            </div>
+        </div>       
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="{{ MODULE_NAME }}-source_type">
+                <span data-toggle="tooltip" title="{{ help_source_type }}">{{ entry_source_type }}</span>
+            </label>
+            <div class="col-sm-9">
+                <select name="field[source_type]" id="{{ MODULE_NAME }}-source_type" class="form-control">
+                    <option value="doctype"{% if params.source_type == "doctype" or params.source_type is empty %} selected="selected"{% endif %}>{{ text_source_doctype }}</option>
+                    <option value="field"{% if params.source_type == "field" %} selected="selected"{% endif %}>{{ text_source_field }}</option>
+                </select>
+                <div id="{{ MODULE_NAME }}-source_type_field">
+                    {% import "default/template/macros/field_in_field.twig" as mfield %}
+                    {{ mfield.show(source_field_name, params.source_field_uid, doctype_uid, 'source_field', text_macros_field) }}        
+                </div>  
+            </div>
+        </div>   
+        <div class="form-group">
+          <div class="col-sm-12">
+            <label class="control-label">
+                <span data-toggle="tooltip" title="{{ help_filters }}">{{ entry_filters }}</span>
+            </label>            
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover" id="{{ MODULE_NAME }}-table_condition">
+                <thead>
+                  <tr>
+                    <th style="width:70px;"></th>
+                    <th>{{ column_field_1 }}</th>
+                    <th style="width:180px;">{{ column_comparison }}</th>
+                    <th>{{ column_field_2 }}</th>
+                    <th style="width: 40px;">
+                      <button class="btn btn-default btn-sm" data-toggle="tooltip" title="{{ button_add }}"><i class="fa fa-plus-circle"></i></button>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template id="{{ MODULE_NAME }}-template_condition_row">
+                    <tr>
+                      <td>
+                        <select>
+                          <option value="0" selected="selected">{{ text_and }}</option>
+                          <option value="1">{{ text_or }}</option>
+                        </selected>
+                      </td>     
+                      <td>
+                        <input type="hidden" class="hidden">                            
+                        <input type="text" placeholder="{{ entry_condition_field_1_name }}" class="form-control">
+                      </td>
+                      <td>
+                        <select class="form-control">
+                          <option value="equal">{{text_condition_equal}}</option>
+                          <option value="notequal">{{text_condition_notequal}}</option>
+                          <option value="more">{{text_condition_more}}</option>
+                          <option value="moreequal">{{text_condition_moreequal}}</option>
+                          <option value="less">{{text_condition_less}}</option>
+                          <option value="lessequal">{{text_condition_lessequal}}</option>
+                          <option value="contains">{{text_condition_contains}}</option>
+                          <option value="notcontains">{{text_condition_notcontains}}</option>
+                          <option value="include">{{ text_condition_include }}</option>
+                          <option value="notinclude">{{ text_condition_notinclude }}</option>
+                        </select>                            
+                      </td>
+                      <td>
+                        <input type="text" placeholder="{{ entry_condition_field_2_name }}" class="form-control">                                    
+                      </td>
+                      <td> 
+                          <button type="button" class="btn btn-default btn-sm" onclick="$(this).parent().parent().remove();" data-toggle="tooltip" title="{{ text_button_del_value }}"><i class="fa fa-remove"></i>
+                      </td>
+                    </tr>   
+                  </template>  
+                </tbody>
+              </table> 
+            </div>
+          </div>    
+        </div>           
+               
+    </div>
+</div>

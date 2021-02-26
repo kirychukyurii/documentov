@@ -1,0 +1,126 @@
+{{ method_get_substr_description }}
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-field_method_append_field_separator">{{ entry_method_get_substr_separator }}</label>
+    <div class="col-sm-9">     
+        <input type="text" name="field_separator_name" id="input-field_separator_name" value="{{ field_separator_name }}" placeholder="{{ text_select_field }}" class="form-control" {% if field_separator_setting %} style="font-style:italic" {% endif %}>
+        <input type="hidden" name="action[method][{{ method }}][field_separator_uid]" value="{{ method_params['field_separator_uid'] }}">
+    </div>    
+</div>
+    
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-field_method_append_field_part">{{ entry_method_get_substr_part }}</label>
+    <div class="col-sm-9">     
+        <input type="text" name="field_part_name" id="input-field_part_name" value="{{ field_part_name }}" placeholder="{{ text_select_field }}" class="form-control" {% if field_part_setting %} style="font-style:italic" {% endif %}>
+        <input type="hidden" name="action[method][{{ method }}][field_part_uid]" value="{{ method_params['field_part_uid'] }}">
+    </div>    
+</div>
+    
+<script type="text/javascript">
+    $('input[name=\'field_part_name\']').autocomplete({
+        'source': function (request, response) {
+            if (request === '{{ text_select }}') request = '';
+            var regexp = new RegExp('{{ text_by_link_in_field }}');
+            request = request.replace(regexp, '').trim().replace(/\"/g, '');
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+                dataType: 'json',
+                cache: false,
+                success: function (json) {
+                    json.unshift({
+                        field_uid: 0,
+                        name: '{{ text_none }}'
+                    });
+                    response($.map(json, function (item) {
+                        var result = {
+                            value: item['field_uid'],
+                            label: item['name']
+                        };
+                        if (item['field_uid'] > 0) {
+                            if (item['setting'] === "1") {
+                                result['setting'] = 1;
+                                result['label'] = '<span style="font-style:italic">{{ text_by_link_in_field }} "' + item['name'] + '"</span>';
+                            } else {
+                                result['label'] = '{{ text_by_link_in_field }} "' + item['name'] + '"';
+                            }
+                        }
+                        return result;
+                    }));
+                } //end success
+            }); //end ajax
+        }, //end source   
+        'select': function (item) {
+            if(item['value']) {
+                var label = item['label'];
+                if (item['setting'] === 1) {
+                    $('input[name=\'field_part_name\']').css("font-style", "italic");
+                    label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+                } else {
+                    $('input[name=\'field_part_name\']').css("font-style", "");
+                }
+                if ($('input[name=\'action[method][{{ method }}][field_part_uid]\']').val() !== item['value']) {
+                    $('input[name=\'field_part_name\']').val('');
+                    $('input[name=\'action[method][{{ method }}][field_part_uid]\']').val('');
+                }
+                $('input[name=\'field_part_name\']').val(label);
+                $('input[name=\'action[method][{{ method }}][field_part_uid]\']').val(item['value']);                
+            } else {
+                $('input[name=\'field_part_name\']').val('');
+                $('input[name=\'action[method][{{ method }}][field_part_uid]\']').val('');                
+            }
+        }
+    });
+
+    $('input[name=\'field_separator_name\']').autocomplete({
+        'source': function (request, response) {
+            if (request === '{{ text_select }}') request = '';
+            var regexp = new RegExp('{{ text_by_link_in_field }}');
+            request = request.replace(regexp, '').trim().replace(/\"/g, '');
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+                dataType: 'json',
+                cache: false,
+                success: function (json) {
+                    json.unshift({
+                        field_uid: 0,
+                        name: '{{ text_none }}'
+                    });
+                    response($.map(json, function (item) {
+                        var result = {
+                            value: item['field_uid'],
+                            label: item['name']
+                        };
+                        if (item['field_uid'] > 0) {
+                            if (item['setting'] === "1") {
+                                result['setting'] = 1;
+                                result['label'] = '<span style="font-style:italic">{{ text_by_link_in_field }} "' + item['name'] + '"</span>';
+                            } else {
+                                result['label'] = '{{ text_by_link_in_field }} "' + item['name'] + '"';
+                            }
+                        }
+                        return result;
+                    }));
+                } //end success
+            }); //end ajax
+        }, //end source   
+        'select': function (item) {
+            if(item['value']) {
+                var label = item['label'];
+                if (item['setting'] === 1) {
+                    $('input[name=\'field_separator_name\']').css("font-style", "italic");
+                    label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+                } else {
+                    $('input[name=\'field_separator_name\']').css("font-style", "");
+                }
+                if ($('input[name=\'action[method][{{ method }}][field_separator_uid]\']').val() !== item['value']) {
+                    $('input[name=\'field_separator_name\']').val('');
+                    $('input[name=\'action[method][{{ method }}][field_separator_uid]\']').val('');
+                }
+                $('input[name=\'field_separator_name\']').val(label);
+                $('input[name=\'action[method][{{ method }}][field_separator_uid]\']').val(item['value']);                
+            } else {
+                $('input[name=\'field_separator_name\']').val('');
+                $('input[name=\'action[method][{{ method }}][field_separator_uid]\']').val('');                
+            }
+        }
+    });
+</script>    

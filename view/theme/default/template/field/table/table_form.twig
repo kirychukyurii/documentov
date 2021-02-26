@@ -1,0 +1,33 @@
+<div class="form-group">
+
+
+  <div class="text-info">{{ text_add_field }}
+    <buttton type="button" class="btn btn-default" id="table_field-button_add" data-toggle="tooltip" title="{{ text_add_button }}">
+      <i class="fa fa-plus-circle"></i>
+    </button>
+  </div>
+  <div class="">
+    <div id='table_fields' style='margin-top: 3px'></div>
+  </div>
+  <input type="hidden" name="field[inner_fields]" value='{{ params.inner_fields }}'>
+  <input type="hidden" name="inner_fields_descriptions" value='{{inner_fields_descriptions}}'>
+</div>
+<script>
+  (function () {
+    if (typeof FieldContainer === "undefined") {
+      addScript("view/javascript/field/table/fieldcontainer.js");
+    }
+    var inner_fields = new FieldContainer('table', 'input[name=\'field[inner_fields]\']', '#table_fields', 'input[name=\'inner_fields_descriptions\']', '{{ doctype_uid }}', '', '{{ language_id }}');
+    inner_fields.initfc();
+    $('#table_field-button_add').on('click', function () {
+      inner_fields.editField();
+    });
+    // из-за второго модального окна теряется скролл, исправляем
+    $(document).on('hidden.bs.modal', function (event) {
+      if ($('.modal:visible').length) {
+        $('body').addClass('modal-open');
+      }
+    });
+
+  })();
+</script>

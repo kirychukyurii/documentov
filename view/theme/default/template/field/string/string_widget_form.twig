@@ -1,0 +1,13 @@
+{% if mask and not filter_form and not widget_name %}
+  <script>
+    $(function () {
+      if (!$("#{{ ID }}").mask) {
+        addScript("view/javascript/jquery/maskedinput/jquery.maskedinput.min.js");
+      }
+      $("#{{ ID }}").mask("{{ mask }}");
+    });
+  </script>
+{% endif %}
+<div class="{{ BLOCK }}">
+  <input type="text" name="{{ NAME }}" id="{{ ID }}" value="{{ field_value }}" class="{{ ID }} form-control">
+</div>

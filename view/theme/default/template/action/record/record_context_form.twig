@@ -1,0 +1,281 @@
+{% set tv ='uid'%}
+<div class="panel-body">
+    <ul class="nav nav-tabs" id="record_nav_tabs">
+        <li class="active"><a href="#tab-target" data-toggle="tab">{{ text_tab_target }}</a></li>
+        <li><a href="#tab-setter_parameters" data-toggle="tab">{{ text_tab_setter_parameters }}</a></li>
+    </ul>
+    <div class="tab-content">
+        <!-- приемник -->
+        <div class="tab-pane fade in active" id="tab-target">
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="select-target_type"><span data-toggle="tooltip" title="{{ help_target_type }}">{{ entry_target_type }}</span>
+                </label>
+                <div class="col-sm-9">  
+                    <select class="form-control" name="action[target_type]" id="select-target_type">
+                        <option value="document" {% if action.target_type == 'document' %}selected="selected"{% endif %}>{{ text_target_type_document }}</option>                            
+                        <option value="doctype"  {% if action.target_type == 'doctype' %}selected="selected"{% endif %}>{{ text_target_type_doctype }}</option>
+                        <option value="fielduid"  {% if action.target_type == 'fielduid' %}selected="selected"{% endif %}> {{ text_target_type_fielduid }} </option>
+
+                    </select>
+                </div>
+            </div>
+            <div class="form-group" id="target_doclink_field">                    
+                <label class="col-sm-3 control-label" for="input-target_doclink_field_name"><span data-toggle="tooltip" title="{{help_target_doclink}}">{{text_target_doclink}}</span></label>
+                <div class="col-sm-9">     
+                    <input type="text" name="target_doclink_field_name" id="input-target_doclink_field_name" placeholder="{{entry_target_doclink}}" class="form-control" value="{{target_doclink_field_name}}" {%if target_doclink_field_setting %} style="font-style:italic" {%endif%}>
+                    <input type="hidden" name="action[target_doclink_field_uid]"  id="input-target_doclink_field_uid" value="{{action.target_doclink_field_uid}}">
+                </div>    
+            </div>   
+            <div class="form-group" id="target_field">    
+                <label class="col-sm-3 control-label" for="input-target_field_name"><span data-toggle="tooltip" title="{{ help_target_field}}">{{text_target_field}}</span></label>
+                <div class="col-sm-9">     
+                    <input type="text" name="target_field_name" id="input-target_field_name" value='{{target_field_name}}' placeholder="{% if action.target_type == 'fielduid' %}{{entry_target_fielduid}}{% else %} {{ entry_target_field }} {%endif%}" class="form-control">
+                    <input type="hidden" name="action[target_field_uid]" id='input-target_field_uid' value="{{action.target_field_uid}}">
+
+                </div>    
+            </div>    
+
+            <div class="form-group" id="target_field_method">    
+                <label class="col-sm-3 control-label" for="input-target_field_method_name"><span data-toggle="tooltip" title="{{ help_target_field_method }}">{{text_target_field_method}}</span></label>
+                <div class="col-sm-9">
+                    <select name="action[target_field_method_name]" id="select-target_field_method" class="form-control" {% if action.target_type == 'fielduid' %} disabled="disabled" {%endif%}>
+                        <option value ='standard_setter' {% if not action.target_field_method_name %} selected='selected' {% endif %}> {{ text_default_method }}</option>
+                        {% for setter in avaliable_setters %}
+                            <option value="{{setter.name}}" {% if action.target_field_method_name == setter.name %} selected='selected' {% endif %}>{{setter.alias}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            </div>  
+        </div>
+
+        <div class="tab-pane fade" id="tab-setter_parameters">
+            <div class="form-group" id="target_method_form">
+                {{ target_method_form }}
+            </div>  
+        </div>
+
+    </div>    
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-action_history"><span data-toggle="tooltip" title="{{ help_action_history }}">{{ text_action_history }}</span></label>
+        <div class="col-sm-9">
+            <label class="checkbox-inline"> <input type="checkbox" name="action[history]" id="input-action_history" value="1" {% if action.history == 1 %}checked="checked"{% endif %}></label>
+        </div>   
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    function ReloadRecordParamFieldMethodList(selector, methodtype, field_uid, value) {
+        if (!field_uid) {
+            $(selector).html('');
+            $(selector).append($('<option>', {
+                value:
+                    'standard_setter',
+                text: '{{ text_default_method }}'
+            }));
+            $(selector).val = value;
+            return;
+        }
+        var url = 'index.php?route=doctype/doctype/get_field_methods&field_uid=' + field_uid + '&method_type=' + methodtype;
+        $.ajax({
+            url: url,
+            cache: false,
+            dataType: 'json'
+        }).done(function (data) {
+            if (data) {
+                data.unshift({
+                    name: 'standard_setter',
+                    alias: '{{ text_default_method }}'
+                });
+            } else {
+                data = [{'name': 'standard_setter', alias: '{{ text_default_method }}'}]
+            }
+            $(selector).html('');
+            data.forEach(function (item, i, data) {
+                $(selector).append($('<option>', {
+                    value: item['name'],
+                    text: item['alias']
+                }));
+            })
+            //$(selector).val(value);
+        }); //end ajax
+    }
+
+    function ReloadFieldMethodForm(selector, field_uid, field_method, doctype_uid, method_params_name_hierarchy) {
+        $(selector).html('');
+        var url = 'index.php?route=doctype/doctype/get_field_method_form&field_uid=' + field_uid + '&doctype_uid=' + doctype_uid + '&method_params_name_hierarchy=' + method_params_name_hierarchy;
+        //if (field_method !== 'standard_setter' || field_method !== 'standard_getter') {
+        url += '&method=' + field_method;
+        //}
+
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            cache: false,
+            success: function (html) {
+                if (html) {
+                    $(selector).html(html);
+                }
+            }
+        });
+    }
+
+    switch ($('#select-target_type').val()) {
+        
+        case "doctype":
+            $('#target_doclink_field').hide();
+            break;
+        case "document":
+            $('#target_doclink_field').show();
+            
+            break;
+        case "fielduid":
+            $('#target_doclink_field').show();
+            $('#input-target_field_name').attr('placeholder', '{{entry_target_fielduid}}');
+            $('#target_field label span').text('{{text_fielduid_from_field}}');
+            break;
+    }
+
+    $('#select-target_type').on('change', function () {
+        $('#input-target_field_name').val('');
+        $('#input-target_field_uid').val('');
+        $('#target_method_form').html('{{ text_select_field }}');
+        $('#input-target_field_name').attr('placeholder', '{{ entry_target_field }}');
+        $('#select-target_field_method').removeAttr('disabled');
+        ReloadRecordParamFieldMethodList('#select-target_field_method', 'setter', 0, '');
+        switch (this.value) {
+            case "doctype":
+                $('#target_doclink_field').hide();
+                $('#target_field label span').text('{{text_target_field}}');
+                break;
+            case "document":
+                $('#target_doclink_field').show();
+                $('#target_field label span').text('{{text_target_field}}');
+                break;
+            case "fielduid":
+                $('#target_doclink_field').show(); 
+                $('#input-target_field_name').attr('placeholder', '{{entry_target_fielduid}}');
+                $('#select-target_field_method').attr('disabled', 'disabled');
+                $('#target_field label span').text('{{text_fielduid_from_field}}');
+                break;
+        }
+    });
+
+
+    $('#input-target_field_name').autocomplete({
+        'source': function (request, response) {
+            var doctype_uid = "0";
+            if ($('#input-target_doclink_field_uid').val() == "0" && ($('#select-target_type').val() == "document") || $('#select-target_type').val() == "fielduid") {
+                doctype_uid = '{{ doctype_uid }}';
+            }
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid=' + doctype_uid + '&setting=' + ($('#select-target_type').val() == 'doctype' ? 1 : 0),
+                dataType: 'json',
+                cache: false,
+                success: function (json) {
+                    response($.map(json, function (item) {
+                        return {
+                            label: item['name'],
+                            value: item['field_uid']
+                        }
+
+                    }));
+                } //end success
+            }); //end ajax
+        }, //end source   
+        'select': function (item) {
+            if ($('#input-target_field_uid').val() !== item['value']) {
+                ReloadRecordParamFieldMethodList('#select-target_field_method', 'setter', item['value']);
+                /*if ($('#select-target_field_method').val() !== '') {
+                 //ранее был выбран не стандартный метод, необходимо перезагрузить форму стандартного метода
+                 $('#target_method_form').html('');
+                 //var field_uid = $('input[name=\'action[target_field_uid]\']').val();
+                 
+                 }*/
+                //$('#select-target_field_method').val('standard_setter');
+                $('#input-target_field_uid').val(item['value']);
+                ReloadFieldMethodForm('#target_method_form', item['value'], 'standard_setter', '{{doctype_uid}}', '[method_params]');
+            }
+            $('#input-target_field_name').val(item['label']);
+
+        }
+    });
+
+
+    $('#input-target_doclink_field_name').autocomplete({
+        'source': function (request, response) {
+            if (request === '{{text_currentdoc}}')
+                request = '';
+            var regexp = new RegExp('{{text_by_link_in_field}}');
+            request = request.replace(regexp, '').trim().replace(/\"/g, '');
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&filter_name=' + encodeURIComponent(request) + '&doctype_uid={{ doctype_uid }}',
+                dataType: 'json',
+                cache: false,
+                success: function (json) {
+                    json.unshift({
+                        field_uid: "0",
+                        name: '{{text_currentdoc}}'
+                    });
+                    response($.map(json, function (item) {
+                        var result = {
+                            value: item['field_uid'],
+                            label: item['name']
+                        };
+                        if (item['field_uid'] && item['field_uid'] !== "0") {
+                            if (item['setting'] === "1") {
+                                result['setting'] = 1;
+                                result['label'] = '<span style="font-style:italic">{{text_by_link_in_field}} "' + item['name'] + '"</span>';
+                            } else {
+                                result['label'] = '{{text_by_link_in_field}} "' + item['name'] + '"';
+                            }
+                        }
+                        return result;
+                    }));
+                } //end success
+            }); //end ajax
+        }, //end source   
+        'select': function (item) {
+            var label = item['label'];
+            if (item['setting'] === 1) {
+                $('#input-target_doclink_field_name').css("font-style", "italic");
+                label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+            } else {
+                $('#input-target_doclink_field_name').css("font-style", "");
+            }
+            if ($('#input-target_doclink_field_uid').val() !== item['value']) {
+                $('#input-target_field_name').val('');
+                $('#input-target_field_uid').val('');
+                ReloadRecordParamFieldMethodList('#select-target_field_method', 'setter', 0, '');
+                //$('#select-target_field_method').val('standard_setter');
+                $('#target_method_form').html('');
+            }
+            $('#input-target_doclink_field_name').val(label);
+            $('#input-target_doclink_field_uid').val(item['value']);
+        }
+    });
+
+    //загрузка формы метода целевого поля
+    $('#select-target_field_method').on('change', function () {
+        //console.log('select-target_field_method');
+        $('#target_method_form').html('');
+        var field_uid = $('input[name=\'action[target_field_uid]\']').val();
+        var _this = this;
+        $.ajax({
+            url: 'index.php?route=doctype/doctype/get_field_method_form&method=' + encodeURIComponent(this.value) + '&field_uid=' + field_uid + '&method_params_name_hierarchy=[method_params]&doctype_uid={{doctype_uid}}',
+            dataType: 'json',
+            cache: false,
+            success: function (html) {
+                if (html) {
+                    $('#target_method_form').html(html);
+                }
+            }
+        });
+    });
+
+</script>    
+
+

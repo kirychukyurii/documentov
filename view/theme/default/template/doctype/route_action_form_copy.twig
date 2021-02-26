@@ -1,0 +1,111 @@
+  
+    <div class="modal-header">
+        <div class="pull-right">
+            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-reply"></i></button>
+        </div>    
+        <div class="pull-left"><h4 class="modal-title text-left">{% if action_id is empty %}{{ text_title_action_add }}{% else %}{{ text_title_action_edit }}{% endif %}</h4></div>
+    </div>
+
+    <div class="modal-body" id="form_copy_route_action">
+        <input id="input-filter_action" class="form-control" placeholder="{{ text_search }}">
+        <div class="table-responsive" style="height: 400px;">
+            <table class="table table-bordered table-hover" id="table-copy_action">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="check-action_selected_all" onclick="$('input[name*=\'selected-copy_action\']').attr('checked', this.checked);$(this).attr('checked', this.checked);" /></th>
+                        <th>{{ text_route_point }}</th>
+                        <th>{{ text_route_context }}</th>
+                        <th>{{ text_route_action }}</th>
+                        <th>{{ text_route_description }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for route in actions %}
+                    {%for context in route %}
+                        {%for action in context %}
+                        <tr>
+                            <td><input type="checkbox" name="selected-copy_action[]" value="{{ action.action_id }}" /></td>
+                            <td>{{ action.route_name }}</td>
+                            <td>{{ action.context_name }}</td>
+                            <td>{{ action.action_name }}</td>
+                            <td>{{ action.action_description }}</td>
+                        </tr>    
+                        {% endfor %}    
+                    {% endfor %}    
+                {% endfor %}    
+                </tbody>
+            </table>
+        </div>    
+    </div>
+
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <button type="button" class="btn btn-default btn-block" id="modal-copy_action" onclick="saveCopyRouteAction('{% if action_id is empty %}add{% else %}edit{% endif %}');" data-loading-text="{{ text_loading }}">{{ button_copy }}</button>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                    <div style="margin-top: 15px;" class="visible-xs"></div>
+                    <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+            </div>
+
+        </div>
+    </div>
+           
+           
+<script type="text/javascript">
+ 
+$(document).ready(function(){
+  $("#input-filter_action").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#table-copy_action tbody tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+    if (value) {
+       $('#check-action_selected_all').hide();
+    } else {
+       $('#check-action_selected_all').show();
+    }      
+  });
+});
+
+$('input[name*=\'selected-copy_action\']').on('click', function() {
+    if (this.checked) {
+        $(this).parent().parent().css('background-color', '#eee');
+    } else {
+        $(this).parent().parent().css('background-color', '');
+    } 
+});
+
+function saveCopyRouteAction() {
+  if (!$('input[name*=\'selected-copy_action\']:checked').length) {
+    $('#modal-copy_action').modal('hide');
+    return;
+  }
+    $.ajax({
+        url: 'index.php?route=doctype/doctype/copy_route_action&route_uid={{ route_uid }}&context={{ context }}',
+        type: 'post',
+        cache: false,
+        data: $('#form_copy_route_action input[type=\'text\'], #form_copy_route_action input[type=\'hidden\'], #form_copy_route_action input[type=\'radio\']:checked, #form_copy_route_action input[type=\'checkbox\']:checked, #form_copy_route_action select, #form_copy_route_action textarea'),
+        dataType: 'json',
+        beforeSend: function() {
+                $('#modal-copy_action').button('loading');
+        },            
+        success: function(json) {
+            var html = '';
+            $.each(json, function(){
+                html += '<tr id="route_{{ context }}_action-row' + this.route_action_uid + '" class="new_element">' +
+                        '<td class="text-left pointer" onclick="editRouteAction(\'' + this.route_action_uid + '\');">' + this.name + '</td>' +
+                        '<td class="text-left pointer" onclick="editRouteAction(\'' + this.route_action_uid + '\');">' + this.description + '</td>' +
+                        '<td class="text-right"  id="route_{{ context }}_action-button' + this.route_action_uid + '" style="width: 120px;">' + 
+                        '<button class="btn btn-default btn-sm" type="button" onclick="up(this, \'move_action&action_id=' + this.route_action_uid + '\');" data-toggle="tooltip" title="{{ button_up }}" data-original-title="{{ button_up }}"><i class="fa fa-arrow-up"></i></button> ' + 
+                        '<button class="btn btn-default btn-sm" type="button" onclick="down(this, \'move_action&action_id=' + this.route_action_uid + '\');" data-toggle="tooltip" title="{{ button_down }}" data-original-title="{{ button_down }}"><i class="fa fa-arrow-down"></i></button> ' + 
+                        '<button type="button" onclick="removeRouteAction(\'' + this.route_action_uid + '\',\'{{ context }}\');" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-default btn-sm"><i class="fa fa-minus-circle"></i></button></td>' + 
+                        '</tr>';        
+                });            
+            $('#table_route_{{ context }}_action{{ route_uid }} tbody').append(html); 
+            $('#modal-copy_action').modal('hide');
+        }
+    });
+}
+
+</script>

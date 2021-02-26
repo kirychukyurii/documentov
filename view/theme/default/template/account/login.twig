@@ -1,0 +1,120 @@
+{% if header is not empty %}
+  {{ header }}
+{% else %}
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8"/>
+      <meta content="Бесплатная система электронного документооборота СЭД Documentov www.documentov.com" name="Description"/>
+      <meta content="width=device-width, initial-scale=1" name="viewport">
+      <meta content="IE=edge" http-equiv="X-UA-Compatible">
+      <meta content="no-cache" http-equiv="Cache-Control">
+      <title>{{ text_title }}</title>
+      <script src="view/javascript/jquery/jquery-2.1.1.min.js" type="text/javascript"></script>
+      <link href="view/theme/default/stylesheet/bootstrap.css" media="screen" rel="stylesheet"/>
+      <script src="view/javascript/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+      <link href="view/javascript/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+      <link href="view/theme/default/stylesheet/stylesheet.css" rel="stylesheet">
+      <link href="view/theme/default/stylesheet/animate.css" rel="stylesheet">
+
+      <style>
+        @keyframes animation-opacity {
+          0% {
+            opacity: 0.5;
+          }
+          20% {
+            opacity: 0.75;
+          }
+          40% {
+            opacity: 1.0;
+          }
+          60% {
+            opacity: 1.0;
+          }
+          80% {
+            opacity: 0.75;
+          }
+          100% {
+            opacity: 0.5;
+          }
+        }
+        .logo {
+          {# animation: animation-opacity 4s infinite linear; #}
+        }
+      </style>
+    </head>
+    <body>
+    {% endif %}
+
+    <div class="" id="account-login">
+      {% if success %}
+        <br>
+        <div class="alert alert-success alert-dismissible">
+          <i class="fa fa-check-circle"></i>
+          {{ success }}</div>
+      {% endif %}
+      {% if error_warning %}
+        <br>
+        <div class="alert alert-danger alert-dismissible">
+          <i class="fa fa-exclamation-circle"></i>
+          {{ error_warning }}</div>
+      {% endif %}
+      <div class="row">
+        <div class="col-sm-12" id="content">
+          <br><br>
+          <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6">
+              {% if logo %}
+                {{ logo }}
+              {% else %}
+                <h1 class="logo animated slow rollIn">
+                  <a href="https://www.documentov.com" target="_blank">Δocumentov</a>
+                </h1>
+              {% endif %}
+              <div class="well">
+                <p>
+                  <strong>{{ text_i_am_returning_customer }}</strong>
+                </p>
+                <form action="{{ action }}" id="login_form" method="post" enctype="multipart/form-data">
+                  <div class="form-group">
+                    <label class="control-label" for="input-email">{{ entry_email }}</label>
+                    <input type="text" name="email" value="{{ email }}" placeholder="{{ entry_email }}" id="input-email" class="form-control"/>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" for="input-password">{{ entry_password }}</label>
+                    <input type="password" name="password" value="{{ password }}" placeholder="{{ entry_password }}" id="input-password" class="form-control"/>
+                    <br>
+                    <input type="submit" value="{{ button_login }}" id="submit_button" class="btn btn-success"/>
+                    {% if redirect %}
+                      <input type="hidden" name="redirect" value="{{ redirect }}"/>
+                    {% endif %}
+                    {% if backurl %}
+                      <input type="hidden" name="backurl" value="{{ backurl }}"/>
+                    {% endif %}
+                  </div>
+                </form>
+              </div>
+              {% if logo %}
+                <div class="text-center">
+                  {{ powered }}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+        (function () {
+          $("#login_form").submit(function (e) {
+            $("#submit_button").attr("disabled", true);
+            return true;
+          });
+        })();
+      </script>
+      {% if footer is not empty %}
+        {{ footer }}
+    {% else %}
+      </body>
+    </html>
+  {% endif %}

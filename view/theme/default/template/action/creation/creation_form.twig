@@ -1,0 +1,326 @@
+ <div class="form-group">    
+    <label class="col-sm-3 control-label" for="input-doctype_name"><span data-toggle="tooltip" title="{{ help_doctype }}">{{ entry_doctype }}</span></label>
+    <div class="col-sm-9">     
+        <input type="text" name="doctype_name" id="input-doctype_name" value="{{ action.doctype_name }}" placeholder="{{ entry_doctype }}" class="form-control">
+        <input type="hidden" name="action[doctype_uid]" id="input-doctype_uid" value="{{ action.doctype_uid }}">
+    </div>    
+</div>
+          
+<div class="form-group">
+    <label class="col-sm-3 control-label"><span data-toggle="tooltip" title="{{ help_set_field_value }}">{{ entry_set_field_value }}:</span></label>
+        
+    <div class="col-sm-9">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="table_list_set">
+                <thead>
+                <tr>
+                    <th>{{ column_field_target }}</th>
+                    <th>{{ column_field_source }}</th>
+                    <th style="width: 40px;"><span class="btn btn-default btn-sm" id="button_add_set" data-toggle="tooltip" title="{{ button_add }}"><i class="fa fa-plus-circle"></i></span></th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% set row = 0 %}
+                    {% if action.sets is not empty %}
+                    {% for set in action.sets %}
+                    {% set row = row + 1 %}    
+                    <tr>
+                        <td>
+                            <input type="text" name="target_field_name{{ row }}" id="input-target_field_name{{ row }}" value="{{ set.target_field_name }}" placeholder="{{ entry_target_field_name }}" class="form-control">
+                            <input type="hidden" name="action[set][{{ row }}][target_field_uid]" value="{{ set.target_field_uid }}">                            
+                        </td>
+                        <td>
+                            <input type="text" name="source_field_name{{ row }}" id="input-source_field_name{{ row }}" value="{{ set.source_field_name }}" placeholder="{{ entry_source_field_name }}" class="form-control">
+                            <input type="hidden" name="action[set][{{ row }}][source_field_uid]" value="{{ set.source_field_uid }}">                                                        
+                        </td>
+                        <td> 
+                            <button type="button" class="btn btn-default btn-sm" onclick="$(this).parent().parent().remove();" data-toggle="tooltip" title="{{ text_button_del_value }}"><i class="fa fa-remove"></i>
+                        </td>
+                    </tr>   
+                    
+                    {% endfor %} 
+                    {% endif %}
+                </tbody>
+            </table> 
+        </div>
+    </div>    
+</div>
+{% if in_route %}                
+<div class="form-group">    
+    <label class="col-sm-3 control-label" for="input-field_new_document_author_name"><span data-toggle="tooltip" title="{{ help_field_new_document_author }}">{{ entry_field_new_document_author }}</span></label>
+    <div class="col-sm-9">     
+        <input type="text" name="field_new_document_author_name" id="input-field_new_document_author_name" value="{{ action.field_new_document_author_name }}" placeholder="{{ entry_field_new_document_author }}" class="form-control" {% if action.field_new_document_author_setting %}style="font-style:italic"{% endif %}>
+        <input type="hidden" name="action[field_new_document_author_id]" id="input-field_new_document_author_id" value="{{ action.field_new_document_author_id }}">
+    </div>    
+</div>                
+{% endif %} 
+<div class="form-group">    
+    <label class="col-sm-3 control-label" for="input-field_new_document_name"><span data-toggle="tooltip" title="{{ help_field_new_document }}">{{ entry_field_new_document }}</span></label>
+    <div class="col-sm-9">     
+        <input type="text" name="field_new_document_name" id="input-field_new_document_name" value="{{ action.field_new_document_name }}" placeholder="{{ entry_field_new_document }}" class="form-control">
+        <input type="hidden" name="action[field_new_document_uid]" id="input-field_new_document_uid" value="{{ action.field_new_document_uid }}">
+    </div>    
+</div>      
+<div class="form-group">    
+    <label class="col-sm-3 control-label" for="select-execute_route">
+      <span data-toggle="tooltip" title="{{ help_execute_route }}">
+        {{ entry_execute_route }}
+      </span>
+    </label>
+    <div class="col-sm-9">     
+      <select name="action[execute_route]" id="select-execute_route" class="form-control">
+        <option value="0"{% if action.execute_route is empty or action.execute_route == 0 %} selected="selected"{% endif %}>{{ text_execute_route_sequent }}</option>
+        <option value="1"{% if action.execute_route == 1 %} selected="selected"{% endif %}>{{ text_execute_route_parallel }}</option>
+      </select>
+    </div>    
+</div> 
+
+{% if execute_route is empty or execute_route == 0 %}             
+<div class="form-group">    
+    <label class="col-sm-3 control-label" for="select-doc_debug">
+      <span data-toggle="tooltip" title="{{ help_doc_debug }}">
+        {{ entry_doc_debug }}
+      </span>
+    </label>
+    <div class="col-sm-9">     
+      <select name="action[doc_debug]" id="select-doc_debug" class="form-control">
+        <option value="0"{% if action.doc_debug is empty or action.doc_debug == 0 %} selected="selected"{% endif %}>{{ text_doc_no_debug }}</option>
+        <option value="1"{% if action.doc_debug == 1 %} selected="selected"{% endif %}>{{ text_doc_admin_debug }}</option>
+        <option value="2"{% if action.doc_debug == 2 %} selected="selected"{% endif %}>{{ text_doc_user_debug }}</option>
+      </select>
+    </div>    
+</div>      
+{% endif %}         
+        
+<script type="text/javascript">    
+    
+    var row = {{ row }};
+    for (i=1; i<=row; i++) {
+        select_target_field(i);
+        select_source_field(i);
+    }
+
+    $('input[name=\'doctype_name\']').autocomplete({
+        'source': function(request, response) {
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete&filter_name=' + encodeURIComponent(request),
+                dataType: 'json',
+                success: function(json) {
+                    json.unshift({
+                        doctype_uid: 0,
+                        name: '{{ text_none }}'
+                    });
+
+                    response($.map(json, function(item) {
+                        return {
+                            label: item['name'],
+                            value: item['doctype_uid']
+                        }
+                    }));                    
+                } //end success
+            }); //end ajax
+        }, //end source   
+        
+        'select': function(item) {
+            if(item['value']) {
+                $('input[name=\'doctype_name\']').val(item['label']);
+                $('input[name=\'action[doctype_uid]\']').val(item['value']);
+            } else {
+                $('input[name=\'doctype_name\']').val('');
+                $('input[name=\'action[doctype_uid]\']').val('');   
+             }    
+        }
+    });    
+
+    $('input[name=\'field_new_document_name\']').autocomplete({
+        'source': function(request, response) {
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&doctype_uid={{ doctype_uid }}&setting=0&filter_name=' + encodeURIComponent(request),
+                dataType: 'json',
+                success: function(json) {
+                    json.unshift({
+                        field_uid: 0,
+                        name: '{{ text_none }}'
+                    });
+
+                    response($.map(json, function(item) {
+                        return {
+                            label: item['name'],
+                            value: item['field_uid']
+                        }
+                    }));                    
+                } //end success
+            }); //end ajax
+        }, //end source   
+        
+        'select': function(item) {
+            if(item['value']) {
+                $('input[name=\'field_new_document_name\']').val(item['label']);
+                $('input[name=\'action[field_new_document_uid]\']').val(item['value']);
+            } else {
+                $('input[name=\'field_new_document_name\']').val('');
+                $('input[name=\'action[field_new_document_uid]\']').val('');   
+            }    
+        }
+    });  
+    
+    $('input[name=\'field_new_document_author_name\']').autocomplete({
+        'source': function(request, response) {
+            $.ajax({
+                url: 'index.php?route=doctype/doctype/autocomplete_field&doctype_uid={{ doctype_uid }}&filter_name=' + encodeURIComponent(request),
+                dataType: 'json',
+                success: function(json) {
+                    json.unshift({
+                        field_uid: 0,
+                        name: '{{ text_none }}'
+                    });
+
+                    response($.map(json, function(item) {                       
+                        var result = {
+                            value: item['field_uid'],
+                            label: item['name']
+                        };
+                        if (item['field_uid'] !== 0) {
+                            if (item['setting'] === "1") {
+                                result['setting'] = 1;
+                                result['label'] = '<span style="font-style:italic"> ' + item['name'] + '</span>';
+                            } else {
+                                result['label'] = item['name'];
+                            }
+                        }
+                        return result;                        
+                        
+                        
+                    }));                    
+                } //end success
+            }); //end ajax
+        }, //end source   
+        
+        'select': function(item) {
+            if(item['value']) {
+                var label = item['label'];
+                if (item['setting'] === 1) {
+                    $('input[name=\'field_new_document_author_name\']').css("font-style", "italic");
+                    label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+                } else {
+                    $('input[name=\'field_new_document_author_name\']').css("font-style", "");
+                }                
+                $('input[name=\'field_new_document_author_name\']').val(label);
+                $('input[name=\'action[field_new_document_author_id]\']').val(item['value']);
+            } else {
+                $('input[name=\'field_new_document_author_name\']').val('');
+                $('input[name=\'action[field_new_document_author_id]\']').val('');   
+            }    
+        }
+    });    
+
+    function select_target_field(row) {        
+        $('input[name=\'target_field_name' + row + '\']').autocomplete({
+            'source': function(request, response) {
+                $.ajax({
+                    url: 'index.php?route=doctype/doctype/autocomplete_field&doctype_uid=' + $('#input-doctype_uid').val() + '&setting=0&filter_name=' + encodeURIComponent(request),
+                    dataType: 'json',
+                    success: function(json) {
+                        json.unshift({
+                            field_uid: 0,
+                            name: '{{ text_none }}'
+                        });
+
+                        response($.map(json, function(item) {
+                            return {
+                                label: item['name'],
+                                value: item['field_uid']
+                            }
+                        }));                    
+                    } //end success
+                }); //end ajax
+            }, //end source   
+
+            'select': function(item) {
+                if(item['value']) {
+                    $('input[name=\'target_field_name' + row + '\']').val(item['label']);
+                    $('input[name=\'action[set][' + row + '][target_field_uid]\']').val(item['value']);
+                } else {
+                    $('input[name=\'target_field_name' + row + '\']').val('');
+                    $('input[name=\'action[set][' + row + '][target_field_uid]\']').val('');   
+                 }    
+            }
+        });    
+    }
+
+    function select_source_field(row) {        
+        $('input[name=\'source_field_name' + row + '\']').autocomplete({
+            'source': function(request, response) {
+                $.ajax({
+                    url: 'index.php?route=doctype/doctype/autocomplete_field&doctype_uid={{ doctype_uid }}&filter_name=' + encodeURIComponent(request),
+                    dataType: 'json',
+                    success: function(json) {
+                        json.unshift({
+                            field_uid: 0,
+                            name: '{{ text_none }}'
+                        });
+
+                        response($.map(json, function(item) {                            
+                            var result = {
+                                value: item['field_uid'],
+                                label: item['name']
+                            };
+                            if (item['field_uid']) {
+                                if (item['setting'] === "1") {
+                                    result['setting'] = 1;
+                                    result['label'] = '<span style="font-style:italic"> ' + item['name'] + '</span>';
+                                }
+                            }
+                            return result;                            
+                        }));                    
+                    } //end success
+                }); //end ajax
+            }, //end source   
+
+            'select': function(item) {
+                if(item['value']) {
+                    var label = item['label'];
+                    if (item['setting'] === 1) {
+                        $('input[name=\'source_field_name' + row + '\']').css("font-style", "italic");
+                        label = label.replace('<span style="font-style:italic">', '').replace('</span>', '').trim();
+                    } else {
+                        $('input[name=\'source_field_name' + row + '\']').css("font-style", "");
+                    }
+                    $('input[name=\'source_field_name' + row + '\']').val(label);
+                    $('input[name=\'action[set][' + row + '][source_field_uid]\']').val(item['value']);  
+                } else {
+                    $('input[name=\'source_field_name' + row + '\']').val('');
+                    $('input[name=\'action[set][' + row + '][source_field_uid]\']').val('');            
+                    
+                }
+            }
+        });    
+    }
+    
+    
+    $('#button_add_set').on('click', function(){   
+        if (!$('#input-doctype_uid').val()) {
+            alert('{{ text_select_doctype }}');
+        } else {            
+            row++;
+            html = '<tr>' + 
+                    '<td>' +
+                    '<input type="text" name="target_field_name' + row + '" id="input-target_field_name' + row + '" value="" placeholder="{{ entry_target_field_name }}" class="form-control">' +
+                    '<input type="hidden" name="action[set][' + row + '][target_field_uid]" value="">' + 
+                    '</td>' +
+                    '<td>' +
+                    '<input type="text" name="source_field_name' + row + '" id="input-source_field_name' + row + '" value="" placeholder="{{ entry_source_field_name }}" class="form-control">' +
+                    '<input type="hidden" name="action[set][' + row + '][source_field_uid]" value="">' + 
+                    '</td>';
+            html += '<td>' + 
+                    '<button type="button" class="btn btn-default btn-sm" onclick="$(this).parent().parent().remove();" data-toggle="tooltip" title="{{ text_button_del_value }}"><i class="fa fa-remove"></i></td></tr>';
+            $('#table_list_set tbody').append(html);
+            select_target_field(row);    
+            select_source_field(row);    
+        }    
+    });    
+    
+</script>    
+        
+        
+        

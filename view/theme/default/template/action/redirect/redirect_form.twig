@@ -1,0 +1,24 @@
+<hr>
+{% if error %}
+  {{ error }}
+  <script>
+    if ($('.modal').is('#modal-iaction')) {
+      $('#condition-modal-button-add_inner').hide();
+      $('#condition-modal-action-add_inner').hide();
+    } else {
+      $('#modal-button-add').hide();
+      $('#modal-action-add').hide();
+    }
+  </script>
+{% else %}
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="input-field_document_name">
+      <span data-toggle="tooltip" title="{{ help_field_document }}">{{ entry_field_document }}</span>
+    </label>
+    <div class="col-sm-9">
+      {% import "default/template/macros/field_in_action_uid.twig" as mfield %}
+      {{ mfield.show(field_document_name, action.field_document_uid, doctype_uid, 'field_document', text_macros_field, field_document_setting) }}
+
+    </div>
+  </div>
+{% endif %}

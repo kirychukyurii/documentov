@@ -1,0 +1,45 @@
+<div class="{{ BLOCK }} field-block">
+  {% if histories %}
+    <select class="form-control" id="select-viewdoc_history_{{ unique }}">
+      <option value="0">{{ text_current_version }}</option>
+      {% for version in histories %}
+        <option value="{{ version.history_id }}">{{ version.date_added }}
+          {{ version.author_name}}</option>
+      {% endfor %}
+    </select>
+  {% endif %}
+  <div id="block-viewdoc_form_{{ unique }}">
+    {{ header }}
+    {{ form }}
+      {{ footer }}
+    </div>
+
+    <script>
+      if (!navDocumentov.fieldViewdoc) {
+        navDocumentov.fieldViewdoc = {};
+      }
+      navDocumentov.fieldViewdoc['form_{{ unique }}'] = $('#block-viewdoc_form_{{ unique }}').html();
+      navDocumentov.fieldViewdoc.history = {}; // для кэширования версий
+
+      $('#select-viewdoc_history_{{ unique }}').on('change', function () {
+        let historyId = $('#select-viewdoc_history_{{ unique }}').val();
+        if (navDocumentov.fieldViewdoc.history[historyId]) {
+          $('#block-viewdoc_form_{{ unique }}').html(navDocumentov.fieldViewdoc.history[historyId]);
+        } else if (historyId > 0) {
+          $.ajax({
+            url: 'index.php?route=field/viewdoc&document_uid={{ document_uid }}&field_uid={{ field_uid }}&history_id=' + historyId,
+            dataType: 'json',
+            cache: true,
+            success: function (json) {
+              if (json['form']) {
+                $('#block-viewdoc_form_{{ unique }}').html(json['form']);
+                navDocumentov.fieldViewdoc.history[historyId] = json['form'];
+              }
+            }
+          });
+        } else {
+          $('#block-viewdoc_form_{{ unique }}').html(navDocumentov.fieldViewdoc['form_{{ unique }}']);
+        }
+      });
+    </script>
+  </div>

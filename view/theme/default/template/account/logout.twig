@@ -1,0 +1,96 @@
+{% if header is not empty %}
+  {{ header }}
+{% else %}
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8"/>
+      <meta content="Бесплатная система электронного документооборота СЭД Documentov www.documentov.com" name="Description"/>
+      <meta content="width=device-width, initial-scale=1" name="viewport">
+      <meta content="IE=edge" http-equiv="X-UA-Compatible">
+      <meta content="no-cache" http-equiv="Cache-Control">
+      <title>{{ text_title }}</title>
+      <script src="view/javascript/jquery/jquery-2.1.1.min.js" type="text/javascript"></script>
+      <link href="view/theme/default/stylesheet/bootstrap.css" media="screen" rel="stylesheet"/>
+      <script src="view/javascript/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+      <link href="view/javascript/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+      <link href="view/theme/default/stylesheet/stylesheet.css" rel="stylesheet">
+      <link href="view/theme/default/stylesheet/animate.css" rel="stylesheet">
+
+      <style>
+        @keyframes animation-opacity {
+          0% {
+            opacity: 0.5;
+          }
+          20% {
+            opacity: 0.75;
+          }
+          40% {
+            opacity: 1.0;
+          }
+          60% {
+            opacity: 1.0;
+          }
+          80% {
+            opacity: 0.75;
+          }
+          100% {
+            opacity: 0.5;
+          }
+        }
+        .logo {
+          {# animation: animation-opacity 4s infinite linear; #}
+        }
+      </style>
+    </head>
+    <body>
+    {% endif %}
+
+    <div class="" id="account-logout">
+      
+      <div class="row">
+        <div class="col-sm-12" id="content">
+          <br><br>
+          <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6">
+              {% if logo %}
+                {{ logo }}
+              {% else %}
+                <h1 class="logo animated slow rollIn">
+                  <a href="https://www.documentov.com" target="_blank">Δocumentov</a>
+                </h1>
+              {% endif %}
+              <div class="well">
+                <p>
+                  <strong>{{ text_i_am_purged_customer }}<a href="{{login_link}}">{{text_login_link}}</a></strong>
+                   
+                </p>                
+              </div>
+              {% if logo %}
+                <div class="text-center">
+                  {{ powered }}
+                </div>
+              {% endif %}
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <script>
+        var XHR = new XMLHttpRequest();
+        XHR.open("GET", "{{login_link}}", true, "no user", "no password");
+        XHR.send();       
+        (function () {
+          // var d = $('<h1>').addClass('logo').append($('<a>').attr('href', 'https://www.documentov.com').attr('target', '_blank').html('Δocumentov'));
+          // $('.col-sm-12 .row .col-sm-6 .well').before(d);
+          // $('.well').css('background-color', 'inherit');
+        })();
+      </script>
+      {% if footer is not empty %}
+        {{ footer }}
+    {% else %}
+      </body>
+    </html>
+  {% endif %}

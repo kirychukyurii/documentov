@@ -1,0 +1,56 @@
+  
+    <div class="modal-header">
+        <div class="pull-right">
+            <button type="button" class="btn btn-default" onclick="edit();" data-loading-text="{{ text_loading }}"><i class="fa fa-save"></i></button>
+            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-reply"></i></button>
+        </div>    
+        <div class="pull-left"><h4 class="modal-title text-left">{{ title }}</h4></div>
+    </div>
+
+    <div class="modal-body">
+        <div class="form-horizontal" id="form">
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="input-field_name">{{ text_field_value }}</label>
+                <div class="col-sm-9">
+                    {{ form }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-footer">
+            <div class="row">
+                    <div class="col-md-3 col-sm-6">
+                        <button type="button" class="btn btn-default btn-block" id="modal-button-add" onclick="edit();" data-loading-text="{{ text_loading }}">{{ button_save }}</button>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                            <div style="margin-top: 15px;" class="visible-xs"></div>
+                            <span class="btn btn-default btn-block" data-dismiss="modal">{{ button_cancel }}</button>
+                    </div>
+
+            </div>
+    </div>
+           
+           
+<script type="text/javascript"><!--
+
+ function edit() {
+        $.ajax({
+            url: 'index.php?route=doctype/doctype/save_field_value&field_uid={{ field_uid }}',
+            type: 'post',
+            data: $('#form input[type=\'text\'], #form input[type=\'number\'], #form input[type=\'hidden\'], #form input[type=\'radio\']:checked, #form input[type=\'checkbox\']:checked, #form select, #form textarea, #input-field_type, #input-field_name'),
+            dataType: 'json',
+            beforeSend: function() {
+                    $('#modal-button-add').button('loading');
+            },            
+            success: function(json) {
+                $('#setting_field_value{{ field_uid }}').html(json);
+                $('#modal-afield').modal('hide');
+            }
+        })
+    };
+
+
+
+//--></script>

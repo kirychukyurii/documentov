@@ -1,0 +1,8 @@
+.value-field-selector {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+}
+.value-field-selector__text {
+  flex-grow: 1;
+}

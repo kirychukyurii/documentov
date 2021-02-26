@@ -1,0 +1,13 @@
+<script type="text/javascript">
+  if (typeof({{ data.MODULE_NAME }}) === "undefined") {
+    addScript("view/javascript/field/{{ data.FILE_NAME }}/{{ data.FILE_NAME }}.js");
+  }
+  {% if data.METHOD_NAME is empty %}
+    {% set METHOD_NAME = 'getWidgetView' %}
+  {% else %}
+    {% set METHOD_NAME = data.METHOD_NAME %}
+  {% endif %}
+  // создаем класс поля; в php7.4 между new и названием класса нет пробела; нужно обновлять TWIG
+  (new {{ ' ' ~ data.MODULE_NAME }}
+  ('{{ data| json_encode() | e("js") }}')).{{ METHOD_NAME }}();
+</script>
