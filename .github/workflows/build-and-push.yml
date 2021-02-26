@@ -1,6 +1,9 @@
 name: "Build and push to hub.docker.com"
 
-on: [workflow_dispatch]
+on:
+  push:
+    branches:
+      - "develop"
 
 jobs:
   build_and_publish:
@@ -28,7 +31,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: yuriikirychuk/documentov:latest,yuriikirychuk/documentov:${{ steps.branch_name.outputs.SOURCE_TAG }}
+          tags: yuriikirychuk/documentov:${{ steps.branch_name.outputs.SOURCE_TAG }}
           no-cache: true
           platforms: linux/amd64
       -
