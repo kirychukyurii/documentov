@@ -1,0 +1,29 @@
+<?php
+
+$_['heading_title'] = 'отладчик';
+$_['service_setting'] = 'У сервісу немає загальних параметрів';
+$_['text_changing_field'] = 'зміна поля';
+$_['text_execute_action'] = 'запуск дії';
+$_['text_type_route'] = 'переміщення на точку';
+$_['text_debugger_on'] = 'включений';
+$_['text_debugger_off'] = 'відключений';
+$_['text_via_docbutton'] = 'через кнопку документа';
+$_['text_via_folbutton'] = 'через кнопку журналу';
+$_['text_via_route'] = 'через маршрут';
+$_['text_total_logs'] = 'всього записів';
+$_['text_show_logs'] = 'показувати по';
+$_['column_date'] = 'час';
+$_['column_user'] = 'ініціатор';
+$_['column_document'] = 'Документ / журнал';
+$_['column_type'] = 'Тип';
+$_['column_param'] = 'параметри';
+$_['column_name'] = 'Назва';
+$_['column_date1'] = 'час після';
+$_['column_date2'] = 'час до';
+$_['column_document_uid'] = 'ID документа / журналу';
+$_['column_action'] = 'Дія';
+$_['column_field'] = 'Поле';
+$_['button_start'] = 'запустити';
+$_['button_stop'] = 'зупинити';
+$_['button_refresh'] = 'оновити';
+$_['button_clear'] = 'Очистити';
