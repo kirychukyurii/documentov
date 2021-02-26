@@ -16,8 +16,7 @@ php7.2-gd \
 php-tidy \
 php7.2-zip \
 php-mbstring \
-zip \
-unzip
+mysql-client
 
 COPY default /etc/nginx/sites-available/default
 
