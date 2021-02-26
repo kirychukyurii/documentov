@@ -3,7 +3,7 @@ name: "Build and push to hub.docker.com"
 on:
   push:
     branches:
-      - "develop"
+      - "**"
 
 jobs:
   build_and_publish:
