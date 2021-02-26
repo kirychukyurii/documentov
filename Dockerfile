@@ -32,7 +32,8 @@ COPY . /var/www/html
 ############ INITIAL APPLICATION SETUP #####################
 
 WORKDIR /var/www/html
-RUN chmod -R 755 *
+RUN chown -R www-data * \
+    && chmod -R 755 *
 
 EXPOSE 80
 EXPOSE 443
