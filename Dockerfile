@@ -37,7 +37,7 @@ RUN chown -R www-data * \
 EXPOSE 80
 EXPOSE 443
 
-VOLUME ["/var/www/html/", "/var/log/nginx/"]
+VOLUME ["/var/www/html/"]
 
 WORKDIR /root/
 CMD ./services.sh

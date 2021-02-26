@@ -18,4 +18,7 @@ server {
                 include snippets/fastcgi-php.conf;
                 fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
         }
+        # forward request and error logs to docker log collector
+        access_log /dev/stdout;
+        error_log /dev/stderr;
 }
