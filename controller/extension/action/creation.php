@@ -193,17 +193,20 @@ class ControllerExtensionActionCreation extends ActionController
               ),
             ];
 
-            $result = $this->daemon->exec("ExecuteButtonAction", $dd);
-            if (!empty($result['error'])) {
-              return ['error' => $result['error']];
+            $execResult = $this->daemon->exec("ExecuteButtonAction", $dd);
+            if (!empty($execResult['error'])) {
+              return ['error' => $execResult['error']];
             }
 
-            if (empty($result['window']) && empty($result['redirect']) && empty($result['replace'])) {
+            if (empty($execResult['window']) && empty($execResult['redirect']) && empty($execResult['replace'])) {
               $result = array(
                 'redirect' => str_replace('&amp;', '&', $this->url->link('document/document', 'document_uid=' . $new_document_uid . (!empty($data['folder_uid']) ? '&folder_uid=' . $data['folder_uid'] : ""))),
                 'document_uid' => $new_document_uid,
                 'log'      => sprintf($this->language->get('text_document_create'), str_replace('&amp;', '&', $this->url->link('document/document', 'document_uid=' . $new_document_uid, true, true)))
               );
+            }
+            if (!empty($execResult['append'])) {
+              $result['append'] = $execResult['append'];
             }
             return $result;
           }

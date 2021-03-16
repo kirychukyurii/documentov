@@ -366,7 +366,7 @@ class ModelExtensionServiceExport extends Model
               }
             }
           }
-          if ($cntrb['action'] == "record") {
+          if ($cntrb['action'] == "record" && isset($p['target_field_method_name'])) {
             if ($p['target_field_method_name'] == "insert_textes") {
               $temp = $p['method_params'];
               $p['method_params'] = ['textes' => $temp];
@@ -674,6 +674,57 @@ class ModelExtensionServiceExport extends Model
     }
     return $configuration;
   }
+  private function patchConf1830($configuration)
+  {
+
+    $version = str_replace(".", "", $configuration['version']);
+    while (strlen($version) < 4) {
+      $version .= "0";
+    }
+    if ($version >= 1830) {
+      return $configuration;
+    }
+
+    foreach ($configuration as $idx => &$conf) {
+      if (!is_array($conf)) {
+        continue;
+      }
+      if (isset($conf['field'])) {
+        foreach ($conf['field'] as &$field) {
+          if ($field['type'] == "text") {
+            $field['params'] = $this->convertIntTextParams($field['params']);
+          }
+          if ($field['type'] == "table") {
+            $params = json_decode($field['params'], true);
+            if (isset($params['inner_fields'])) {
+              foreach ($params['inner_fields'] as &$iField) {
+                if ($iField['field_type'] == 'text') {
+                  $iField['params'] = $this->convertIntTextParams($iField['params']);
+                }
+              }
+              $field['params'] = $this->jsonEncode($params);
+            }
+          }
+        }
+      }
+    }
+    return $configuration;
+  }
+
+  private function convertIntTextParams($fieldParams)
+  {
+    $params = json_decode($fieldParams, true);
+    if (isset($params['image_height'])) {
+      $params['image_height'] = (int)$params['image_height'];
+    }
+    if (isset($params['image_width'])) {
+      $params['image_width'] = (int)$params['image_width'];
+    }
+    if (isset($params['size_file'])) {
+      $params['size_file'] = (int)$params['size_file'];
+    }
+    return $this->jsonEncode($params);
+  }
 
   private function clearDoctype($doctype_uid)
   {
@@ -731,6 +782,7 @@ class ModelExtensionServiceExport extends Model
     $configuration = $this->patchConf1700($configuration);
     $configuration = $this->patchConf1800($configuration);
     $configuration = $this->patchConf1808($configuration);
+    $configuration = $this->patchConf1830($configuration);
     $doctype_uid = "";
     $folder_uid = "";
     $doctype_uids = [];
@@ -862,6 +914,7 @@ class ModelExtensionServiceExport extends Model
 
   private function jsonEncode($v)
   {
-    return $this->db->escape(json_encode($v, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_UNICODE));
+    return json_encode($v, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_UNICODE);
+    // return $this->db->escape(json_encode($v, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_UNICODE));
   }
 }

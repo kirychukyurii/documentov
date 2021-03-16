@@ -196,8 +196,7 @@ class File
    */
   public function clear()
   {
-    return
-      $this->cache = [];
+    $this->cache = [];
     $this->temp = [];
     $this->delDir($this->dir_cache, false);
   }

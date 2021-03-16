@@ -16,8 +16,7 @@ php7.2-gd \
 php-tidy \
 php7.2-zip \
 php-mbstring \
-zip \
-unzip
+mysql-client
 
 COPY default /etc/nginx/sites-available/default
 
@@ -38,7 +37,7 @@ RUN chown -R www-data * \
 EXPOSE 80
 EXPOSE 443
 
-VOLUME ["/var/www/html/", "/var/log/nginx/"]
+VOLUME ["/var/www/html/"]
 
 WORKDIR /root/
 CMD ./services.sh
