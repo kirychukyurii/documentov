@@ -42,8 +42,9 @@ class ControllerDocumentFolder extends Controller
           $data['show_count_group'] = !empty($folder_info['additional_params']['show_count_group']) ? "1" : "";
           //проверяем, есть ли в типе документа поля, которые включены в полнотекстовый индекс
           $doctype_fields = $this->model_doctype_doctype->getFields(array('doctype_uid' => $data['doctype_uid']));
+
           foreach ($doctype_fields as $doctype_field) {
-            if (isset($doctype_field['params']['ft_index']) && $doctype_field['params']['ft_index'] == "1") {
+            if (isset($doctype_field['ft_index']) && $doctype_field['ft_index'] == "1") {
               $data['ftsearch_avaliable'] = true;
               break;
             }

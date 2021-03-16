@@ -174,4 +174,4 @@ field_viewfield_source_field_type = Тип поля: %s
 field_viewfield_source_value = Поле: %s из документа по ссылке в поле %s
 field_viewfield_target_field_is_empty = Источник поля пуст
 field_viewfield_target_doc_is_empty = Поле с документом пусто
-field_text_xml_description = Корневой элемент: %s
+field_xml_description = Корневой элемент: %s

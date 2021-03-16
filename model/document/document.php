@@ -174,6 +174,12 @@ class ModelDocumentDocument extends Model
 
   public function removeDraftDocument($document_uid, $remove_draft_3 = true)
   {
+    $data = [
+      'document_uid' => $document_uid,
+      'session' => $this->getSession()
+    ];
+    $this->daemon->exec("DeleteDocumentDraft", $data);
+    return;
     $this->db->query("UPDATE " . DB_PREFIX . "document SET draft=(CASE WHEN draft=3 THEN 3 ELSE 0 END), draft_params='' WHERE document_uid='" . $this->db->escape($document_uid) . "' ");
     //если документ имел драфт=3, то вместе с драфотом удаляем и его полностью
     //кейс: док создали чрез Создание и инициализировали поля (они пишутся прямо в базе, поскольку драфт работает только с полями из шаблона, а инициализироваться могут любые
@@ -818,9 +824,11 @@ class ModelDocumentDocument extends Model
     if (isset($data['filter_search_type'])) {
       if ($data['filter_search_type'] == "quick") {
         $data['display_filter'] = $data['filter_search'] ?? "";
-        unset($data['filter_search_type']);
-        unset($data['filter_search']);
+      } else {
+        $data['value_filter'] = $data['filter_search'] ?? "";
       }
+      unset($data['filter_search_type']);
+      unset($data['filter_search']);
     }
     $data['user_suid'] = $this->customer->getStructureId();
     // print_r($data);
@@ -1397,7 +1405,9 @@ class ModelDocumentDocument extends Model
     }
     if ($document_uid && $draft) { //если запрашивается настроечное поле document_uid может быть равен 0
       $document_info = $this->getDocument($document_uid);
-      if (!empty($document_info['draft'])) {
+      // print_r($document_info);
+      // exit;
+      if (!empty($document_info['draft_params'])) {
         $draft_params = json_decode($document_info['draft_params'], true);
         if (isset($draft_params[$field_uid])) {
           if (is_array($draft_params[$field_uid])) {
