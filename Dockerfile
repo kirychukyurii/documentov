@@ -5,7 +5,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update -y && apt-get install --no-install-recommends --no-install-suggests -y \
     ca-certificates && update-ca-certificates
-RUN apt-get install --no-install-recommends --no-install-suggests -y \
+RUN apt-get update -y && apt-get install --no-install-recommends --no-install-suggests -y \
     dialog apt-utils nginx php7.2 php7.2-fpm php7.2-mysql php7.2-cli php7.2-curl \
     php7.2-gd php-tidy php7.2-zip php-mbstring mysql-client
 
