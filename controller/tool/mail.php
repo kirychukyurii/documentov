@@ -24,7 +24,13 @@ class ControllerToolMail extends Controller
 
     echo " " . sprintf($this->language->get('text_send_mail'), $data['to']);
     $mail = new Mail($this->config->get('config_mail_engine'));
-    $mail->parameter = $this->config->get('config_mail_parameter');
+    $mail->parameter = $this->config->array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
     $mail->smtp_hostname = $this->config->get('config_mail_smtp_hostname');
     $mail->smtp_username = $this->config->get('config_mail_smtp_username');
     $mail->smtp_password = html_entity_decode($this->config->get('config_mail_smtp_password'), ENT_QUOTES, 'UTF-8');
