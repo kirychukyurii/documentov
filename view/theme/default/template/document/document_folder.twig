@@ -313,9 +313,13 @@
     });
     history.pushState(null, null, clearUrl.slice(0, -1));
 
-    let $arr = url.split("&document_uid=");
+    let $arr = url.split("&document_uid=")
+    let documentUID = ''
     if ($arr[1] !== undefined && $arr[1] && $arr[1] != '0') {
-      navDocumentov.openDocument($arr[1].slice(0,36));
+      documentUID = $arr[1].slice(0,36)
+    }
+    if (documentUID && documentUID.indexOf('&')===-1) {
+      navDocumentov.openDocument(documentUID);
     } else if (search) {
       $('input[name=\'inputSearch\']').val(search);
       navDocumentov.search();

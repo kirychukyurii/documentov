@@ -13,7 +13,7 @@ json_encode_params = Ошибка при кодировании параметр
 json_decode_params = Ошибка при декодировании JSON параметров действия (UID=%s, тип=%s): %s
 unknown_type_action = Неизвестный тип действия: %s (UID=%s)
 save_document = Ошибка при сохранении документа (UID=%s): %s
-template_file_not_found = Не найден файл шаблона действия %s.%s
+template_file_not_found = Ошибка при загрузке файла шаблона действия %s.%s.tpl: %s
 template_file_get = Ошибка при чтении файла шаблона действия %s.%s: %s
 save_get_doc_for_save = Ошибка при сохранении создаваемого документа: %s
 no_access = Нет доступа
