@@ -134,7 +134,6 @@ class ControllerDocumentDocument extends Controller
         $this->response->redirect($this->url->link('error/daemon_not_started', true));
       }
 
-
       if (!empty($document_info['action_result']['error'])) {
         $this->document->setTitle($doctype_info['name'] ?? "");
         $footer = $this->load->controller('common/footer');
@@ -307,7 +306,7 @@ class ControllerDocumentDocument extends Controller
     $document_info = $this->model_document_document->getDocument($this->request->get['document_uid']);
     if ($document_info && $document_info['draft'] && $document_info['author_uid'] == $this->customer->getStructureId()) {
       //автор удаляет свой черновик
-      $this->model_document_document->removeDocument($this->request->get['document_uid']);
+      $this->model_document_document->removeDraftDocument($this->request->get['document_uid']);
       //удаление уведомлений
       $structure_uid = $this->customer->getStructureId();
       if ($structure_uid) {

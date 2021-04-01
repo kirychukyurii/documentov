@@ -31,10 +31,10 @@ class File
     // $this->daemon = $registry->get('daemon');
     // $this->timeActualMax = $registry->get('config')->get('cache_autoactualize_max') ?? 600;
     // $this->timeActualMin = $registry->get('config')->get('cache_autoactualize_min') ?? 5;
-    // !file_exists(DIR_CACHE) ? mkdir(DIR_CACHE) : "";
-    // $db_database = defined("DB_DATABASE") ? DB_DATABASE : "TEMP";
-    // $this->dir_cache = DIR_CACHE . $db_database . DIRECTORY_SEPARATOR;
-    // !file_exists($this->dir_cache) ? mkdir($this->dir_cache) : "";
+    !file_exists(DIR_CACHE) ? mkdir(DIR_CACHE) : "";
+    $db_database = defined("DB_DATABASE") ? DB_DATABASE : "TEMP";
+    $this->dir_cache = DIR_CACHE . $db_database . DIRECTORY_SEPARATOR;
+    !file_exists($this->dir_cache) ? mkdir($this->dir_cache) : "";
     // // регистриуем save, чтобы выполнить сохранение в файлы в конце работы скрипта
     // // это необходимо для того, чтобы не выполнить одинаковые записи несколько раз; 
     // register_shutdown_function(array($this, 'save'));

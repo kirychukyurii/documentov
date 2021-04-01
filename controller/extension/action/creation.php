@@ -195,6 +195,14 @@ class ControllerExtensionActionCreation extends ActionController
 
             $execResult = $this->daemon->exec("ExecuteButtonAction", $dd);
             if (!empty($execResult['error'])) {
+              if (is_array($execResult['error'])) {
+                foreach ($execResult['error'] as $err) {
+                  if (strpos($err, "document was delete")) {
+                    return ['error' => "Ошибка при сохранении документа. Возможно, Вы пытались создать документ на новой вкладке браузера. Вам нужно создать документ снова"];
+                  }
+                }
+              }
+
               return ['error' => $execResult['error']];
             }
 
