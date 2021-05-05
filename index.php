@@ -1,7 +1,7 @@
 <?php
 
 //  Version
-define('VERSION', '1.8.3.1'); //4d
+define('VERSION', '1.8.4.3'); //4d
 //  Configuration
 if (is_file('config.php')) {
   require_once('config.php');

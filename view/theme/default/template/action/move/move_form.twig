@@ -18,9 +18,9 @@
 <div class="form-group" id="block-type_move">
     <label class="col-sm-3 control-label" for="select-type_move"><span data-toggle="tooltip" title="{{ help_type_move }}">{{ entry_type_move }}</span></label>
     <div class="col-sm-9">    
-        <select name="action[type_move]" id="select-type_move" class="form-control">
-            <option value="0"{% if not action.type_move %} selected="selected"{% endif %}>{{ text_move_daemon }}</option>
-            <option value="1"{% if action.type_move %} selected="selected"{% endif %}>{{ text_move_action }}</option>
+        <select name="action[moveType]" id="select-type_move" class="form-control">
+            <option value="0"{% if not action.moveType %} selected="selected"{% endif %}>{{ text_move_daemon }}</option>
+            <option value="1"{% if action.moveType %} selected="selected"{% endif %}>{{ text_move_action }}</option>
         </select>    
     </div>    
 </div> 

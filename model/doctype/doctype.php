@@ -403,6 +403,8 @@ class ModelDoctypeDoctype extends Model
           || ($key == "disable_parall")
           || ($key == "inits")
           || ($key == "drillDown")
+          || ($key == "moveType")
+          || ($key == "templates")
           || ($key == "total")
         ) { // кст. - doctype_uid исп. в ссыл. поле
           $field_info['params'][$key] = $value;
@@ -943,7 +945,8 @@ class ModelDoctypeDoctype extends Model
       'draft'             => 1,
       'action'            => $data['route_action'],
       'action_log'        => (int) ($data['action_log'] ?? 0),
-      'params'            => $this->jsonEncode($data['params']),
+      // 'params'            => $this->jsonEncode($data['params']),
+      'params'            => $data['params'],
       'description'       => $data['action_description'] ?? "",
       'status'            => $data['action_status'] ?? 1,
     ];
@@ -975,7 +978,7 @@ class ModelDoctypeDoctype extends Model
     } else {
       $action_info['params'] = $action_info['action_params'];
     }
-    $action_info['params'] = $this->jsonEncode($action_info['params']);
+    // $action_info['params'] = $this->jsonEncode($action_info['params']);
     unset($action_info['action_params']);
     unset($action_info['action_type']);
 
@@ -1002,8 +1005,8 @@ class ModelDoctypeDoctype extends Model
   public function editStatusRouteAction($route_action_uid, $status)
   {
     $data = [
-      'uid' => $route_action_uid,
-      'action_status' => $status ? 1 : 0
+      'actionUID' => $route_action_uid,
+      'status' => $status ? "1" : "0"
     ];
 
     $this->daemon->exec("EditRouteActionStatus", $data);
@@ -1076,15 +1079,15 @@ class ModelDoctypeDoctype extends Model
 
   public function copyRouteAction($route_action_uid, $route_uid, $context)
   {
-    $action_info = $this->getRouteAction($route_action_uid);
-    unset($action_info['action_params']['uid']);
-    $action_info['params'] = [
-      'action' => $action_info['action_params'],
-      'route_action' => $action_info['action'],
+    if (!$route_action_uid || !$route_action_uid || !$context) {
+      return "";
+    }
+    $data = [
+      'routeActionUID' => $route_action_uid,
+      'routeUID' => $route_uid,
+      'context' => $context,
     ];
-
-    $route_action_uid = $this->addRouteAction($route_uid, $context, $action_info['params']);
-    return $route_action_uid;
+    return $this->daemon->exec("CopyRouteAction", $data);
   }
 
   public function removeRouteAction($route_action_uid)

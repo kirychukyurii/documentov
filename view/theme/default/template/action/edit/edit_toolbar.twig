@@ -94,6 +94,7 @@
       success: function (json) { // перезагружаем документ
         $('#document_form').html(json['replace']['document_form']);
         $('#link-remove_draft').addClass('hidden');
+        $('.draft-message').hide()
       }
     });
   });
@@ -101,10 +102,7 @@
   window.save_draft = function () {
     $.ajax({url: 'index.php?route=document/{% if folder_uid is empty %}document{% else %}folder{% endif %}/button&button_uid={{ button_uid }}&{% if folder_uid is empty %}document_uid={{ document_uid }}{% else %}document_uids={{ document_uid }}{% endif %}&draft=1', type: 'post', data: $('#document_form input[type=\'text\'], #document_form input[type=\'number\'], #document_form input[type=\'password\'], #document_form input[type=\'hidden\'], #document_form input[type=\'radio\']:checked, #document_form input[type=\'checkbox\']:checked, #document_form select, #document_form textarea'), dataType: 'json', success: function (json) {}});
   };
-  navDocumentov.setFieldDraft();
-  $(".form-control").on('change', function () {
-    navDocumentov.updateFieldDraft();
-  });
+
   $(document).mousemove(function (e) { // на тот случай, если пользователь заполнил поле и сразу потянулся закрывать вкладку
     if (e.pageY <= 5) {
       navDocumentov.updateFieldDraft();
