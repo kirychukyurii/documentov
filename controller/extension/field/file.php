@@ -123,7 +123,7 @@ class ControllerExtensionFieldFile extends FieldController
     $params['preview']['status'] = !empty($params['preview']['status']) ? 1 : 0;
     $params['preview']['width'] = !empty($params['preview']['width']) ? (int)$params['preview']['width'] : 0;
     $params['preview']['height'] = !empty($params['preview']['height']) ? (int)$params['preview']['height'] : 0;
-    $params['preview']['link'] = !empty($params['preview']['status']) ? 1 : 0;
+    $params['preview']['link'] = !empty($params['preview']['link']) ? 1 : 0;
     $params['size_file'] = !empty($params['size_file']) ? (int)  $params['size_file'] : 0;
     $params['limit_files'] = !empty($params['limit_files']) ? (int)  $params['limit_files'] : 0;
     return $params;
@@ -304,7 +304,7 @@ class ControllerExtensionFieldFile extends FieldController
             'name' => $file_info['file_name'],
             'link' => str_replace("&amp;", "&", $link . $token),
             'preview' => $preview,
-            'preview_link' =>  str_replace("&amp;", "&", $preview_link . $token),
+            'preview_link' =>  $preview_link ? str_replace("&amp;", "&", $preview_link . $token) : ""
           );
         }
       }

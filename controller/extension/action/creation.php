@@ -316,6 +316,9 @@ class ControllerExtensionActionCreation extends ActionController
               ),
             );
           }
+          if (!empty($new_document_info['action_result']['append'])) {
+            $result['append'] = $new_document_info['action_result']['append'];
+          }
         }
       }
       if ($append) {

@@ -8,4 +8,8 @@
     }
   });
   $('#tcolumn').animate({ scrollTop: 0 }, "slow");
+  $(".form-control").on('change', function () {
+    navDocumentov.updateFieldDraft();
+  });
+  navDocumentov.setFieldDraft();
 </script>

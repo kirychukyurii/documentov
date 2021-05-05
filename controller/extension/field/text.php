@@ -125,11 +125,11 @@ class ControllerExtensionFieldText extends FieldController
       case "append_text_separator":
         return $this->load->view('field/text/method_append_text_separator_form', $data);
       case "insert_textes":
+
         if (!isset($data['method_params']['standard_setter_param'])) {
           $textes = array();
-          $i = 1;
-          foreach ($data['method_params'] as $param) {
-            $textes['text' . $i++] = $param;
+          foreach ($data['method_params'] as $k => $v) {
+            $textes[$k] = $v;
           }
           $data['method_params'] = $textes;
         }
@@ -426,6 +426,8 @@ class ControllerExtensionFieldText extends FieldController
     switch ($data['method_name']) {
       case "insert_textes":
         $data['method_params'] = ['textes' => $data['method_params']];
+        // print_r($data['method_params']);
+        // exit;
         break;
       case "set_value_from_template":
         if ($data['method_params']['template']) {

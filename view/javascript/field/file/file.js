@@ -218,13 +218,20 @@ FieldFile.prototype.getWidgetView = function () {
 
 
         _this.renderPDF($canvas.get(0), this.link, controls);
-      } else if (this.preview && this.preview_link) {
+      } else if (this.preview) {
         // <a href="{{ file.preview_link }}" target="_blank"><img src="{{ file.link }}"></a>
         $img = $("<img>").attr("src", this.link);
-        $("<a>").attr("href", this.preview_link).attr("target", "_blank").append($img).appendTo(block);
-      } else if (this.preview) {
-        // <img src="{{ file.link }}"></img>
-        $img = $("<img>").attr("src", this.link).append(block);
+        if (this.preview_link) {
+          $("<a>").attr("href", this.preview_link).attr("target", "_blank").append($img).appendTo(block);
+        } else {
+          // block.append($img)
+          $img.appendTo(block)
+        }
+
+        // } 
+        // else if (this.preview) {
+        //   // <img src="{{ file.link }}"></img>
+        //   $img = $("<img>").attr("src", this.link).append(block);
       } else {
         // <a href="{{ file.link }}" target="_blank">{{ file.name }}</a>
         $("<a>").attr("href", this.link).attr("target", "_blank").html(this.name).appendTo(block);

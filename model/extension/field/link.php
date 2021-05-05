@@ -74,6 +74,7 @@ class ModelExtensionFieldLink extends FieldModel
       return "";
     }
     $display_value = array();
+
     $doctype_field_uid = $this->getDoctypeFieldUid($field_info);
 
     if (is_array($field_value)) {
@@ -91,7 +92,7 @@ class ModelExtensionFieldLink extends FieldModel
       }
       $data = array(
         'url'           => $this->url->link('document/document', 'document_uid=' . $value, true, true), //относительный урл, чтобы при смене доменного имени в системе не сохранились старые урлы
-        'text'          => htmlentities(str_replace(",", "&#44;", strip_tags(html_entity_decode($this->model_document_document->getFieldDisplay($doctype_field_uid, $value))))), //вырезаем теги и обратно преобразуем " в &quote;  и пр
+        'text'          => htmlentities(str_replace(",", "&#44;", strip_tags(html_entity_decode($this->model_document_document->getFieldDisplay($doctype_field_uid, $value, false))))), //вырезаем теги и обратно преобразуем " в &quote;  и пр
         'document_uid'  => $value,
         'href'          => $field_info['params']['href'] ?? 0
       );

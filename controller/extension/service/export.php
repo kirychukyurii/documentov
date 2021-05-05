@@ -165,7 +165,7 @@ class ControllerExtensionServiceExport extends Controller
             if (!empty($data['folder'])) {
               foreach ($data['folder'] as $folder_uid) {
                 $folder_info = $this->model_doctype_folder->getFolder($folder_uid);
-                if (!isset($folder_info['name'])) {
+                if (isset($folder_info['name'])) {
                   $result[] = "<a href='" .  $this->url->link('doctype/folder/edit', 'folder_uid=' . $folder_uid) . "'>" . $folder_info['name'] . "</a>";
                 }
 

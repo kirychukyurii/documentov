@@ -179,22 +179,6 @@ class ModelDocumentDocument extends Model
       'session' => $this->getSession()
     ];
     $this->daemon->exec("DeleteDocumentDraft", $data);
-    return;
-    $this->db->query("UPDATE " . DB_PREFIX . "document SET draft=(CASE WHEN draft=3 THEN 3 ELSE 0 END), draft_params='' WHERE document_uid='" . $this->db->escape($document_uid) . "' ");
-    //если документ имел драфт=3, то вместе с драфотом удаляем и его полностью
-    //кейс: док создали чрез Создание и инициализировали поля (они пишутся прямо в базе, поскольку драфт работает только с полями из шаблона, а инициализироваться могут любые
-    //при нажатии на отмены при создании дока - нужно все зачистить
-    if ($remove_draft_3) {
-      $document_info = $this->getDocument($document_uid);
-      // автор хочет удалить черновик, черновики должны быть удалены все
-      $query = $this->db->query("SELECT `document_uid` FROM `document` WHERE `doctype_uid`='" . $document_info['doctype_uid'] . "' AND `draft`='3' AND `author_uid`='" .  $document_info['author_uid']  . "' ");
-      foreach ($query->rows as $row) {
-        $this->removeDocument($row['document_uid']);
-      }
-      // if (isset($document_info['draft']) && $document_info['draft'] == 3) {
-      //   $this->removeDocument($document_uid);
-      // }
-    }
   }
 
   /**
@@ -224,7 +208,6 @@ class ModelDocumentDocument extends Model
     ];
 
     $result = $this->daemon->exec("GetDocument", $data);
-
     if ($result === null) {
       $this->redirect();
     }
@@ -899,10 +882,10 @@ class ModelDocumentDocument extends Model
 
   private function getTemplateComparison($first_value, $second_value, $comparison)
   {
-    if ($first_value == "0" && $second_value == "") {
+    if (empty($first_value) || ($first_value == "0" && $second_value == "")) {
       $first_value = "";
     }
-    if ($first_value == "" && $second_value == "0") {
+    if (empty($second_value) || ($first_value == "" && $second_value == "0")) {
       $second_value = "";
     }
     $result = false;
@@ -1384,8 +1367,10 @@ class ModelDocumentDocument extends Model
    */
   public function getFieldValue($field_uid, $document_uid, $draft = FALSE, $access = FALSE, $display = false)
   {
+
     $this->load->model('doctype/doctype');
-    $document_info = $this->getDocument($document_uid);
+
+    $document_info = $this->getDocument($document_uid, $access);
     $field_info = $this->model_doctype_doctype->getField($field_uid);
 
     if (!$field_info) {
@@ -1393,20 +1378,20 @@ class ModelDocumentDocument extends Model
     }
 
     if ($access && $document_uid) {
+
       // проверяем доступ к полю (кроме документ_июд = 0)
       if (!$document_info || !$this->checkAccessViewField($field_info, $document_uid)) {
         return; //нет доступа
       }
     }
-
     if (!empty($field_info['setting'])) {
       //имеем дело с настроечным полем, document_uid = 0
       $document_uid = 0;
     }
+
     if ($document_uid && $draft) { //если запрашивается настроечное поле document_uid может быть равен 0
-      $document_info = $this->getDocument($document_uid);
+      $document_info = $this->getDocument($document_uid, $access);
       // print_r($document_info);
-      // exit;
       if (!empty($document_info['draft_params'])) {
         $draft_params = json_decode($document_info['draft_params'], true);
         if (isset($draft_params[$field_uid])) {

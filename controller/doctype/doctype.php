@@ -621,13 +621,12 @@ class ControllerDoctypeDoctype extends Controller
       //копируем действия
       $result = array();
       foreach ($this->request->post['selected-copy_action'] as $route_action_uid) {
-        $copy_action_id = $this->model_doctype_doctype->copyRouteAction($route_action_uid, $this->request->get['route_uid'], $this->request->get['context']);
-        if ($copy_action_id) {
-          $action_info = $this->model_doctype_doctype->getRouteAction($copy_action_id);
+        $copy_action_info = $this->model_doctype_doctype->copyRouteAction($route_action_uid, $this->request->get['route_uid'], $this->request->get['context']);
+        if ($copy_action_info) {
           $result[] = array(
-            'name' => $this->load->controller('extension/action/' . $action_info['action'] . "/getTitle"),
-            'description' => $action_info['description'] ? $action_info['description'] : $this->load->controller('extension/action/' . $action_info['action'] . "/getDescription", $action_info['action_params']),
-            'route_action_uid' => $copy_action_id
+            'name' => $this->load->controller('extension/action/' . $copy_action_info['action'] . "/getTitle"),
+            'description' => $copy_action_info['description'] ? $copy_action_info['description'] : $this->load->controller('extension/action/' . $copy_action_info['action'] . "/getDescription", $copy_action_info['action_type']),
+            'route_action_uid' => $copy_action_info["uid"]
           );
         }
         $this->response->addHeader('Content-Type: application/json');
@@ -1097,7 +1096,7 @@ class ControllerDoctypeDoctype extends Controller
   {
     $this->load->model('doctype/doctype');
     $field_uid = $this->request->get['field_uid'];
-    if (isset($this->request->get['method'])) {
+    if (!empty($this->request->get['method'])) {
       $method = $this->request->get['method'];
     } else {
       $method = 'standard_getter';
@@ -1788,8 +1787,8 @@ class ControllerDoctypeDoctype extends Controller
     } else {
       $this->getList();
     }
-    $this->response->addHeader('Content-Type: application/json');
-    $this->response->setOutput(json_encode([]));
+    // $this->response->addHeader('Content-Type: application/json');
+    // $this->response->setOutput(json_encode(['success' => 1]));
   }
 
   /**

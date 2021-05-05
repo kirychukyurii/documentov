@@ -18,7 +18,7 @@ $_['text_description_move_route_field']     = ' на точку из поля';
 $_['text_description_move']                 = 'Перемещается';
 $_['text_select_route']                     = 'Выбрать из списка';
 $_['text_select_field']                     = 'Идентификатор точки из поля';
-$_['text_move_daemon']                      = 'выполнять через демон (рекомендуется)';
-$_['text_move_action']                      = 'выполнять самому действию без демона';
+$_['text_move_daemon']                      = 'выполнять параллельно';
+$_['text_move_action']                      = 'выполнять последовательно';
 
 $_['error_document_not_found']              = 'Не найдены документы для перемещения';
