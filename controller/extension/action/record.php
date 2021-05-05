@@ -208,7 +208,7 @@ class ControllerExtensionActionRecord extends ActionController
         $method_data = array();
         $method_data['doctype_uid'] = $data['doctype_uid'];
         $method_data['field_uid'] = $data['action']['target_field_uid'];
-        if (isset($data['action']['target_field_method_name'])) {
+        if (!empty($data['action']['target_field_method_name'])) {
           $method_data['method_name'] = $data['action']['target_field_method_name'];
         } else {
           $method_data['method_name'] = 'standard_setter';

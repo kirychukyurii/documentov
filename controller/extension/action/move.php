@@ -138,11 +138,11 @@ class ControllerExtensionActionMove extends ActionController
       $data['params']['action']['document_route_field_uid'] =  $data['params']['action']['document_route_uid'];
       $data['params']['action']['document_route_uid'] = "";
     }
-    // [field_document_uid] => 0
-    // [routeSource] => fuid
-    // [document_route_uid] => 
-    // [type_move] => 0
-    // $data['params']['action']['document_route_type'] = !empty($data['params']['action']['document_route_type']) ? 1 : 0;
+    if (isset($data['params']['action']['moveType']) && $data['params']['action']['moveType'] == "1") {
+      $data['params']['action']['moveType'] = true;
+    } else {
+      $data['params']['action']['moveType'] = false;
+    }
     return $data['params']['action'];
   }
 

@@ -288,7 +288,7 @@ class ControllerExtensionFieldTable extends FieldController
       if (!$table_view || !count($table_view)) {
         $table_data = json_decode(($data['field_value']), true);
 
-        if ($table_data) {
+        if ($table_data && is_array($table_data)) {
           foreach ($table_data as $key => $row_data) {
             $data_row = [
               'row_data' => $row_data,
@@ -425,6 +425,15 @@ class ControllerExtensionFieldTable extends FieldController
       default:
         return '';
     }
+  }
+
+
+  public function setMethodParams($data)
+  {
+    if (isset($data['method_params']['accordance'])) {
+      $data['method_params']['accordance']['value'] = json_decode(htmlspecialchars_decode($data['method_params']['accordance']['value']), true);
+    }
+    return $data['method_params'] ?? [];
   }
 
   /**
